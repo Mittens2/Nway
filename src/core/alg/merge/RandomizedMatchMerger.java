@@ -27,7 +27,8 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 	public void run(){
 		long startTime = System.currentTimeMillis();
 		unusedElements = joinAllModels();
-		solution = execute(1);
+		//solution = execute();
+		solution = execute(2);
 		BigDecimal weight = AlgoUtil.calcGroupWeight(solution);
 		if(AlgoUtil.areThereDuplicates(solution)){
 			weight = new BigDecimal(-500);
@@ -57,29 +58,19 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 	private ArrayList<Tuple> execute(){
 		ArrayList<Tuple> result = new ArrayList<Tuple>();
 		while(unusedElements.size() > 1){
-			for (int i = models.size(); i > 0; i--){
-				Element picked = unusedElements.get(unusedElements.size());
-				unusedElements.remove(unusedElements.size());
-				Tuple bestTuple = getBestTuple(new ArrayList<Element>(unusedElements), picked, 1);
-				result.add(bestTuple);
-			}
+			Element picked = unusedElements.get(unusedElements.size() - 1);
+			unusedElements.remove(unusedElements.size() - 1);
+			Tuple bestTuple = getBestTuple(new ArrayList<Element>(unusedElements), picked, 1);
+			result.add(bestTuple);
+
 		}
 		return result;
 	}
 	
 	private ArrayList<Tuple> execute(int threshold){
 		ArrayList<Tuple> result = new ArrayList<Tuple>();
-		for (int i = threshold; i > 0; i--){
-			for (int j = unusedElements.size() - 1; j >= 0; j--){
-				Element picked = unusedElements.get(j);
-				Tuple bestTuple = getBestTuple(unusedElements, picked, i);
-				if (bestTuple.getSize() != 1){
-					for (Element e: bestTuple.getElements())
-						unusedElements.remove(e);
-					result.add(bestTuple);
-				}
-			}
-		}
+		// TODO Algorithm that starts with looking for threshold number of matches
+		// threshold is decremented by 1 every iteration.
 		return result;
 	}
 	
@@ -90,6 +81,7 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 			elems = AlgoUtil.removeElementsSameModelId(picked, elems);
 			elems = AlgoUtil.getElementsWithSharedProperties(picked, elems, shared);
 			picked = getMaxElement(elems, best);
+			unusedElements.remove(picked);
 		}
 		return best;
 	}

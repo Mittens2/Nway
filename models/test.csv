@@ -1,0 +1,18 @@
+1,[a d e g],a;d;e;g
+1,[c i j],c;i;j
+1,[e f g],e;f;g
+1,[b d f],b;d;f
+1,[b g i j],b;g;i;j
+1,[a c d h],a;c;d;h
+2,[a b d e],a;b;d;e
+2,[a f g h],a;f;g;h
+2,[c g i],c;g;i
+2,[c g j],c;g;j
+2,[d i j],d;i;j
+2,[b c d e],b;c;d;e
+3,[b g h j],b;g;h;j
+3,[b d j],b;d;j
+3,[a c h],a;c;h
+3,[a d g j],a;d;g;j
+3,[b f],b;f
+3,[b c e g],b;c;e;g

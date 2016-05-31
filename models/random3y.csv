@@ -1,0 +1,298 @@
+1,"[e, b, c, j]",e;b;c;j
+1,"[g, d, a, j, h, i]",g;d;a;j;h;i
+1,"[g, e, j, h, i]",g;e;j;h;i
+1,"[f, g, d, c, a, j, h]",f;g;d;c;a;j;h
+1,"[g, a]",g;a
+1,"[g, e, b, c, j, i]",g;e;b;c;j;i
+1,"[f, e, b, c, j, h]",f;e;b;c;j;h
+1,[h],h
+1,"[f, g, a, j, h]",f;g;a;j;h
+1,"[f, d, c, j, i]",f;d;c;j;i
+1,"[f, g, d, i]",f;g;d;i
+1,"[g, e, a, h]",g;e;a;h
+1,"[g, d, b, c, a, j, h]",g;d;b;c;a;j;h
+1,"[f, g, e, b, a, j, h]",f;g;e;b;a;j;h
+1,"[g, d, a, i]",g;d;a;i
+1,"[e, h]",e;h
+1,"[f, g, d, e, c, a, i]",f;g;d;e;c;a;i
+1,"[f, g, e]",f;g;e
+1,[d],d
+1,"[f, e, b, c, j, i]",f;e;b;c;j;i
+1,"[g, d, e, b, a, j, h, i]",g;d;e;b;a;j;h;i
+1,"[f, g, e, c, j, h, i]",f;g;e;c;j;h;i
+1,[j],j
+1,"[f, g, d, b, c, a, j, h]",f;g;d;b;c;a;j;h
+1,"[f, g, e, b, c, a, j, h, i]",f;g;e;b;c;a;j;h;i
+1,"[f, g, e, b, j, i]",f;g;e;b;j;i
+1,"[g, d, e, j]",g;d;e;j
+1,[g],g
+1,"[f, d, c, j, h, i]",f;d;c;j;h;i
+1,"[f, g, d, b, a, j]",f;g;d;b;a;j
+1,"[e, b, c, a, i]",e;b;c;a;i
+1,"[d, b, c, a, h]",d;b;c;a;h
+1,"[f, g, d, e, c, a, j, h]",f;g;d;e;c;a;j;h
+1,"[g, d, b, c, a, h, i]",g;d;b;c;a;h;i
+1,"[f, d, b, h]",f;d;b;h
+1,"[f, g, e, b, c, j, i]",f;g;e;b;c;j;i
+1,"[g, d, e, c, j, h, i]",g;d;e;c;j;h;i
+1,"[f, g, d, e, b, c, a, i]",f;g;d;e;b;c;a;i
+1,"[g, d, e, b, c, a, j, h, i]",g;d;e;b;c;a;j;h;i
+1,"[f, d, e, b, h, i]",f;d;e;b;h;i
+1,"[f, g, d, e, b, j, h]",f;g;d;e;b;j;h
+1,"[b, c, a, h]",b;c;a;h
+1,[a],a
+1,"[f, g, e, b]",f;g;e;b
+1,[c],c
+2,"[f, g, c, a, h, i]",f;g;c;a;h;i
+2,"[f, g, d, b, c, a, j, h]",f;g;d;b;c;a;j;h
+2,"[f, g, d, b, c, h, i]",f;g;d;b;c;h;i
+2,"[f, d, e, a]",f;d;e;a
+2,"[f, d, a, j, h, i]",f;d;a;j;h;i
+2,"[g, d, e, a, j, h]",g;d;e;a;j;h
+2,"[f, e, b, a, h, i]",f;e;b;a;h;i
+2,"[f, a, i]",f;a;i
+2,"[g, j, i]",g;j;i
+2,"[f, g, d, e, b, c, a, h]",f;g;d;e;b;c;a;h
+2,"[f, e, c, a, j]",f;e;c;a;j
+2,"[g, d, e, c, j, i]",g;d;e;c;j;i
+2,"[b, c, j]",b;c;j
+2,"[f, g, d, e, b, c, a, j, h]",f;g;d;e;b;c;a;j;h
+2,"[f, g, b, c, j]",f;g;b;c;j
+2,"[g, d, e, b, c, a, j, h, i]",g;d;e;b;c;a;j;h;i
+2,"[f, b, i]",f;b;i
+2,"[d, j]",d;j
+2,"[f, g, d, e]",f;g;d;e
+2,"[f, b, c, a, h]",f;b;c;a;h
+2,"[f, g, e, j]",f;g;e;j
+2,"[g, d, e, b, c, h, i]",g;d;e;b;c;h;i
+2,"[d, e, c, a, j, h]",d;e;c;a;j;h
+2,"[f, g, d, e, c, a, j, h, i]",f;g;d;e;c;a;j;h;i
+2,"[f, g, d, e, b, c, j]",f;g;d;e;b;c;j
+2,"[d, c, j]",d;c;j
+2,"[f, e, a, h]",f;e;a;h
+2,"[d, b, c, j, h]",d;b;c;j;h
+2,"[e, a, j, i]",e;a;j;i
+2,"[f, g, d, b, c, a, h, i]",f;g;d;b;c;a;h;i
+2,"[g, d, c, j]",g;d;c;j
+2,"[d, b, c, a]",d;b;c;a
+2,"[g, d, e, b, c, j, i]",g;d;e;b;c;j;i
+2,"[f, d, e, b, h, i]",f;d;e;b;h;i
+2,"[e, c]",e;c
+2,"[f, d, a, i]",f;d;a;i
+2,"[f, g, d, e, b, c, a, j, h, i]",f;g;d;e;b;c;a;j;h;i
+2,"[f, g, e, b, c, a, j, h, i]",f;g;e;b;c;a;j;h;i
+2,"[g, d, e, c, a, j]",g;d;e;c;a;j
+2,"[d, e, b, h]",d;e;b;h
+2,"[f, g, d, e, b, c, a, j, i]",f;g;d;e;b;c;a;j;i
+3,"[d, b, c, a, j, h]",d;b;c;a;j;h
+3,"[f, d, b, h, i]",f;d;b;h;i
+3,"[f, e, b, c, j, h, i]",f;e;b;c;j;h;i
+3,"[g, d, a, h]",g;d;a;h
+3,"[f, g, d, e, j, h]",f;g;d;e;j;h
+3,"[d, a, i]",d;a;i
+3,"[g, d, e, b, a, j, h]",g;d;e;b;a;j;h
+3,"[a, h]",a;h
+3,"[f, g, d, e, b, a, j, i]",f;g;d;e;b;a;j;i
+3,"[f, g, d, b, c, j]",f;g;d;b;c;j
+3,"[f, g, d, e, b, c, a, h, i]",f;g;d;e;b;c;a;h;i
+3,"[g, d, j]",g;d;j
+3,"[g, d, b, c, a, j, h, i]",g;d;b;c;a;j;h;i
+3,"[f, e, c, a, h, i]",f;e;c;a;h;i
+3,"[f, g, d, e, a]",f;g;d;e;a
+3,"[f, g, e, a, i]",f;g;e;a;i
+3,"[c, j, i]",c;j;i
+3,"[f, g, d, e, c, a, j, h, i]",f;g;d;e;c;a;j;h;i
+3,"[f, g, d, e, b, c, a, j]",f;g;d;e;b;c;a;j
+3,"[e, b, j, h, i]",e;b;j;h;i
+3,"[g, b, c, a, j, h, i]",g;b;c;a;j;h;i
+3,"[f, g, d, a, j, h, i]",f;g;d;a;j;h;i
+3,"[g, d, e, b, j, i]",g;d;e;b;j;i
+3,"[g, d, e, c, a]",g;d;e;c;a
+3,"[f, d, j, i]",f;d;j;i
+4,"[f, g, e, a, h]",f;g;e;a;h
+4,"[f, b, j, h]",f;b;j;h
+4,"[d, e, c]",d;e;c
+4,"[g, e, b, a, j, h, i]",g;e;b;a;j;h;i
+4,"[f, g, d, e, b, c, i]",f;g;d;e;b;c;i
+4,"[g, e, c, a, j, i]",g;e;c;a;j;i
+4,"[f, g, d, e, b, c, a, j, h]",f;g;d;e;b;c;a;j;h
+4,"[f, g, d, e, c, a, j, h, i]",f;g;d;e;c;a;j;h;i
+4,"[f, e, j]",f;e;j
+4,"[f, e, b, h, i]",f;e;b;h;i
+4,"[f, e, b, a, j, i]",f;e;b;a;j;i
+4,"[e, c, j, h]",e;c;j;h
+4,"[f, g, d, b, c, a, h]",f;g;d;b;c;a;h
+4,"[g, d, e, c, j]",g;d;e;c;j
+4,"[d, c, a, j, i]",d;c;a;j;i
+4,"[j, h, i]",j;h;i
+4,"[f, g, d, e, c, a, j, i]",f;g;d;e;c;a;j;i
+4,"[f, d, e, b, c, a, h, i]",f;d;e;b;c;a;h;i
+4,"[g, d, e, b, j, h]",g;d;e;b;j;h
+4,"[f, e, b, c, a]",f;e;b;c;a
+4,"[d, j]",d;j
+4,"[g, e, b, c, h, i]",g;e;b;c;h;i
+4,"[g, d, j, h, i]",g;d;j;h;i
+4,"[f, g, e, b, c, a, j, i]",f;g;e;b;c;a;j;i
+5,"[f, g, e, b, a, j, h, i]",f;g;e;b;a;j;h;i
+5,"[b, a]",b;a
+5,"[f, d, e, b, c, j, h, i]",f;d;e;b;c;j;h;i
+5,"[g, e, b, a, h, i]",g;e;b;a;h;i
+5,"[f, e, b, c, a, h, i]",f;e;b;c;a;h;i
+5,"[f, b, h, i]",f;b;h;i
+5,"[d, b, c, a]",d;b;c;a
+5,"[d, i]",d;i
+5,"[g, d, e, b, c, h, i]",g;d;e;b;c;h;i
+5,[c],c
+5,"[f, d, e, b, c, a, j, i]",f;d;e;b;c;a;j;i
+5,"[g, d, e, c, a, i]",g;d;e;c;a;i
+5,"[f, g, d, e, b, c, a, j, i]",f;g;d;e;b;c;a;j;i
+5,"[g, c, a, j, i]",g;c;a;j;i
+5,"[f, g, e, c, a, j, i]",f;g;e;c;a;j;i
+5,[f],f
+5,"[d, b, h]",d;b;h
+5,"[f, g, b, j, i]",f;g;b;j;i
+5,"[g, d, e, c, a, j, h, i]",g;d;e;c;a;j;h;i
+5,"[f, g, b, c, j, h, i]",f;g;b;c;j;h;i
+5,"[c, i]",c;i
+5,"[f, d, b, c, a, h, i]",f;d;b;c;a;h;i
+5,"[e, h, i]",e;h;i
+5,"[f, g, d, b, c, a, j]",f;g;d;b;c;a;j
+5,"[d, e, c, h]",d;e;c;h
+5,"[e, h]",e;h
+5,"[f, g, e, b, j, h, i]",f;g;e;b;j;h;i
+5,"[f, g, d, e, b, c, a, h, i]",f;g;d;e;b;c;a;h;i
+5,[g],g
+5,"[f, e, b, c, a, j, h]",f;e;b;c;a;j;h
+5,"[f, g, d, e, c, a, h, i]",f;g;d;e;c;a;h;i
+5,"[g, b, c, h, i]",g;b;c;h;i
+5,"[f, g, d, b, c, a, j, h]",f;g;d;b;c;a;j;h
+6,"[g, b, c, a, j, h]",g;b;c;a;j;h
+6,"[f, g, d, e, b, c, j, h, i]",f;g;d;e;b;c;j;h;i
+6,"[e, h]",e;h
+6,"[b, c, j, h, i]",b;c;j;h;i
+6,"[a, j, i]",a;j;i
+6,"[f, d, b, h]",f;d;b;h
+6,"[e, b, i]",e;b;i
+6,"[g, a]",g;a
+6,"[a, i]",a;i
+6,"[f, g, d, c, h, i]",f;g;d;c;h;i
+6,"[d, e, c]",d;e;c
+6,"[g, j]",g;j
+6,"[f, g, e, b, c, j, i]",f;g;e;b;c;j;i
+6,"[f, g, d, e, c, j, h, i]",f;g;d;e;c;j;h;i
+6,"[d, c, h]",d;c;h
+6,"[f, d, e, b, c, a, h, i]",f;d;e;b;c;a;h;i
+6,[h],h
+6,[d],d
+6,"[c, j, i]",c;j;i
+6,"[a, j, h]",a;j;h
+6,"[f, d, e, b, c, j, h, i]",f;d;e;b;c;j;h;i
+6,"[d, e, b, c, a, i]",d;e;b;c;a;i
+6,"[f, d, j, i]",f;d;j;i
+6,"[g, d, e, c, a, i]",g;d;e;c;a;i
+6,"[f, g, e, b, a, i]",f;g;e;b;a;i
+6,"[d, e, c, a, h, i]",d;e;c;a;h;i
+6,"[f, e, b, c, i]",f;e;b;c;i
+6,"[f, d, b, c, a, h]",f;d;b;c;a;h
+7,"[f, g, e, b, a, j, h, i]",f;g;e;b;a;j;h;i
+7,"[g, d, e, b, a, h, i]",g;d;e;b;a;h;i
+7,"[g, d, c, a, j]",g;d;c;a;j
+7,"[g, c, j]",g;c;j
+7,"[g, d, e, b, a, h]",g;d;e;b;a;h
+7,"[b, c, a, j, h, i]",b;c;a;j;h;i
+7,"[g, d, b, c]",g;d;b;c
+7,"[f, a, i]",f;a;i
+7,"[g, b, a, j, h, i]",g;b;a;j;h;i
+7,"[f, g, d, j, h, i]",f;g;d;j;h;i
+7,"[f, e, b, a, j, h]",f;e;b;a;j;h
+7,"[g, d, b, c, a, h, i]",g;d;b;c;a;h;i
+7,"[f, g, d, b, a, j, i]",f;g;d;b;a;j;i
+7,[a],a
+7,"[g, d, b, a, j, i]",g;d;b;a;j;i
+7,"[g, e, a, j, h, i]",g;e;a;j;h;i
+7,"[g, d, e, c, a, j, i]",g;d;e;c;a;j;i
+7,"[f, b, a, i]",f;b;a;i
+7,"[f, g, e, b, c, a, h]",f;g;e;b;c;a;h
+7,"[f, g, d, e, c, a, j, h, i]",f;g;d;e;c;a;j;h;i
+7,"[e, j, h]",e;j;h
+7,"[g, d, b, a]",g;d;b;a
+7,"[f, g, d, e, c, a, j, h]",f;g;d;e;c;a;j;h
+7,"[f, d, e, b, c, a, h, i]",f;d;e;b;c;a;h;i
+7,"[d, j, h]",d;j;h
+7,"[g, e, b, j, i]",g;e;b;j;i
+7,"[f, g, d, e, b, c, j, h, i]",f;g;d;e;b;c;j;h;i
+7,[g],g
+7,"[f, d, a, i]",f;d;a;i
+7,"[e, j]",e;j
+7,"[g, e, c, a, h, i]",g;e;c;a;h;i
+7,"[f, e, j]",f;e;j
+7,[c],c
+8,"[d, e, c, j, i]",d;e;c;j;i
+8,"[g, e, b, h, i]",g;e;b;h;i
+8,"[g, d, e, b, a, j, h]",g;d;e;b;a;j;h
+8,"[f, d, e, j, i]",f;d;e;j;i
+8,"[c, h]",c;h
+8,"[h, i]",h;i
+8,"[f, d, c, a, i]",f;d;c;a;i
+8,"[f, g, b, c, a, j, i]",f;g;b;c;a;j;i
+8,"[f, g, d, c, a, j, i]",f;g;d;c;a;j;i
+8,"[f, d, b, c, j]",f;d;b;c;j
+8,[f],f
+8,"[f, g, d, c, h]",f;g;d;c;h
+8,"[f, g, d, e, b, c, a, j, h, i]",f;g;d;e;b;c;a;j;h;i
+8,"[g, d, e, b, a, j, h, i]",g;d;e;b;a;j;h;i
+8,"[d, b, c, j]",d;b;c;j
+8,"[f, b, a, j, i]",f;b;a;j;i
+8,"[g, e, j, i]",g;e;j;i
+8,"[a, i]",a;i
+8,"[g, d, b, a, j, h, i]",g;d;b;a;j;h;i
+9,"[f, d, e, a, i]",f;d;e;a;i
+9,"[d, e, c, a, j, h, i]",d;e;c;a;j;h;i
+9,"[f, g, d, e, b, c, a, j]",f;g;d;e;b;c;a;j
+9,"[d, e, c, a, j]",d;e;c;a;j
+9,"[e, b, c]",e;b;c
+9,"[f, g, d, b, c, j, i]",f;g;d;b;c;j;i
+9,"[e, h, i]",e;h;i
+9,[c],c
+9,"[f, g, d, e, c, a, j]",f;g;d;e;c;a;j
+9,"[g, c]",g;c
+9,"[f, g, b, c, a, h]",f;g;b;c;a;h
+9,"[f, g, e, b, a, j, h]",f;g;e;b;a;j;h
+9,"[f, g, d, e, b, c, j, i]",f;g;d;e;b;c;j;i
+9,"[f, b, c, a]",f;b;c;a
+9,"[f, g, e, b, a]",f;g;e;b;a
+9,"[e, b, j, h, i]",e;b;j;h;i
+9,"[f, e, c, a, h, i]",f;e;c;a;h;i
+9,"[f, g, d, b, c, a, j, h, i]",f;g;d;b;c;a;j;h;i
+9,"[f, h]",f;h
+9,"[g, d, e, b, c, a, h, i]",g;d;e;b;c;a;h;i
+9,"[d, j]",d;j
+9,"[f, g, e, b, j]",f;g;e;b;j
+9,"[f, g, d, e, b, c, a, j, h]",f;g;d;e;b;c;a;j;h
+9,"[f, i]",f;i
+9,"[f, g, d, j]",f;g;d;j
+9,"[f, g, e, c, a, h]",f;g;e;c;a;h
+9,"[f, g, d, e, b, c, j, h, i]",f;g;d;e;b;c;j;h;i
+9,"[f, g, d, e, b]",f;g;d;e;b
+10,"[f, g, e, b, c, a, j, h, i]",f;g;e;b;c;a;j;h;i
+10,"[g, b, c]",g;b;c
+10,"[f, g, c, a, j]",f;g;c;a;j
+10,[e],e
+10,"[f, g, e, c, a, h, i]",f;g;e;c;a;h;i
+10,"[c, a, i]",c;a;i
+10,"[f, g, d, b, c, a, j, h, i]",f;g;d;b;c;a;j;h;i
+10,"[g, e, b, j, h, i]",g;e;b;j;h;i
+10,"[f, d, e, b, c, h, i]",f;d;e;b;c;h;i
+10,"[f, g, d, e, b, c, a, h]",f;g;d;e;b;c;a;h
+10,"[f, g, d, e, a, h]",f;g;d;e;a;h
+10,"[f, e, c, a, j, h, i]",f;e;c;a;j;h;i
+10,"[f, e, b, j, h, i]",f;e;b;j;h;i
+10,"[f, g, e, b, i]",f;g;e;b;i
+10,"[g, d, e, b, a, j, h]",g;d;e;b;a;j;h
+10,"[e, b, c, a, j]",e;b;c;a;j
+10,"[f, g, d, b, c, j, h]",f;g;d;b;c;j;h
+10,"[f, i]",f;i
+10,"[d, c, a]",d;c;a
+10,"[f, g, e, b, c, a, j, i]",f;g;e;b;c;a;j;i
+10,"[f, g, d, e, b, c, a, j, h]",f;g;d;e;b;c;a;j;h
+10,"[f, g, b, a, j, h, i]",f;g;b;a;j;h;i

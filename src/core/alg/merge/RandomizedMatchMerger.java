@@ -3,6 +3,7 @@ package core.alg.merge;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Random;
 import java.util.Stack;
 
@@ -51,15 +52,26 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 		 * @return The list of all of the models' Elements.
 		 */
 		ArrayList<Element> elems = new ArrayList<Element>();
-		Collections.sort(models, new ModelComparator(true));
+		//Collections.sort(models, new ModelComparator(true));
 		for(Model m:models){
 			ArrayList<Element> modelElems = m.getElements();
-			Collections.sort(modelElems, new ElementComparator(true));
+			//Collections.sort(modelElems, new ElementComparator(true));
 			elems.addAll(modelElems);
 		}
 		
 		//Collections.sort(elems, new ElementComparator(false));
 		return elems;
+	}
+	
+	private HashMap<String, Integer> getSortedProperties(ArrayList<Element> elems){
+		HashMap<String, Integer> propFreq = new HashMap<String, Integer>();
+		for (Element e: elems){
+			for (String p: e.getProperties()){
+				int count = propFreq.containsKey(p) ? propFreq.get(p) : 0;
+				propFreq.put(p, count + 1);
+			}
+		}
+		return propFreq;
 	}
 	
 	private ArrayList<Tuple> execute(){

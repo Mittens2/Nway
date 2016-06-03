@@ -149,6 +149,23 @@ public class AlgoUtil {
 		return elems;
 	}
 	
+	public static ArrayList<ArrayList<Element>> partitionShared(Element target, ArrayList<Element> elems, int shared){
+		ArrayList<ArrayList<Element>> partition = new ArrayList<ArrayList<Element>>();
+		ArrayList<Element> compatible = new ArrayList<Element>();
+		ArrayList<Element> incompatible = new ArrayList<Element>();
+		for (Element e: elems){
+			if (haveCommonProperties(target, e, shared)){
+				compatible.add(e);
+			}
+			else{
+				incompatible.add(e);
+			}
+		}
+		partition.add(compatible);
+		partition.add(incompatible);
+		return partition;
+	}
+	
 	public static ArrayList<Element> removeElementsSameModelId(Element target, ArrayList<Element> elems){
 		for (int i = elems.size() - 1; i >= 0; i--){
 			if (elems.get(i).getModelId() == target.getModelId()){

@@ -72,9 +72,9 @@ public class Runner extends ResultsWriter{
 			//runOnGreedy(4);
 		//runOnGreedy(5);
 		}*/
-		AlgoUtil.COMPUTE_RESULTS_CLASSICALLY = false;
-		results.addAll(runBigHungarian());
-		//results.addAll(runRandomizedMatch());
+		//AlgoUtil.COMPUTE_RESULTS_CLASSICALLY = false;
+		//results.addAll(runBigHungarian());
+		results.addAll(runRandomizedMatch());
 		
 		
 		//runLocalSearches(3);
@@ -251,7 +251,7 @@ public class Runner extends ResultsWriter{
 		RunResult rr = rmm.getRunResult(models.size());
 		ArrayList<RunResult> result = new ArrayList<RunResult>();
 		result.add(rr);
-		System.out.println(rr);
+		//System.out.println(rr);
 		//AlgoUtil.printTuples(rmm.getTuplesInMatch());
 		writeResults(result, "Randomized");
 		return result;

@@ -38,13 +38,32 @@ public class Main {
 	}
 	
 	private static void singleBatchRun(String modelsFile, String resultsFile, int numOfModelsToUse, boolean toChunkify){
+		/**
+		 * Runs algorithms over the first numOfModelsToUse models from modelsFile in a single run.
+		 * 
+		 * @param modelsFile The name of the file to derive the models.
+		 * @param resultsFile The name of the file which results should be written to.
+		 * @param numOfModelsToUse The number of models to be used in the run.
+		 */
 		ArrayList<Model> models = Model.readModelsFile(modelsFile);
 		System.out.println(modelsFile.substring(modelsFile.indexOf("/") + 1, modelsFile.indexOf(".")) + ", num models: " + models.size());
 		Runner runner = new Runner(models, resultsFile, null, numOfModelsToUse, toChunkify);
 		runner.execute();
+		System.out.println(runner.getRunResults().get(0).weight);
 	}
 	
 	private static void multipleBatchRun(String modelsFile, String resultsFile, int numOfModelsToUse){
+		/**
+		 * Divides the case defined by modelsFile into batches of numOfModelsToUse models.
+		 * Runs algorithms over the set of models designated as many times as numOfModelsToUse
+		 * can be taken out of the total models designated by modelsFile. 
+		 * Prints average weight of the runs at the end.
+		 * 
+		 * @param modelsFile The name of the file to derive the models.
+		 * @param resultsFile The name of the file which results should be written to.
+		 * @param numOfModelsToUse The number of models to be used in each run.
+		 * @see singleBatchRun
+		 */
 		ArrayList<Model> models = Model.readModelsFile(modelsFile);
 		System.out.println(modelsFile.substring(modelsFile.indexOf("/") + 1, modelsFile.indexOf(".")) + ", num models: " + models.size());
 		int runs = models.size() / numOfModelsToUse;

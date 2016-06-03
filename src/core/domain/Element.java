@@ -32,6 +32,8 @@ public class Element {
 	private int id = ID++;
 	private boolean isRaw;
 	
+	private int propScore;
+	
 	private static Random random = new Random(System.currentTimeMillis()+1165);
 	
 	public Element(String id){
@@ -223,6 +225,14 @@ public class Element {
 	
 	public boolean isRaw(){
 		return this.isRaw;
+	}
+	
+	public void setPropScore(int score){
+		this.propScore = score;
+	}
+	
+	public int getPropScore(){
+		return this.propScore;
 	}
 	
 	

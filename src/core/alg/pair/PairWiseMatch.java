@@ -87,7 +87,7 @@ public abstract class PairWiseMatch extends AlgoBase {
 			}
 		}
 		
-		AlgoUtil.printTuples(retVal);
+		//AlgoUtil.printTuples(retVal);
 		
 		return retVal;
 	}

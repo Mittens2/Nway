@@ -1,5 +1,6 @@
 package core;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 
 import core.alg.merge.MultiModelHungarian;
@@ -43,21 +44,40 @@ public class Main {
 		runner.execute();
 	}
 	
+	private static void multipleBatchRun(String modelsFile, String resultsFile, int numOfModelsToUse){
+		ArrayList<Model> models = Model.readModelsFile(modelsFile);
+		System.out.println(modelsFile.substring(modelsFile.indexOf("/") + 1, modelsFile.indexOf(".")) + ", num models: " + models.size());
+		int runs = models.size() / numOfModelsToUse;
+		BigDecimal total = BigDecimal.ZERO;
+		for (int i = 0; i < runs; i++){
+			Runner runner = new Runner(new ArrayList<Model>(models.subList(i * numOfModelsToUse, (i + 1) * numOfModelsToUse)), resultsFile, null, numOfModelsToUse, true);
+			runner.execute();
+			total = total.add(runner.getRunResults().get(0).weight);
+		}
+		System.out.println("Average score:" + total.divide(BigDecimal.TEN));
+	}
+	
 	public static void main(String[] args) {
 		
-		String testPath = "models/test.csv";
+		String hospitals = "models/hospitals.csv";
+		String warehouses = "models/warehouses.csv";
+		String random = "models/models/random.csv";
+		String randomLoose = "models/models/randomLoose.csv";
+		String randomTight = "models/models/randomTight.csv";
+		
+		/*String testPath = "models/test.csv";
 		String hospitals = "models/hospitals.csv";
 		String warehouses = "models/warehouses.csv";
 		String random10 = "models/random10.csv";
 		String randomTMP = "models/random3y.csv";
 		String randomTMP1= "models/3x6_models.csv";
-		String runningExample = "models/runningExample2.csv";
+		String runningExample = "models/runningExample2.csv";*/
 		
 		String resultsHospitals = "results/hospital_results.xls";
 		String resultsWarehouses = "results/warehouses_results.xls";
-		String resultRandom10 = "results/random10_results.xls";
-		String resultsRunningExample = "results/runningExample.xls";
-		String _3x6 = "results/3x6.xls";
+		String resultsRandom = "results/random_results.xls";
+		String resultsRandomLoose = "results/randomLoose_results.xls";
+		String resultsRandomTight = "results/random_resultsTight.xls";
 				
 		AlgoUtil.useTreshold(true);
 		
@@ -73,11 +93,16 @@ public class Main {
 		//singleBatchRun(hospitals, resultsHospitals,-1, true);
 		//singleBatchRun(warehouses, resultsWarehouses,-1, true);
 		
-		AlgoUtil.COMPUTE_RESULTS_CLASSICALLY = true;
+		//AlgoUtil.COMPUTE_RESULTS_CLASSICALLY = true;
+		
 		//AlgoUtil.COMPUTE_RESULTS_CLASSICALLY = false;
-		singleBatchRun(hospitals, resultsHospitals,-1, true);
+		
 		singleBatchRun(warehouses, resultsWarehouses,-1, true);	
-//		workOnBatch(random10, resultRandom10);
+		singleBatchRun(hospitals, resultsHospitals,-1, true);
+		multipleBatchRun(random, resultsRandom, 10);	
+		multipleBatchRun(randomLoose, resultsRandomLoose, 10);	
+		multipleBatchRun(randomTight, resultsRandomTight, 10);
+		//workOnBatch(random10, resultRandom10);
 		
 		//workOnBatch("models/randomH.csv", "results/randomH.xls");
 		//workOnBatch("models/randomWH.csv", "results/randomWH.xls");

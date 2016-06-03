@@ -124,7 +124,7 @@ public class BatchRunner extends ResultsWriter {
 		for(int i=0; i<numOfBatches;i++){
 			ArrayList<Model> models = allModels.get(i);
 			Runner rnr = new Runner(models);
-			combineResults(runNewHungarianResults, rnr.runBigHungarian());
+			//combineResults(runNewHungarianResults, rnr.runBigHungarian());
 		}
 		//averageResults(runNewHungarianResults);
 		writeResults("New Hungarian", runNewHungarianResults);

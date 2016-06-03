@@ -42,7 +42,7 @@ public class GreedyMerger extends Merger {
 		rr.avgTupleWeight = avgWeight;
 		rr.weight = weight;
 		rr.updateBins(res);
-		AlgoUtil.printTuples(res);
+		//AlgoUtil.printTuples(res);
 		return rr;
 	}
 	

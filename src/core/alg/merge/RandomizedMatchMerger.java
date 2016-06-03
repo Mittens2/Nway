@@ -27,8 +27,8 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 	public void run(){
 		long startTime = System.currentTimeMillis();
 		unusedElements = joinAllModels();
-		//solution = execute();
-		solution = execute(2);
+		solution = execute();
+		//solution = execute(2);
 		BigDecimal weight = AlgoUtil.calcGroupWeight(solution);
 		if(AlgoUtil.areThereDuplicates(solution)){
 			weight = new BigDecimal(-500);
@@ -45,24 +45,25 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 	
 	private ArrayList<Element> joinAllModels() {
 		ArrayList<Element> elems = new ArrayList<Element>();
-		//Collections.sort(models, new ModelComparator(true));
+		Collections.sort(models, new ModelComparator(false));
 		for(Model m:models){
 			ArrayList<Element> modelElems = m.getElements();
-			//Collections.sort(modelElems, new ElementComparator(true));
+			Collections.sort(modelElems, new ElementComparator(true));
 			elems.addAll(modelElems);
 		}
-		//Collections.sort(elems, new ElementComparator(false));
+		//Collections.sort(elems, new ElementComparator(true));
 		return elems;
 	}
 	
 	private ArrayList<Tuple> execute(){
 		ArrayList<Tuple> result = new ArrayList<Tuple>();
 		while(unusedElements.size() > 1){
-			Element picked = unusedElements.get(unusedElements.size() - 1);
-			unusedElements.remove(unusedElements.size() - 1);
+			//Element picked = unusedElements.get(unusedElements.size() - 1);
+			//unusedElements.remove(unusedElements.size() - 1);
+			Element picked = unusedElements.get(0);
+			unusedElements.remove(0);
 			Tuple bestTuple = getBestTuple(new ArrayList<Element>(unusedElements), picked, 1);
 			result.add(bestTuple);
-
 		}
 		return result;
 	}

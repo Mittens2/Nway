@@ -23,6 +23,7 @@ import core.domain.Model;
 public class Runner extends ResultsWriter{
 
 	private ArrayList<Model> models;
+	private ArrayList<RunResult> results;
 	private String manualResultsFileLoc;
 	private boolean toChunkify;
 	
@@ -43,6 +44,7 @@ public class Runner extends ResultsWriter{
 			this.models = modelSubset;
 		this.manualResultsFileLoc = manualResultsFileLoc;
 		this.toChunkify = toChunkify;
+		results = new ArrayList<RunResult>();
 	}
 	
 	private void addManualRun() {
@@ -60,19 +62,19 @@ public class Runner extends ResultsWriter{
 //		runOnLocalSearch(N_WAY.ALG_POLICY.REPLACE_BEST, "LS triwise");
 	//	runOnLocalSearch(N_WAY.ALG_POLICY.REPLACE_FIRST_BY_SQUARES, "LS triwise");
 		//addManualRun();
-		
-		/*runOnPairs();
-		if(!toChunkify){
+		AlgoUtil.COMPUTE_RESULTS_CLASSICALLY = true;
+		//runOnPairs();
+		/*if(!toChunkify){
 			runOnGreedy(models.size());
 		}
 		else{
 			runOnGreedy(3);
-			runOnGreedy(4);
+			//runOnGreedy(4);
 		//runOnGreedy(5);
 		}*/
 		AlgoUtil.COMPUTE_RESULTS_CLASSICALLY = false;
-		//runBigHungarian();
-		runRandomizedMatch();
+		results.addAll(runBigHungarian());
+		//results.addAll(runRandomizedMatch());
 		
 		
 		//runLocalSearches(3);
@@ -240,7 +242,6 @@ public class Runner extends ResultsWriter{
 		//AlgoUtil.printTuples(mmm.getTuplesInMatch());
 		writeResults(result, "New Hungarian");
 		return result;
-		
 	}
 	
 	public ArrayList<RunResult> runRandomizedMatch(){
@@ -302,6 +303,9 @@ public class Runner extends ResultsWriter{
 		}
 			
 	}
+	 public ArrayList<RunResult> getRunResults(){
+		 return results;
+	 }
 	
 //	private RunResult runOn(MergeDescriptor md, int modelSplitSize, int bucketSize){
 //		 

@@ -38,7 +38,7 @@ public class FirstFoundLocalSearch extends LocalSearch {
 		return retVal;
 	}
 	
-	protected boolean optimizeSolution(ArrayList<Tuple> tuples2,
+	public boolean optimizeSolution(ArrayList<Tuple> tuples2,
 			ArrayList<Tuple> solution, HashSet<Tuple> hashSet, int i) {
 		// TODO Auto-generated method stub
 		System.out.println("Replace first, curr solution value: " + AlgoUtil.calcGroupWeight(solution) + new Date());

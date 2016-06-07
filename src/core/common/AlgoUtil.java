@@ -140,9 +140,9 @@ public class AlgoUtil {
 		return lst; 
 	}
 	
-	public static ArrayList<Element> getElementsWithSharedProperties(Element target, ArrayList<Element> elems, int x){
+	public static ArrayList<Element> getElementsWithSharedProperties(Element target, ArrayList<Element> elems, int shared){
 		for (int i = elems.size() - 1; i >= 0; i--){
-			if (!haveCommonProperties(elems.get(i), target, x)){
+			if (!haveCommonProperties(elems.get(i), target, shared)){
 				elems.remove(i);
 			}
 		}

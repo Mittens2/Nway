@@ -246,22 +246,35 @@ public class Runner extends ResultsWriter{
 	
 	public ArrayList<RunResult> runRandomizedMatch(){
 		@SuppressWarnings("unchecked")
-		RandomizedMatchMerger rmm = new RandomizedMatchMerger((ArrayList<Model>) models.clone());
+		ArrayList<RunResult> results = new ArrayList<RunResult>();
+		ArrayList<MergeDescriptor> mds = allPermOnAlg(N_WAY.ALG_POLICY.RANDOM);
+		for(MergeDescriptor md:mds){
+			results.add(runRandomMatch(md));
+		}
+		writeResults(results, "Randomized");
+		return results;
+	}
+	
+	private RunResult runRandomMatch(MergeDescriptor md){
+		RandomizedMatchMerger rmm = new RandomizedMatchMerger((ArrayList<Model>) models.clone(), md, true);
 		rmm.run();
 		RunResult rr = rmm.getRunResult(models.size());
-		ArrayList<RunResult> result = new ArrayList<RunResult>();
-		result.add(rr);
-		//System.out.println(rr);
-		//AlgoUtil.printTuples(rmm.getTuplesInMatch());
-		writeResults(result, "Randomized");
-		return result;
+		rr.setTitle(AlgoUtil.nameOfMergeDescription(md, -1));
+		System.out.println(rr);
+		return rr;
 	}
 	
 	private ArrayList<MergeDescriptor> allPermOnAlg(N_WAY.ALG_POLICY pol){
 		ArrayList<MergeDescriptor> retVal = new ArrayList<MergeDescriptor>();
-
+		
 		retVal.add(new MergeDescriptor(pol, true, N_WAY.ORDER_BY.MODEL_ID));
-		if(toChunkify || pol == N_WAY.ALG_POLICY.PAIR_WISE){
+		if (pol == N_WAY.ALG_POLICY.RANDOM){
+			retVal.add(new MergeDescriptor(true, true));
+			retVal.add(new MergeDescriptor(true, false));
+			retVal.add(new MergeDescriptor(false, true));
+			retVal.add(new MergeDescriptor(false, false));
+		}
+		else if(toChunkify || pol == N_WAY.ALG_POLICY.PAIR_WISE){
 			retVal.add(new MergeDescriptor(pol, true, N_WAY.ORDER_BY.MODEL_SIZE));
 			retVal.add(new MergeDescriptor(pol, false, N_WAY.ORDER_BY.MODEL_SIZE));
 		}

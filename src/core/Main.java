@@ -2,6 +2,8 @@ package core;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 
 import core.alg.merge.MultiModelHungarian;
 import core.alg.merge.MultiModelMerger;
@@ -9,6 +11,7 @@ import core.common.AlgoUtil;
 import core.domain.Model;
 import core.execution.BatchRunner;
 import core.execution.BatchRunner.BatchRunDescriptor;
+import core.execution.RunResult;
 import core.execution.Runner;
 
 
@@ -49,7 +52,6 @@ public class Main {
 		System.out.println(modelsFile.substring(modelsFile.indexOf("/") + 1, modelsFile.indexOf(".")) + ", num models: " + models.size());
 		Runner runner = new Runner(models, resultsFile, null, numOfModelsToUse, toChunkify);
 		runner.execute();
-		System.out.println(runner.getRunResults().get(0).weight);
 	}
 	
 	private static void multipleBatchRun(String modelsFile, String resultsFile, int numOfModelsToUse){
@@ -67,13 +69,65 @@ public class Main {
 		ArrayList<Model> models = Model.readModelsFile(modelsFile);
 		System.out.println(modelsFile.substring(modelsFile.indexOf("/") + 1, modelsFile.indexOf(".")) + ", num models: " + models.size());
 		int runs = models.size() / numOfModelsToUse;
-		BigDecimal total = BigDecimal.ZERO;
+		ArrayList<ArrayList<BigDecimal>> runScores = new ArrayList<ArrayList<BigDecimal>>();
 		for (int i = 0; i < runs; i++){
 			Runner runner = new Runner(new ArrayList<Model>(models.subList(i * numOfModelsToUse, (i + 1) * numOfModelsToUse)), resultsFile, null, numOfModelsToUse, true);
 			runner.execute();
-			total = total.add(runner.getRunResults().get(0).weight);
+			ArrayList<BigDecimal> currScores = new ArrayList<BigDecimal>();
+			for (RunResult rr : runner.getRunResults()){
+				currScores.add(rr.weight);
+			}
+			runScores.add(currScores);
 		}
-		System.out.println("Average score:" + total.divide(BigDecimal.TEN));
+		printStatsMultipleRun(runScores);
+		
+		
+	}
+	
+	public static void printStatsMultipleRun(ArrayList<ArrayList<BigDecimal>> runScores){
+		/**
+		 * Prints out the average, standard deviation as well as the maximum and minimum scores for each set of runs
+		 * in runScores.
+		 * 
+		 * @param runScores The set of sets of run scores (if there are multiple conditions per some algorithm).
+		 */
+		int cases = runScores.get(0).size();
+		int runs = runScores.size();
+		BigDecimal[] averages = new BigDecimal[cases];
+		BigDecimal[] stdDevs = new BigDecimal[cases];
+		BigDecimal[] maxScores = new BigDecimal[cases];
+		BigDecimal[] minScores = new BigDecimal[cases];
+		//int[] maxs = new int[cases];
+		//int[] mins = new int[cases];
+		Arrays.fill(averages, BigDecimal.ZERO);
+		Arrays.fill(stdDevs, BigDecimal.ZERO);
+		Arrays.fill(maxScores, BigDecimal.ZERO);
+		Arrays.fill(minScores, BigDecimal.TEN);
+		// Calculate average.
+		for (ArrayList<BigDecimal> singleRun: runScores){
+			for (int i = 0; i < cases; i++){
+				averages[i] = averages[i].add(singleRun.get(i).divide(BigDecimal.TEN));
+			}
+		}
+		// Calculate standard deviation and max/min runs.
+		for (ArrayList<BigDecimal> singleRun: runScores){
+			for (int i = 0; i < cases; i++){
+				BigDecimal currRun = singleRun.get(i);
+				if (currRun.compareTo(maxScores[i]) > 0){
+					maxScores[i] = currRun;
+				}
+				if (currRun.compareTo(minScores[i]) < 0){
+					minScores[i] = currRun;
+				}
+				stdDevs[i] = stdDevs[i].add((averages[i].subtract(singleRun.get(i))).pow(2));
+			}
+		}
+		// Print stats.
+		for (int i = 0; i < cases; i++){
+			System.out.println("Case " + i);
+			System.out.println("average: " + averages[i] + "+-" + stdDevs[i]);
+			System.out.println("max run: " + maxScores[i] + ", min run: " + minScores[i] + "\n");
+		}
 	}
 	
 	public static void main(String[] args) {
@@ -117,10 +171,10 @@ public class Main {
 		//AlgoUtil.COMPUTE_RESULTS_CLASSICALLY = false;
 		
 		singleBatchRun(warehouses, resultsWarehouses,-1, true);	
-		singleBatchRun(hospitals, resultsHospitals,-1, true);
-		multipleBatchRun(random, resultsRandom, 10);	
-		multipleBatchRun(randomLoose, resultsRandomLoose, 10);	
-		multipleBatchRun(randomTight, resultsRandomTight, 10);
+		//singleBatchRun(hospitals, resultsHospitals,-1, true);
+		//multipleBatchRun(random, resultsRandom, 10);	
+		//multipleBatchRun(randomLoose, resultsRandomLoose, 10);	
+		//multipleBatchRun(randomTight, resultsRandomTight, 10);
 		//workOnBatch(random10, resultRandom10);
 		
 		//workOnBatch("models/randomH.csv", "results/randomH.xls");

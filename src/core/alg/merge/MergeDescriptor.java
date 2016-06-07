@@ -8,11 +8,20 @@ public class MergeDescriptor {
 	public ALG_POLICY algPolicy;
 	public boolean asc;
 	public N_WAY.ORDER_BY orderBy;
+	public boolean elementAsc;
 
 	public MergeDescriptor(N_WAY.ALG_POLICY algPolicy, boolean asc, N_WAY.ORDER_BY orderBy) {
 		this.algPolicy = algPolicy;
 		this.asc = asc;
 		this.orderBy = orderBy;
+		this.elementAsc = false;
+	}
+	
+	public MergeDescriptor(boolean modelAsc, boolean elementAsc) {
+		this.algPolicy = N_WAY.ALG_POLICY.RANDOM;
+		this.asc = modelAsc;
+		this.elementAsc = elementAsc;
+		this.orderBy = N_WAY.ORDER_BY.MODEL_SIZE_ELEMENT_SIZE;
 	}
 	
 	public static MergeDescriptor EMPTY = new MergeDescriptor(N_WAY.ALG_POLICY.PAIR_WISE, true, N_WAY.ORDER_BY.MODEL_ID);

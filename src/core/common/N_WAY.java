@@ -32,6 +32,7 @@ public interface N_WAY {
 		MATCH_QUALITY,
 		MODEL_ID,
 		MODEL_SIZE_ELEMENT_SIZE,
+		PROPERTY
 	}
 	
 	

@@ -27,12 +27,16 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 	private RunResult res;
 	private MergeDescriptor md;
 	private boolean classic;
-	private boolean toRandomize = true;
+	private boolean toRandomize;
+	private GeneticAlgorithm geneticAlgorithm;
 
-	public RandomizedMatchMerger(ArrayList<Model> models, MergeDescriptor md, boolean classic){
+	public RandomizedMatchMerger(ArrayList<Model> models, MergeDescriptor md, boolean classic, boolean randomize, 
+			double uniRate, double mutRate){
 		super(models);
 		this.md = md;
 		this.classic = classic;
+		this.toRandomize = randomize;
+		geneticAlgorithm = new GeneticAlgorithm(uniRate, mutRate, 2000);
 	}
 	
 	public void run(){
@@ -56,20 +60,37 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 		 */
 		
 		ArrayList<Element> elems = new ArrayList<Element>();
-		if (md.orderBy == N_WAY.ORDER_BY.MODEL_SIZE_ELEMENT_SIZE){
+		if (md.orderBy == N_WAY.ORDER_BY.MODEL_SIZE_ELEMENT_SIZE || md.orderBy == N_WAY.ORDER_BY.PROPERTY){
 			Collections.sort(models, new ModelComparator(md.asc));
 		}
 		for(Model m:models){
 			ArrayList<Element> modelElems = m.getElements();
 			if (md.orderBy == N_WAY.ORDER_BY.MODEL_SIZE_ELEMENT_SIZE){
-				Collections.sort(modelElems, new ElementComparator(md.elementAsc));
+				Collections.sort(modelElems, new ElementComparator(md.elementAsc, false));
 			}
 			elems.addAll(modelElems);
+		}
+		if (md.orderBy == N_WAY.ORDER_BY.PROPERTY){
+			HashMap<String, Integer> propFreq = getSortedProperties(elems);
+			for (Element e: elems){
+				int score = 0;
+				for (String p: e.getProperties()){
+					score += propFreq.get(p);
+				}
+				e.setPropScore(score);
+			}
+			//Collections.sort(elems, new ElementComparator(md.asc, true));
+			elems = new ArrayList<Element>();
+			for (Model m: models){
+				ArrayList<Element> modelElems = m.getElements();
+				Collections.sort(modelElems, new ElementComparator(md.elementAsc, true));
+				elems.addAll(modelElems);
+			}
 		}
 		return elems;
 	}
 	
-	/*private HashMap<String, Integer> getSortedProperties(ArrayList<Element> elems){
+	private HashMap<String, Integer> getSortedProperties(ArrayList<Element> elems){
 		HashMap<String, Integer> propFreq = new HashMap<String, Integer>();
 		for (Element e: elems){
 			for (String p: e.getProperties()){
@@ -78,7 +99,7 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 			}
 		}
 		return propFreq;
-	}*/
+	}
 	
 	private ArrayList<Tuple> execute(){
 		/**
@@ -94,9 +115,7 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 			result.add(bestTuple);
 		}
 		if (toRandomize){
-			Algorithm geneticAlgorithm = new Algorithm();
-			Population pop = geneticAlgorithm.evolvePopulation(new Population(result), 0);
-			result = pop.convertToTuples();
+			result = runGeneticAlgorithm(result);
 		}
 		return result;
 	}
@@ -145,6 +164,10 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 		return maxElement;
 	}
 	
+	private ArrayList<Tuple> runGeneticAlgorithm(ArrayList<Tuple> result){
+		Population pop = geneticAlgorithm.evolvePopulation(new Population(result), 0);
+		return pop.convertToTuples();
+	}
 
 	@Override
 	public ArrayList<Tuple> getTuplesInMatch() {
@@ -169,7 +192,7 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 		return res;
 	}
 	public class Individual {
-	    static final int defaultGeneLength = 16;
+	    static final int defaultGeneLength = 100;
 	    private Element[] genes = new Element[defaultGeneLength];
 	    private double fitness = -1;
 
@@ -216,11 +239,26 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 	        return geneString;
 	    }
 	}
+	public class IndividualComparator implements Comparator<Individual>{
+		@Override
+		public int compare(Individual i1, Individual i2) {
+			if (i1.getFitness() > i2.getFitness()){
+				return -1;
+			}
+			else if (i1.getFitness() == i2.getFitness()){
+				return 0;
+			}
+			else{
+				return 1;
+			}
+		}
+		
+	}
 	public class Population {
 	    private ArrayList<Individual> individuals;
 	    private ArrayList<Individual> sortedIndividuals;
 	    private ArrayList<Element> mutations;
-	    private Comparator<Individual> cmp;
+	    private IndividualComparator cmp = new IndividualComparator();
 	    private double fitness = -1;
 	    /*
 	     * Constructors
@@ -239,29 +277,11 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 	        		addIndividual(t);
 	        	}
 	        }
-	        cmp = new Comparator<Individual>() {
-				@Override
-				public int compare(Individual i1, Individual i2) {
-						if (i1.getFitness() > i2.getFitness()){
-							return -1;
-						}
-						else if (i1.getFitness() == i2.getFitness()){
-							return 0;
-						}
-						else{
-							return 1;
-						}
-				}
-			};
 	    }
 
 	    /* Getters */
 	    public Individual getIndividual(int index) {
 	        return individuals.get(index);
-	    }
-
-	    public Individual getFittest(int start) {
-	        return sortedIndividuals.get(0);
 	    }
 
 	    /* Public methods */
@@ -284,7 +304,19 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 	    		sortedIndividuals = new ArrayList<Individual>(individuals);
 	    		Collections.sort(sortedIndividuals, cmp);
 	    	}
-	    	return sortedIndividuals;
+	    	return new ArrayList<Individual>(sortedIndividuals);
+	    }
+	    
+	    public ArrayList<Individual> getIndividuals(){
+	    	return new ArrayList<Individual>(individuals);
+	    }
+	    
+	    public ArrayList<Element> getMutations(){
+	    	return mutations;
+	    }
+	    
+	    public void setMutations(ArrayList<Element> mutations){
+	    	this.mutations = mutations;
 	    }
 	    
 	    public double getFitness(){
@@ -309,58 +341,57 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 	    }
 
 	}
-	public class Algorithm {
+	public class GeneticAlgorithm {
 	    /* GA parameters */
-	    private static final double uniformRate = 0.01;
-	    private static final double mutationRate = 0.015;
-	    private static final int tournamentSize = 5;
-	    private static final boolean elitism = true;
-	    private static final int elitismSplit = 2;
+	    private double uniformRate = 0.005;
+	    private double mutationRate = 0.005;
 	    private Random rand = new Random();
-	    private int stableCycles = 1000;
+	    private int stableCycles = 2000;
 
 	    /* Public methods */
-	    
+	    public GeneticAlgorithm (double uniformRate, double mutationRate, int cycles){
+	    	this.uniformRate = uniformRate;
+	    	this.mutationRate = mutationRate;
+	    	this.stableCycles = cycles;
+	    }
 	    // Evolve a population
 	    public Population evolvePopulation(Population pop, int stablePops) {
 	    	if (stablePops == stableCycles){
 	    		return pop;
 	    	}
-	    	int keep = pop.size() / elitismSplit;
-	        ArrayList<Individual> oldIndividuals = pop.getSortedIndividuals();
+	    	ArrayList<Individual> oldIndividuals = pop.getIndividuals();
 	        ArrayList<Individual> newIndividuals = new ArrayList<Individual>();
-	        // Keep our best individuals
-        	for (int i = 0; i < keep; i++){
-        		newIndividuals.add(oldIndividuals.get(i));
-        	}
         	
-	        // Loop over the population size and create new individuals with
-	        // crossover
-	        for (int i = keep; i < pop.size() - 1; i += 2) {
-	            Individual indiv1 = oldIndividuals.get(i);
-	            Individual indiv2 = oldIndividuals.get(i + 1);
+	        // Loop over the population size and create new individuals with crossover.
+        	int size = oldIndividuals.size() - (oldIndividuals.size() % 2);
+	        for (int i = 0; i < size; i+=2) {
+	        	int random = rand.nextInt(oldIndividuals.size() - 1);
+	            Individual indiv1 = oldIndividuals.get(0);
+	            oldIndividuals.remove(0);
+	            Individual indiv2 = oldIndividuals.get(random);
+	            oldIndividuals.remove(random);
+	            //oldIndividuals.addAll(crossover(indiv1, indiv2));
 	            newIndividuals.addAll(crossover(indiv1, indiv2));
 	        }
-	        
-	        /*for (int i = pop.size() / elitismSplit; i < newIndividuals.size(); i++) {
+	       
+	        for (int i = 0; i < newIndividuals.size(); i++) {
 	            mutate(newIndividuals.get(i), pop);
-	        }*/
-	        
+	        }
 	        Population newPop = new Population(new ArrayList<Tuple>());
 	        for (Individual i: newIndividuals){
 	    	   newPop.addIndividual(i);
 	        }
-	        //System.out.println(newPop.getFitness());
-	        //System.out.println(pop.getFitness()); 
+	        for (Individual i: oldIndividuals){
+	        	newPop.addIndividual(i);
+	        }
+	        
 	        if (newPop.getFitness() > pop.getFitness()){
-	        	System.out.println("here");
+	        	newPop.setMutations(pop.getMutations());
 	        	return evolvePopulation(newPop, stablePops);
 	        }
 	        else{
-	        	//System.out.println("moped");
 	        	return evolvePopulation(pop, stablePops + 1);
 	        }
-	        //return newPopulation;
 	    }
 
 	    // Crossover individuals
@@ -385,14 +416,28 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 	    }
 	    
 	    private void mutate(Individual indiv, Population pop) {
-	    	int random = rand.nextInt(pop.mutations.size());
-	        if (Math.random() <= mutationRate) {
-	            // Create random gene
-	        	Element mutant = pop.mutations.get(random);
-	        	pop.mutations.remove(random);
-	        	pop.mutations.add(indiv.getGene(Integer.parseInt(mutant.getModelId()) - 1));
-	            indiv.setGene(Integer.parseInt(mutant.getModelId()) - 1, mutant);
-	        }
+	    	ArrayList<Element> mutations = pop.getMutations();
+	    	if (mutations.size() > 0){
+		    	int random = rand.nextInt(mutations.size());
+		        if (Math.random() <= mutationRate) {
+		            // Substitute random gene
+		        	Element mutant = mutations.get(random);
+		        	mutations.remove(random);
+		        	int geneNum = Integer.parseInt(mutant.getModelId()) - 1;
+		        	if (indiv.getGene(geneNum) != null){
+		        		mutations.add(indiv.getGene(geneNum));
+		        	}
+		            indiv.setGene(geneNum, mutant);
+		        }
+	    	}
+	    }
+	    
+	    public void setUniformRate(double rate){
+	    	this.uniformRate = rate;
+	    }
+	    
+	    public void setMutationRate(double rate){
+	    	this.mutationRate = rate;
 	    }
 	}
 

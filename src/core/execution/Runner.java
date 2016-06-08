@@ -18,6 +18,7 @@ import core.alg.pair.ModelSizeBasedPairWiseMatcher;
 import core.common.AlgoUtil;
 import core.common.ModelComparator;
 import core.common.N_WAY;
+import core.common.Statistics;
 import core.domain.Model;
 
 public class Runner extends ResultsWriter{
@@ -248,15 +249,27 @@ public class Runner extends ResultsWriter{
 		@SuppressWarnings("unchecked")
 		ArrayList<RunResult> results = new ArrayList<RunResult>();
 		ArrayList<MergeDescriptor> mds = allPermOnAlg(N_WAY.ALG_POLICY.RANDOM);
-		for(MergeDescriptor md:mds){
-			results.add(runRandomMatch(md));
-		}
+		//double[] data = new double[10];
+		//double max = 0.01;
+		//double min = 0.001;
+		/*for (int i = 1; i <= 10; i ++){
+			double rate = min + i * ((max - min) / 10);
+			for (int j = 0; j < 10; j++){*/
+				for(MergeDescriptor md:mds){
+					RunResult rr = runRandomMatch(md, 0.006, 0.00365);
+					results.add(rr);
+					//data[j] = rr.weight.doubleValue();
+				}
+			/*}
+			Statistics stats = new Statistics(data);
+			System.out.println("Uniform Rate: " + rate + "\n Average score: " + stats.getMean() + "+-" + stats.getStdDev());
+		}*/
 		writeResults(results, "Randomized");
 		return results;
 	}
 	
-	private RunResult runRandomMatch(MergeDescriptor md){
-		RandomizedMatchMerger rmm = new RandomizedMatchMerger((ArrayList<Model>) models.clone(), md, true);
+	private RunResult runRandomMatch(MergeDescriptor md, double uR, double mR){
+		RandomizedMatchMerger rmm = new RandomizedMatchMerger((ArrayList<Model>) models.clone(), md, true, false, uR, mR);
 		rmm.run();
 		RunResult rr = rmm.getRunResult(models.size());
 		rr.setTitle(AlgoUtil.nameOfMergeDescription(md, -1));
@@ -267,12 +280,16 @@ public class Runner extends ResultsWriter{
 	private ArrayList<MergeDescriptor> allPermOnAlg(N_WAY.ALG_POLICY pol){
 		ArrayList<MergeDescriptor> retVal = new ArrayList<MergeDescriptor>();
 		
-		retVal.add(new MergeDescriptor(pol, true, N_WAY.ORDER_BY.MODEL_ID));
+		//retVal.add(new MergeDescriptor(pol, true, N_WAY.ORDER_BY.MODEL_ID));
 		if (pol == N_WAY.ALG_POLICY.RANDOM){
-			retVal.add(new MergeDescriptor(true, true));
-			retVal.add(new MergeDescriptor(true, false));
-			retVal.add(new MergeDescriptor(false, true));
-			retVal.add(new MergeDescriptor(false, false));
+			/*retVal.add(new MergeDescriptor(true, true, N_WAY.ORDER_BY.MODEL_SIZE_ELEMENT_SIZE));
+			retVal.add(new MergeDescriptor(true, false, N_WAY.ORDER_BY.MODEL_SIZE_ELEMENT_SIZE));
+			retVal.add(new MergeDescriptor(false, true, N_WAY.ORDER_BY.MODEL_SIZE_ELEMENT_SIZE));
+			retVal.add(new MergeDescriptor(false, false, N_WAY.ORDER_BY.MODEL_SIZE_ELEMENT_SIZE));*/
+			retVal.add(new MergeDescriptor(true, true, N_WAY.ORDER_BY.PROPERTY));
+			retVal.add(new MergeDescriptor(true, false, N_WAY.ORDER_BY.PROPERTY));
+			retVal.add(new MergeDescriptor(false, true, N_WAY.ORDER_BY.PROPERTY));
+			retVal.add(new MergeDescriptor(false, false, N_WAY.ORDER_BY.PROPERTY));
 		}
 		else if(toChunkify || pol == N_WAY.ALG_POLICY.PAIR_WISE){
 			retVal.add(new MergeDescriptor(pol, true, N_WAY.ORDER_BY.MODEL_SIZE));

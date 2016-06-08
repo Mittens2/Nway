@@ -17,11 +17,11 @@ public class MergeDescriptor {
 		this.elementAsc = false;
 	}
 	
-	public MergeDescriptor(boolean modelAsc, boolean elementAsc) {
+	public MergeDescriptor(boolean modelAsc, boolean elementAsc, N_WAY.ORDER_BY orderBy) {
 		this.algPolicy = N_WAY.ALG_POLICY.RANDOM;
 		this.asc = modelAsc;
 		this.elementAsc = elementAsc;
-		this.orderBy = N_WAY.ORDER_BY.MODEL_SIZE_ELEMENT_SIZE;
+		this.orderBy = orderBy;
 	}
 	
 	public static MergeDescriptor EMPTY = new MergeDescriptor(N_WAY.ALG_POLICY.PAIR_WISE, true, N_WAY.ORDER_BY.MODEL_ID);

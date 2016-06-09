@@ -20,6 +20,7 @@ import core.common.ModelComparator;
 import core.common.N_WAY;
 import core.common.Statistics;
 import core.domain.Model;
+import core.domain.Tuple;
 
 public class Runner extends ResultsWriter{
 
@@ -63,7 +64,7 @@ public class Runner extends ResultsWriter{
 //		runOnLocalSearch(N_WAY.ALG_POLICY.REPLACE_BEST, "LS triwise");
 	//	runOnLocalSearch(N_WAY.ALG_POLICY.REPLACE_FIRST_BY_SQUARES, "LS triwise");
 		//addManualRun();
-		AlgoUtil.COMPUTE_RESULTS_CLASSICALLY = true;
+		//AlgoUtil.COMPUTE_RESULTS_CLASSICALLY = true;
 		//runOnPairs();
 		/*if(!toChunkify){
 			runOnGreedy(models.size());
@@ -249,14 +250,14 @@ public class Runner extends ResultsWriter{
 		@SuppressWarnings("unchecked")
 		ArrayList<RunResult> results = new ArrayList<RunResult>();
 		ArrayList<MergeDescriptor> mds = allPermOnAlg(N_WAY.ALG_POLICY.RANDOM);
-		//double[] data = new double[10];
-		//double max = 0.01;
-		//double min = 0.001;
-		/*for (int i = 1; i <= 10; i ++){
+		/*double[] data = new double[10];
+		double max = 0.02;
+		double min = 0.0005;
+		for (int i = 1; i <= 10; i ++){
 			double rate = min + i * ((max - min) / 10);
 			for (int j = 0; j < 10; j++){*/
 				for(MergeDescriptor md:mds){
-					RunResult rr = runRandomMatch(md, 0.006, 0.00365);
+					RunResult rr = runRandomMatch(md, 0.006, 0.01);
 					results.add(rr);
 					//data[j] = rr.weight.doubleValue();
 				}
@@ -269,7 +270,7 @@ public class Runner extends ResultsWriter{
 	}
 	
 	private RunResult runRandomMatch(MergeDescriptor md, double uR, double mR){
-		RandomizedMatchMerger rmm = new RandomizedMatchMerger((ArrayList<Model>) models.clone(), md, true, false, uR, mR);
+		RandomizedMatchMerger rmm = new RandomizedMatchMerger((ArrayList<Model>) models.clone(), md, uR, mR);
 		rmm.run();
 		RunResult rr = rmm.getRunResult(models.size());
 		rr.setTitle(AlgoUtil.nameOfMergeDescription(md, -1));
@@ -279,19 +280,22 @@ public class Runner extends ResultsWriter{
 	
 	private ArrayList<MergeDescriptor> allPermOnAlg(N_WAY.ALG_POLICY pol){
 		ArrayList<MergeDescriptor> retVal = new ArrayList<MergeDescriptor>();
-		
-		//retVal.add(new MergeDescriptor(pol, true, N_WAY.ORDER_BY.MODEL_ID));
 		if (pol == N_WAY.ALG_POLICY.RANDOM){
-			/*retVal.add(new MergeDescriptor(true, true, N_WAY.ORDER_BY.MODEL_SIZE_ELEMENT_SIZE));
-			retVal.add(new MergeDescriptor(true, false, N_WAY.ORDER_BY.MODEL_SIZE_ELEMENT_SIZE));
-			retVal.add(new MergeDescriptor(false, true, N_WAY.ORDER_BY.MODEL_SIZE_ELEMENT_SIZE));
-			retVal.add(new MergeDescriptor(false, false, N_WAY.ORDER_BY.MODEL_SIZE_ELEMENT_SIZE));*/
-			retVal.add(new MergeDescriptor(true, true, N_WAY.ORDER_BY.PROPERTY));
-			retVal.add(new MergeDescriptor(true, false, N_WAY.ORDER_BY.PROPERTY));
-			retVal.add(new MergeDescriptor(false, true, N_WAY.ORDER_BY.PROPERTY));
-			retVal.add(new MergeDescriptor(false, false, N_WAY.ORDER_BY.PROPERTY));
+			boolean classic = true;
+			boolean randomize = false;
+			retVal.add(new MergeDescriptor(true, true, N_WAY.ORDER_BY.MODEL_ID, classic, randomize));
+			retVal.add(new MergeDescriptor(true, true, N_WAY.ORDER_BY.MODEL_SIZE_ELEMENT_SIZE, classic, randomize));
+			retVal.add(new MergeDescriptor(true, false, N_WAY.ORDER_BY.MODEL_SIZE_ELEMENT_SIZE, classic, randomize));
+			retVal.add(new MergeDescriptor(false, true, N_WAY.ORDER_BY.MODEL_SIZE_ELEMENT_SIZE, classic, randomize));
+			retVal.add(new MergeDescriptor(false, false, N_WAY.ORDER_BY.MODEL_SIZE_ELEMENT_SIZE, classic, randomize));
+			retVal.add(new MergeDescriptor(true, true, N_WAY.ORDER_BY.PROPERTY, classic, randomize));
+			retVal.add(new MergeDescriptor(true, false, N_WAY.ORDER_BY.PROPERTY, classic, randomize));
+			retVal.add(new MergeDescriptor(false, true, N_WAY.ORDER_BY.PROPERTY, classic, randomize));
+			retVal.add(new MergeDescriptor(false, false, N_WAY.ORDER_BY.PROPERTY, classic, randomize));
+			return retVal;
 		}
-		else if(toChunkify || pol == N_WAY.ALG_POLICY.PAIR_WISE){
+		retVal.add(new MergeDescriptor(pol, true, N_WAY.ORDER_BY.MODEL_ID));
+		if(toChunkify || pol == N_WAY.ALG_POLICY.PAIR_WISE){
 			retVal.add(new MergeDescriptor(pol, true, N_WAY.ORDER_BY.MODEL_SIZE));
 			retVal.add(new MergeDescriptor(pol, false, N_WAY.ORDER_BY.MODEL_SIZE));
 		}

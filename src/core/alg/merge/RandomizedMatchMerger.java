@@ -26,16 +26,11 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 	protected ArrayList<Element> unusedElements;
 	private RunResult res;
 	private MergeDescriptor md;
-	private boolean classic;
-	private boolean toRandomize;
 	private GeneticAlgorithm geneticAlgorithm;
 
-	public RandomizedMatchMerger(ArrayList<Model> models, MergeDescriptor md, boolean classic, boolean randomize, 
-			double uniRate, double mutRate){
+	public RandomizedMatchMerger(ArrayList<Model> models, MergeDescriptor md, double uniRate, double mutRate){
 		super(models);
 		this.md = md;
-		this.classic = classic;
-		this.toRandomize = randomize;
 		geneticAlgorithm = new GeneticAlgorithm(uniRate, mutRate, 2000);
 	}
 	
@@ -43,6 +38,7 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 		long startTime = System.currentTimeMillis();
 		unusedElements = joinAllModels();
 		solution = execute();
+		System.out.println(solution);
 		BigDecimal weight = AlgoUtil.calcGroupWeight(solution);
 		long endTime = System.currentTimeMillis();
 		long execTime = endTime - startTime;
@@ -108,13 +104,13 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 		 * @return The list of Tuples derived from performing randomized merge on given models.
 		 */
 		ArrayList<Tuple> result = new ArrayList<Tuple>();
-		while(unusedElements.size() > 1){
+		while(unusedElements.size() > 0){
 			Element picked = unusedElements.get(0);
 			unusedElements.remove(0);
 			Tuple bestTuple = getBestTuple(new ArrayList<Element>(unusedElements), picked);
 			result.add(bestTuple);
 		}
-		if (toRandomize){
+		if (md.randomize){
 			result = runGeneticAlgorithm(result);
 		}
 		return result;
@@ -137,13 +133,15 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 			partition = AlgoUtil.partitionShared(picked, elems, 1);
 			elems = partition.get(0);
 			// If want to consider larger pool of elements.
-			if (!classic){
+			if (!md.classic){
 				incompatible.addAll(partition.get(1));
-				for (Element e: best.getElements()){
-					partition = AlgoUtil.partitionShared(e, incompatible, best.getSize());
+				//for (Element e: best.getElements()){
+					//partition = AlgoUtil.partitionShared(e, incompatible, best.getSize());
+					partition = AlgoUtil.getElementsWithSharedProperties(best, incompatible, 
+							(int) Math.pow(best.getSize(), 2));
 					elems.addAll(partition.get(0));
 					incompatible = partition.get(1);
-				}
+				//}
 			}
 			picked = getMaxElement(elems, best);
 			unusedElements.remove(picked);
@@ -192,7 +190,7 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 		return res;
 	}
 	public class Individual {
-	    static final int defaultGeneLength = 100;
+	    private final static int defaultGeneLength = 8;
 	    private Element[] genes = new Element[defaultGeneLength];
 	    private double fitness = -1;
 
@@ -335,6 +333,13 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 	    			if (i.getGene(j) != null)
 	    				t = t.newExpanded(i.getGene(j), models);
 	    		}
+	    		if (t.getSize() > 0){
+	    			tuples.add(t);
+	    		}
+	    	}
+	    	for (Element e: mutations){
+	    		Tuple t = new Tuple();
+	    		t = t.newExpanded(e, models);
 	    		tuples.add(t);
 	    	}
 	    	return tuples;
@@ -361,7 +366,8 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 	    	}
 	    	ArrayList<Individual> oldIndividuals = pop.getIndividuals();
 	        ArrayList<Individual> newIndividuals = new ArrayList<Individual>();
-        	
+	        Population newPop = new Population(new ArrayList<Tuple>());
+	        newPop.setMutations(new ArrayList<Element>(pop.getMutations()));
 	        // Loop over the population size and create new individuals with crossover.
         	int size = oldIndividuals.size() - (oldIndividuals.size() % 2);
 	        for (int i = 0; i < size; i+=2) {
@@ -370,14 +376,13 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 	            oldIndividuals.remove(0);
 	            Individual indiv2 = oldIndividuals.get(random);
 	            oldIndividuals.remove(random);
-	            //oldIndividuals.addAll(crossover(indiv1, indiv2));
-	            newIndividuals.addAll(crossover(indiv1, indiv2));
+	            oldIndividuals.addAll(crossover(indiv1, indiv2));
+	            //newIndividuals.addAll(crossover(indiv1, indiv2));
 	        }
 	       
 	        for (int i = 0; i < newIndividuals.size(); i++) {
-	            mutate(newIndividuals.get(i), pop);
+	            mutate(newIndividuals.get(i), newPop);
 	        }
-	        Population newPop = new Population(new ArrayList<Tuple>());
 	        for (Individual i: newIndividuals){
 	    	   newPop.addIndividual(i);
 	        }
@@ -386,7 +391,6 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 	        }
 	        
 	        if (newPop.getFitness() > pop.getFitness()){
-	        	newPop.setMutations(pop.getMutations());
 	        	return evolvePopulation(newPop, stablePops);
 	        }
 	        else{

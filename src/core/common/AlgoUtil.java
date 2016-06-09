@@ -140,13 +140,25 @@ public class AlgoUtil {
 		return lst; 
 	}
 	
-	public static ArrayList<Element> getElementsWithSharedProperties(Element target, ArrayList<Element> elems, int shared){
-		for (int i = elems.size() - 1; i >= 0; i--){
-			if (!haveCommonProperties(elems.get(i), target, shared)){
-				elems.remove(i);
+	public static ArrayList<ArrayList<Element>> getElementsWithSharedProperties(Tuple target, ArrayList<Element> elems, int shared){
+		ArrayList<ArrayList<Element>> partition = new ArrayList<ArrayList<Element>>();
+		ArrayList<Element> compatible = new ArrayList<Element>();
+		ArrayList<Element> incompatible = new ArrayList<Element>();
+		for (Element e: elems){
+			int count = 0;
+			for (Element t: target.getElements()){
+				count += getCommonProperties(t, e);
+			}
+			if (count >= shared){
+				compatible.add(e);
+			}
+			else{
+				incompatible.add(e);
 			}
 		}
-		return elems;
+		partition.add(compatible);
+		partition.add(incompatible);
+		return partition;
 	}
 	
 	public static ArrayList<ArrayList<Element>> partitionShared(Element target, ArrayList<Element> elems, int shared){
@@ -302,6 +314,16 @@ public class AlgoUtil {
 		}
 		return false;
 	}
+	
+	private static int getCommonProperties(Element e1, Element e2){
+		Set<String> e1Props = e1.getProperties();
+		int count = 0;
+		for(String prp:e2.getProperties()){
+			if(e1Props.contains(prp))
+				count++;
+		}
+		return count;
+	}
 
 	private static void filterAndSetScaledWeight(ArrayList<Tuple> all, BigDecimal weightTreshold) {
 		int numOfTuples = all.size();
@@ -434,6 +456,7 @@ public class AlgoUtil {
 		if(md.algPolicy == N_WAY.ALG_POLICY.GREEDY) res = "G";
 		if(md.algPolicy == N_WAY.ALG_POLICY.REPLACE_FIRST) res = "LS, ";
 		if(md.algPolicy == N_WAY.ALG_POLICY.REPLACE_BEST) res = "GTLS, ";
+		if(md.algPolicy == N_WAY.ALG_POLICY.RANDOM) res = "DH, ";
 		if(splitSize > 2)
 			res = res+splitSize+", ";
 		if(md.orderBy == N_WAY.ORDER_BY.MODEL_SIZE)
@@ -446,11 +469,30 @@ public class AlgoUtil {
 			res = res+"Most sparse ";
 		else if(md.orderBy == N_WAY.ORDER_BY.MODEL_ID)
 			res = res+"by id ";
+		else if (md.orderBy == N_WAY.ORDER_BY.MODEL_SIZE_ELEMENT_SIZE)
+			res = res+"modelSize/elementSize: ";
+		else
+			res = res+"modelSize/property: ";
 		
 		if(md.asc)
-			return res+"ascending";
+			res = res+"ascending";
 		else
-			return res+"descending";
+			res = res+"descending";
+		if (md.orderBy == N_WAY.ORDER_BY.MODEL_SIZE_ELEMENT_SIZE || md.orderBy == N_WAY.ORDER_BY.PROPERTY){
+			if(md.elementAsc)
+				res = res+"/ascending, ";
+			else
+				res = res+"/descending, ";
+			if(md.classic)
+				res = res+" classic,";
+			else
+				res = res+" expanded,";
+			if(md.randomize)
+				res = res+" random";
+			else
+				res = res+" no random";
+		}
+		return res;
 	}
 	
 }

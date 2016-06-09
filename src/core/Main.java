@@ -117,6 +117,7 @@ public class Main {
 					maxScores[i] = currRun;
 				}
 				if (currRun.compareTo(minScores[i]) < 0){
+					
 					minScores[i] = currRun;
 				}
 				stdDevs[i] = stdDevs[i].add((averages[i].subtract(singleRun.get(i))).pow(2));
@@ -137,6 +138,9 @@ public class Main {
 		String random = "models/models/random.csv";
 		String randomLoose = "models/models/randomLoose.csv";
 		String randomTight = "models/models/randomTight.csv";
+		String level2a = "models/level2a.csv";
+		String level2b = "models/level2b.csv";
+		String level3a = "models/level3a.csv";
 		
 		/*String testPath = "models/test.csv";
 		String hospitals = "models/hospitals.csv";
@@ -150,7 +154,10 @@ public class Main {
 		String resultsWarehouses = "results/warehouses_results.xls";
 		String resultsRandom = "results/random_results.xls";
 		String resultsRandomLoose = "results/randomLoose_results.xls";
-		String resultsRandomTight = "results/random_resultsTight.xls";
+		String resultsRandomTight = "results/randomTight_results.xls";
+		String resultsLevel2a = "results/results_level2a.xls";
+		String resultsLevel2b = "results/results_level2b.xls";
+		String resultsLevel3a = "results/results_level3a.xls";
 				
 		AlgoUtil.useTreshold(true);
 		
@@ -170,13 +177,16 @@ public class Main {
 		
 		//AlgoUtil.COMPUTE_RESULTS_CLASSICALLY = false;
 		
-		singleBatchRun(warehouses, resultsWarehouses,-1, true);	
-		singleBatchRun(hospitals, resultsHospitals,-1, true);
+		//singleBatchRun(warehouses, resultsWarehouses,-1, true);	
+		//singleBatchRun(hospitals, resultsHospitals,-1, true);
 		multipleBatchRun(random, resultsRandom, 10);	
-		multipleBatchRun(randomLoose, resultsRandomLoose, 10);	
-		multipleBatchRun(randomTight, resultsRandomTight, 10);
-		//workOnBatch(random10, resultRandom10);
+		//multipleBatchRun(randomLoose, resultsRandomLoose, 10);	
+		//multipleBatchRun(randomTight, resultsRandomTight, 10);
+		//singleBatchRun(level2a, resultsLevel2a,-1, true);
+		//singleBatchRun(level2b, resultsLevel2b,-1, true);
+		//singleBatchRun(level3a, resultsLevel3a,-1, true);
 		
+		//workOnBatch(random10, resultRandom10);
 		//workOnBatch("models/randomH.csv", "results/randomH.xls");
 		//workOnBatch("models/randomWH.csv", "results/randomWH.xls");
 		//workOnBatch("models/randomBad.csv", "results/randomBad.xls");

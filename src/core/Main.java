@@ -5,9 +5,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 
+import org.jfree.ui.RefineryUtilities;
+
 import core.alg.merge.MultiModelHungarian;
 import core.alg.merge.MultiModelMerger;
 import core.common.AlgoUtil;
+import core.common.ResultsPlotter;
 import core.domain.Model;
 import core.execution.BatchRunner;
 import core.execution.BatchRunner.BatchRunDescriptor;
@@ -79,8 +82,23 @@ public class Main {
 			}
 			runScores.add(currScores);
 		}
-		printStatsMultipleRun(runScores);
-		
+		printStatsMultipleRun(runScores);		
+	}
+	
+	public static void graphData(RunResult rr){
+		ArrayList<BigDecimal> testList1 = new ArrayList<BigDecimal>();
+		ArrayList<BigDecimal> testList2 = new ArrayList<BigDecimal>();
+		ArrayList<String> caseLabels = new ArrayList<String>();
+		for (int i = 0; i < 5; i++){
+			testList1.add(new BigDecimal(5));
+			testList2.add(BigDecimal.ONE);
+			caseLabels.add("category" + i);
+		}
+		ResultsPlotter rp = new ResultsPlotter("test", "alg1", "alg2", caseLabels);
+		rp.createChart(testList1, testList2);
+		rp.pack();
+        RefineryUtilities.centerFrameOnScreen(rp);
+        rp.setVisible(true);
 		
 	}
 	
@@ -179,12 +197,15 @@ public class Main {
 		
 		//singleBatchRun(warehouses, resultsWarehouses,-1, true);	
 		//singleBatchRun(hospitals, resultsHospitals,-1, true);
-		multipleBatchRun(random, resultsRandom, 10);	
+		//multipleBatchRun(random, resultsRandom, 10);	
 		//multipleBatchRun(randomLoose, resultsRandomLoose, 10);	
 		//multipleBatchRun(randomTight, resultsRandomTight, 10);
 		//singleBatchRun(level2a, resultsLevel2a,-1, true);
 		//singleBatchRun(level2b, resultsLevel2b,-1, true);
 		//singleBatchRun(level3a, resultsLevel3a,-1, true);
+		
+		graphData(null);
+		
 		
 		//workOnBatch(random10, resultRandom10);
 		//workOnBatch("models/randomH.csv", "results/randomH.xls");

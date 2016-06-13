@@ -1,5 +1,7 @@
 package core.common;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Arrays;
 
 public class Statistics 
@@ -11,7 +13,15 @@ public class Statistics
     {
         this.data = data;
         size = data.length;
-    }   
+    } 
+    
+    public Statistics(ArrayList<BigDecimal> data){
+    	this.data = new double[data.size()];
+    	for (int i = 0; i < data.size(); i++){
+    		this.data[i] = data.get(i).doubleValue();
+    	}
+    	size = this.data.length;
+    }
 
     public double getMean()
     {

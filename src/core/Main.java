@@ -11,6 +11,7 @@ import core.alg.merge.MultiModelHungarian;
 import core.alg.merge.MultiModelMerger;
 import core.common.AlgoUtil;
 import core.common.ResultsPlotter;
+import core.common.Statistics;
 import core.domain.Model;
 import core.execution.BatchRunner;
 import core.execution.BatchRunner.BatchRunDescriptor;
@@ -43,6 +44,22 @@ public class Main {
 		batcher.run();
 	}
 	
+	/*private static void runExperiment(ArrayList<String> modelsFiles, ArrayList<String> resultsFiles){
+		ArrayList<String> cases = new ArrayList<String>();
+		ArrayList<RunResult> runResults = new ArrayList<RunResult>();
+		for (int i = 0; i < modelsFiles.size(); i++){
+			String mf = modelsFiles.get(i);
+			String rf = resultsFiles.get(i);
+			String subCase = mf.substring(mf.indexOf("/") + 1, mf.indexOf("."));
+			if (subCase.charAt(0) == 'r'){
+				runResults.addAll(multipleBatchRun(mf, rf, 10));
+			}
+			else{
+				runResults.addAll(singleBatchRun(mf, rf, -1, true));
+			}
+		}
+	}*/
+	
 	private static void singleBatchRun(String modelsFile, String resultsFile, int numOfModelsToUse, boolean toChunkify){
 		/**
 		 * Runs algorithms over the first numOfModelsToUse models from modelsFile in a single run.
@@ -57,7 +74,7 @@ public class Main {
 		runner.execute();
 	}
 	
-	private static void multipleBatchRun(String modelsFile, String resultsFile, int numOfModelsToUse){
+	private static double[] multipleBatchRun(String modelsFile, String resultsFile, int numOfModelsToUse){
 		/**
 		 * Divides the case defined by modelsFile into batches of numOfModelsToUse models.
 		 * Runs algorithms over the set of models designated as many times as numOfModelsToUse
@@ -82,27 +99,24 @@ public class Main {
 			}
 			runScores.add(currScores);
 		}
-		printStatsMultipleRun(runScores);		
-	}
-	
-	public static void graphData(RunResult rr){
-		ArrayList<BigDecimal> testList1 = new ArrayList<BigDecimal>();
-		ArrayList<BigDecimal> testList2 = new ArrayList<BigDecimal>();
-		ArrayList<String> caseLabels = new ArrayList<String>();
-		for (int i = 0; i < 5; i++){
-			testList1.add(new BigDecimal(5));
-			testList2.add(BigDecimal.ONE);
-			caseLabels.add("category" + i);
+		//print stats
+		int cases = runScores.get(0).size();
+		double[][] allScores = reorder(runScores);
+		double[] averages = new double[cases];
+		int count = 0;
+		for (int i = 0; i < cases; i++){
+			Statistics stats = new Statistics(allScores[i]);
+			System.out.println("Case " + i);
+			System.out.println("average: " + stats.getMean() + "+-" + stats.getStdDev());
+			System.out.println("max run: " + stats.getMax() + ", min run: " + stats.getMin()+ "\n");
+			averages[i] = stats.getMean();
 		}
-		ResultsPlotter rp = new ResultsPlotter("test", "alg1", "alg2", caseLabels);
-		rp.createChart(testList1, testList2);
-		rp.pack();
-        RefineryUtilities.centerFrameOnScreen(rp);
-        rp.setVisible(true);
-		
+		return averages;
 	}
 	
-	public static void printStatsMultipleRun(ArrayList<ArrayList<BigDecimal>> runScores){
+	/*public static void graphData(){
+	}*/
+	public static double[][] reorder(ArrayList<ArrayList<BigDecimal>> runScores){
 		/**
 		 * Prints out the average, standard deviation as well as the maximum and minimum scores for each set of runs
 		 * in runScores.
@@ -111,42 +125,13 @@ public class Main {
 		 */
 		int cases = runScores.get(0).size();
 		int runs = runScores.size();
-		BigDecimal[] averages = new BigDecimal[cases];
-		BigDecimal[] stdDevs = new BigDecimal[cases];
-		BigDecimal[] maxScores = new BigDecimal[cases];
-		BigDecimal[] minScores = new BigDecimal[cases];
-		//int[] maxs = new int[cases];
-		//int[] mins = new int[cases];
-		Arrays.fill(averages, BigDecimal.ZERO);
-		Arrays.fill(stdDevs, BigDecimal.ZERO);
-		Arrays.fill(maxScores, BigDecimal.ZERO);
-		Arrays.fill(minScores, BigDecimal.TEN);
-		// Calculate average.
-		for (ArrayList<BigDecimal> singleRun: runScores){
-			for (int i = 0; i < cases; i++){
-				averages[i] = averages[i].add(singleRun.get(i).divide(BigDecimal.TEN));
+		double[][] allScores = new double[cases][runs];
+		for (int i = 0; i < runs; i++){
+			for (int j = 0; j < cases; j++){
+				allScores[j][i] = runScores.get(i).get(j).doubleValue();
 			}
 		}
-		// Calculate standard deviation and max/min runs.
-		for (ArrayList<BigDecimal> singleRun: runScores){
-			for (int i = 0; i < cases; i++){
-				BigDecimal currRun = singleRun.get(i);
-				if (currRun.compareTo(maxScores[i]) > 0){
-					maxScores[i] = currRun;
-				}
-				if (currRun.compareTo(minScores[i]) < 0){
-					
-					minScores[i] = currRun;
-				}
-				stdDevs[i] = stdDevs[i].add((averages[i].subtract(singleRun.get(i))).pow(2));
-			}
-		}
-		// Print stats.
-		for (int i = 0; i < cases; i++){
-			System.out.println("Case " + i);
-			System.out.println("average: " + averages[i] + "+-" + stdDevs[i]);
-			System.out.println("max run: " + maxScores[i] + ", min run: " + minScores[i] + "\n");
-		}
+		return allScores;
 	}
 	
 	public static void main(String[] args) {
@@ -197,14 +182,12 @@ public class Main {
 		
 		//singleBatchRun(warehouses, resultsWarehouses,-1, true);	
 		//singleBatchRun(hospitals, resultsHospitals,-1, true);
-		//multipleBatchRun(random, resultsRandom, 10);	
+		multipleBatchRun(random, resultsRandom, 10);	
 		//multipleBatchRun(randomLoose, resultsRandomLoose, 10);	
 		//multipleBatchRun(randomTight, resultsRandomTight, 10);
 		//singleBatchRun(level2a, resultsLevel2a,-1, true);
 		//singleBatchRun(level2b, resultsLevel2b,-1, true);
 		//singleBatchRun(level3a, resultsLevel3a,-1, true);
-		
-		graphData(null);
 		
 		
 		//workOnBatch(random10, resultRandom10);

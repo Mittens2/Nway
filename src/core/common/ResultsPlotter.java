@@ -79,13 +79,15 @@ public class ResultsPlotter extends ApplicationFrame {
 	
 	public void createDataset(double[] alg1, double[] alg2, ArrayList<String> categories){
 		for (int i = 0; i < alg1.length; i++){
-			catDataset.addValue(Math.log(alg1[i] / alg2[i]),"% diff", categories.get(i));
-			//catDataset.addValue(0.01, "x = y", categories.get(i));
+			catDataset.addValue(0.1 * (i + 1) + (1 - alg1[i] / alg2[i]),"% diff", categories.get(i));
+			catDataset.addValue(0.1 * (i + 1), "x = y", categories.get(i));
 		}
 	}
 	
 	public void createChartSingle(){
         final LogarithmicAxis rangeAxis = new LogarithmicAxis("SmartHuman");
+        //rangeAxis.setAllowNegativesFlag(true);
+        //rangeAxis.setUpperBound(0.1);
         final CategoryAxis domainAxis = new CategoryAxis("NwM");
         //rangeAxis.setStandardTickUnits(NumberAxis.createIntegerTickUnits());
         final LineAndShapeRenderer renderer = new LineAndShapeRenderer();

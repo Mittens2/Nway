@@ -133,15 +133,20 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 			partition = AlgoUtil.partitionShared(picked, elems, 1);
 			elems = partition.get(0);
 			// If want to consider larger pool of elements.
-			if (!md.classic){
+			if (md.highlight == 1){
 				incompatible.addAll(partition.get(1));
-				//for (Element e: best.getElements()){
-					//partition = AlgoUtil.partitionShared(e, incompatible, best.getSize());
-					partition = AlgoUtil.getElementsWithSharedProperties(best, incompatible, 
-							(int) Math.pow(best.getSize(), 2));
+				for (Element e: best.getElements()){
+					partition = AlgoUtil.partitionShared(e, incompatible, best.getSize());
 					elems.addAll(partition.get(0));
 					incompatible = partition.get(1);
-				//}
+				}
+			}
+			else if (md.highlight == 2){
+				incompatible.addAll(partition.get(1));
+					partition = AlgoUtil.getElementsWithSharedProperties(best, incompatible, 
+							best.getSize());//(int) Math.pow(best.getSize(), 2));
+					elems.addAll(partition.get(0));
+					incompatible = partition.get(1);
 			}
 			picked = getMaxElement(elems, best);
 			unusedElements.remove(picked);
@@ -154,7 +159,8 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 		Element maxElement = null;
 		for (Element e: elems){
 			Tuple test = best.newExpanded(e, models);
-			if (test.calcWeight(models).compareTo(maxWeight) > 0){
+			if (test.calcWeight(models).compareTo(maxWeight) > 0)
+				{
 				maxElement = e;
 				maxWeight = test.calcWeight(models);
 			}
@@ -190,7 +196,7 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 		return res;
 	}
 	public class Individual {
-	    private final static int defaultGeneLength = 8;
+	    private final static int defaultGeneLength = 100;
 	    private Element[] genes = new Element[defaultGeneLength];
 	    private double fitness = -1;
 

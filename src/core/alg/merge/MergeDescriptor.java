@@ -9,7 +9,7 @@ public class MergeDescriptor {
 	public boolean asc;
 	public N_WAY.ORDER_BY orderBy;
 	public boolean elementAsc;
-	public boolean classic;
+	public int highlight;
 	public boolean randomize;
 
 	public MergeDescriptor(N_WAY.ALG_POLICY algPolicy, boolean asc, N_WAY.ORDER_BY orderBy) {
@@ -20,12 +20,12 @@ public class MergeDescriptor {
 	}
 	
 	public MergeDescriptor(boolean modelAsc, boolean elementAsc, N_WAY.ORDER_BY orderBy, 
-			boolean classic, boolean randomize) {
+			int highlight, boolean randomize) {
 		this.algPolicy = N_WAY.ALG_POLICY.RANDOM;
 		this.asc = modelAsc;
 		this.elementAsc = elementAsc;
 		this.orderBy = orderBy;
-		this.classic = classic;
+		this.highlight = highlight;
 		this.randomize = randomize;
 	}
 	

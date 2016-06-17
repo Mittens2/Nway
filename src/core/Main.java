@@ -1,9 +1,15 @@
 package core;
 
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.GridBagLayout;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
 
 import org.jfree.ui.RefineryUtilities;
 
@@ -44,23 +50,93 @@ public class Main {
 		batcher.run();
 	}
 	
-	/*private static void runExperiment(ArrayList<String> modelsFiles, ArrayList<String> resultsFiles){
-		ArrayList<String> cases = new ArrayList<String>();
-		ArrayList<RunResult> runResults = new ArrayList<RunResult>();
+	private static void runDetailedExperiment(ArrayList<String> modelsFiles, ArrayList<String> resultsFiles){
+		/**
+		 * Runs and experiment on any algorithm against Nwm.
+		 * Outputs results to a graph.
+		 */
+		double[][] nwmScores = new double[][]{
+				{4.595},
+				{1.522},
+				{0.977, 0.917, 0.839, 0.915, 1.005, 0.991, 1.066, 0.870, 1.077, 0.887},
+				{0.998, 0.695, 0.933, 1.055, 0.830, 1.274, 1.049, 0.987, 0.736, 1.027},
+				{0.958, 1.001, 0.950, 0.900, 0.893, 0.940, 1.008, 0.974, 0.948, 0.840},
+				{0.237},
+				{0.279},
+				{0.289},
+				};
+		ResultsPlotter rp = new ResultsPlotter("SmartHuman", "NwM");
+
 		for (int i = 0; i < modelsFiles.size(); i++){
 			String mf = modelsFiles.get(i);
 			String rf = resultsFiles.get(i);
 			String subCase = mf.substring(mf.indexOf("/") + 1, mf.indexOf("."));
-			if (subCase.charAt(0) == 'r'){
-				runResults.addAll(multipleBatchRun(mf, rf, 10));
+			if (subCase.charAt(0) == 'm'){
+				subCase = subCase.substring(mf.indexOf("/") + 1);
+				//rp.addMultipleValueDatapoint(multipleBatchRun(mf, rf, 10)[0], nwmScores[i], subCase);
 			}
 			else{
-				runResults.addAll(singleBatchRun(mf, rf, -1, true));
+				ArrayList<RunResult> runResults = singleBatchRun(mf, rf, -1, true);
+				rp.addSingleValueDataPoint(runResults.get(0).weight.doubleValue(), nwmScores[i][0], subCase);
+				if (i == 0){
+					rp.setAlg1Label(runResults.get(0).title);
+				}
 			}
 		}
-	}*/
+		rp.createChart();
+		rp.setMinimumSize(new Dimension(1000, 500));
+		rp.pack();
+        RefineryUtilities.centerFrameOnScreen(rp);
+        rp.setVisible(true);
+	}
 	
-	private static void singleBatchRun(String modelsFile, String resultsFile, int numOfModelsToUse, boolean toChunkify){
+	private static void runSimpleExperiment(ArrayList<String> modelsFiles, ArrayList<String> resultsFiles){
+		double[] nwmScores = {
+				4.595,
+				1.522,
+				0.977, 0.917, 0.839, 0.915, 1.005, 0.991, 1.066, 0.870, 1.077, 0.887,
+				0.998, 0.695, 0.933, 1.055, 0.830, 1.274, 1.049, 0.987, 0.736, 1.027,
+				0.958, 1.001, 0.950, 0.900, 0.893, 0.940, 1.008, 0.974, 0.948, 0.840,
+				0.237,
+				0.279,
+				0.289,
+				};
+		double[] shScores = new double[32];
+		int currInd = 0;
+		ArrayList<String> subcases = new ArrayList<String>();
+		ResultsPlotter rp = new ResultsPlotter("SmartHuman", "NwM");
+		for (int i = 0; i < modelsFiles.size(); i++){
+			String mf = modelsFiles.get(i);
+			String rf = resultsFiles.get(i);
+			String subCase = mf.substring(mf.indexOf("/") + 1, mf.indexOf("."));
+			if (subCase.charAt(0) == 'm'){
+				subCase = subCase.substring(mf.indexOf("/") + 1);
+				for (double d: multipleBatchRun(mf, rf, 10)[0]){
+					shScores[currInd] = d;
+					currInd++;
+					subcases.add(subCase.charAt(0) + " " + currInd);
+				}
+			}
+			else{
+				ArrayList<RunResult> runResults = singleBatchRun(mf, rf, -1, true);
+				shScores[currInd] = runResults.get(0).weight.doubleValue();
+				currInd++;
+				if (i == 0){
+					rp.setAlg1Label(runResults.get(0).title);
+				}
+				subcases.add(subCase.charAt(0) + "");
+			}
+			
+		}
+		rp.createDataset(shScores, nwmScores, subcases);
+		rp.createChartSingle();
+		rp.setMinimumSize(new Dimension(1000, 500));
+		rp.pack();
+        RefineryUtilities.centerFrameOnScreen(rp);
+        rp.setVisible(true);
+	}
+	
+	private static ArrayList<RunResult> singleBatchRun(String modelsFile, String resultsFile, int numOfModelsToUse, boolean toChunkify){
 		/**
 		 * Runs algorithms over the first numOfModelsToUse models from modelsFile in a single run.
 		 * 
@@ -72,9 +148,16 @@ public class Main {
 		System.out.println(modelsFile.substring(modelsFile.indexOf("/") + 1, modelsFile.indexOf(".")) + ", num models: " + models.size());
 		Runner runner = new Runner(models, resultsFile, null, numOfModelsToUse, toChunkify);
 		runner.execute();
+		ArrayList<RunResult> runResults = runner.getRunResults();
+		/*double[] scores = new double[runResults.size()];
+		for (int i = 0; i < runResults.size(); i++){
+			scores[i] = runResults.get(i).weight.doubleValue();
+		}
+		return scores;*/
+		return runner.getRunResults();
 	}
 	
-	private static double[] multipleBatchRun(String modelsFile, String resultsFile, int numOfModelsToUse){
+	private static double[][] multipleBatchRun(String modelsFile, String resultsFile, int numOfModelsToUse){
 		/**
 		 * Divides the case defined by modelsFile into batches of numOfModelsToUse models.
 		 * Runs algorithms over the set of models designated as many times as numOfModelsToUse
@@ -111,7 +194,8 @@ public class Main {
 			System.out.println("max run: " + stats.getMax() + ", min run: " + stats.getMin()+ "\n");
 			averages[i] = stats.getMean();
 		}
-		return averages;
+		//return averages;
+		return allScores;
 	}
 	
 	/*public static void graphData(){
@@ -136,6 +220,8 @@ public class Main {
 	
 	public static void main(String[] args) {
 		
+
+		
 		String hospitals = "models/hospitals.csv";
 		String warehouses = "models/warehouses.csv";
 		String random = "models/models/random.csv";
@@ -153,6 +239,7 @@ public class Main {
 		String randomTMP1= "models/3x6_models.csv";
 		String runningExample = "models/runningExample2.csv";*/
 		
+		
 		String resultsHospitals = "results/hospital_results.xls";
 		String resultsWarehouses = "results/warehouses_results.xls";
 		String resultsRandom = "results/random_results.xls";
@@ -161,8 +248,30 @@ public class Main {
 		String resultsLevel2a = "results/results_level2a.xls";
 		String resultsLevel2b = "results/results_level2b.xls";
 		String resultsLevel3a = "results/results_level3a.xls";
+		
+		ArrayList<String> models = new ArrayList<String>();
+		models.add(hospitals);
+		models.add(warehouses);
+		models.add(random);
+		models.add(randomLoose);
+		models.add(randomTight);
+		//models.add(level2a);
+		//models.add(level2b);
+		//models.add(level3a);
+		
+		ArrayList<String> results = new ArrayList<String>();
+		results.add(resultsHospitals);
+		results.add(resultsWarehouses);
+		results.add(resultsRandom);
+		results.add(resultsRandomLoose);
+		results.add(resultsRandomTight);
+		results.add(resultsLevel2a);
+		results.add(resultsLevel2b);
+		results.add(resultsLevel3a);
 				
 		AlgoUtil.useTreshold(true);
+		
+		runSimpleExperiment(models, results);
 		
 		//singleBatchRun(randomTMP, null);
 		
@@ -180,14 +289,14 @@ public class Main {
 		
 		//AlgoUtil.COMPUTE_RESULTS_CLASSICALLY = false;
 		
-		//singleBatchRun(warehouses, resultsWarehouses,-1, true);	
-		//singleBatchRun(hospitals, resultsHospitals,-1, true);
+		/*singleBatchRun(warehouses, resultsWarehouses,-1, true);	
+		singleBatchRun(hospitals, resultsHospitals,-1, true);
 		multipleBatchRun(random, resultsRandom, 10);	
-		//multipleBatchRun(randomLoose, resultsRandomLoose, 10);	
-		//multipleBatchRun(randomTight, resultsRandomTight, 10);
-		//singleBatchRun(level2a, resultsLevel2a,-1, true);
-		//singleBatchRun(level2b, resultsLevel2b,-1, true);
-		//singleBatchRun(level3a, resultsLevel3a,-1, true);
+		multipleBatchRun(randomLoose, resultsRandomLoose, 10);	
+		multipleBatchRun(randomTight, resultsRandomTight, 10);
+		singleBatchRun(level2a, resultsLevel2a,-1, true);
+		singleBatchRun(level2b, resultsLevel2b,-1, true);
+		singleBatchRun(level3a, resultsLevel3a,-1, true);*/
 		
 		
 		//workOnBatch(random10, resultRandom10);

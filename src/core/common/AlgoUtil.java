@@ -456,7 +456,7 @@ public class AlgoUtil {
 		if(md.algPolicy == N_WAY.ALG_POLICY.GREEDY) res = "G";
 		if(md.algPolicy == N_WAY.ALG_POLICY.REPLACE_FIRST) res = "LS, ";
 		if(md.algPolicy == N_WAY.ALG_POLICY.REPLACE_BEST) res = "GTLS, ";
-		if(md.algPolicy == N_WAY.ALG_POLICY.RANDOM) res = "DH, ";
+		if(md.algPolicy == N_WAY.ALG_POLICY.RANDOM) res = "SH (";
 		if(splitSize > 2)
 			res = res+splitSize+", ";
 		if(md.orderBy == N_WAY.ORDER_BY.MODEL_SIZE)
@@ -469,28 +469,32 @@ public class AlgoUtil {
 			res = res+"Most sparse ";
 		else if(md.orderBy == N_WAY.ORDER_BY.MODEL_ID)
 			res = res+"by id ";
-		else if (md.orderBy == N_WAY.ORDER_BY.MODEL_SIZE_ELEMENT_SIZE)
-			res = res+"modelSize/elementSize: ";
-		else
-			res = res+"modelSize/property: ";
+		else //if (md.orderBy == N_WAY.ORDER_BY.MODEL_SIZE_ELEMENT_SIZE || md.orderBy == N_WAY.ORDER_BY.PROPERTY)
+			res = res+"mSize:";
 		
 		if(md.asc)
-			res = res+"ascending";
+			res = res+"asc/";
 		else
-			res = res+"descending";
+			res = res+"desc/";
 		if (md.orderBy == N_WAY.ORDER_BY.MODEL_SIZE_ELEMENT_SIZE || md.orderBy == N_WAY.ORDER_BY.PROPERTY){
+			if(md.orderBy == N_WAY.ORDER_BY.MODEL_SIZE_ELEMENT_SIZE)
+				res = res+"eSize:";
+			else
+				res =res+"eProp:";
 			if(md.elementAsc)
-				res = res+"/ascending, ";
+				res = res+"asc/";
 			else
-				res = res+"/descending, ";
-			if(md.classic)
-				res = res+" classic,";
+				res = res+"desc/";
+			if(md.highlight == 0)
+				res = res+"hl0/";
+			else if (md.highlight == 1)
+				res = res+"hl1/";
 			else
-				res = res+" expanded,";
+				res = res+"hl2/";
 			if(md.randomize)
-				res = res+" random";
+				res = res+"rand)";
 			else
-				res = res+" no random";
+				res = res+"noRand)";
 		}
 		return res;
 	}

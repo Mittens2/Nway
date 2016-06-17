@@ -281,17 +281,17 @@ public class Runner extends ResultsWriter{
 	private ArrayList<MergeDescriptor> allPermOnAlg(N_WAY.ALG_POLICY pol){
 		ArrayList<MergeDescriptor> retVal = new ArrayList<MergeDescriptor>();
 		if (pol == N_WAY.ALG_POLICY.RANDOM){
-			boolean classic = true;
+			int highlight = 0;
 			boolean randomize = false;
-			retVal.add(new MergeDescriptor(true, true, N_WAY.ORDER_BY.MODEL_ID, classic, randomize));
-			retVal.add(new MergeDescriptor(true, true, N_WAY.ORDER_BY.MODEL_SIZE_ELEMENT_SIZE, classic, randomize));
-			retVal.add(new MergeDescriptor(true, false, N_WAY.ORDER_BY.MODEL_SIZE_ELEMENT_SIZE, classic, randomize));
-			retVal.add(new MergeDescriptor(false, true, N_WAY.ORDER_BY.MODEL_SIZE_ELEMENT_SIZE, classic, randomize));
-			retVal.add(new MergeDescriptor(false, false, N_WAY.ORDER_BY.MODEL_SIZE_ELEMENT_SIZE, classic, randomize));
-			retVal.add(new MergeDescriptor(true, true, N_WAY.ORDER_BY.PROPERTY, classic, randomize));
-			retVal.add(new MergeDescriptor(true, false, N_WAY.ORDER_BY.PROPERTY, classic, randomize));
-			retVal.add(new MergeDescriptor(false, true, N_WAY.ORDER_BY.PROPERTY, classic, randomize));
-			retVal.add(new MergeDescriptor(false, false, N_WAY.ORDER_BY.PROPERTY, classic, randomize));
+			//retVal.add(new MergeDescriptor(true, true, N_WAY.ORDER_BY.MODEL_ID, highlight, randomize));
+			retVal.add(new MergeDescriptor(true, true, N_WAY.ORDER_BY.MODEL_SIZE_ELEMENT_SIZE, highlight, randomize));
+			//retVal.add(new MergeDescriptor(true, false, N_WAY.ORDER_BY.MODEL_SIZE_ELEMENT_SIZE, highlight, randomize));
+			//retVal.add(new MergeDescriptor(false, true, N_WAY.ORDER_BY.MODEL_SIZE_ELEMENT_SIZE, highlight, randomize));
+			//retVal.add(new MergeDescriptor(false, false, N_WAY.ORDER_BY.MODEL_SIZE_ELEMENT_SIZE, highlight, randomize));
+			//retVal.add(new MergeDescriptor(true, true, N_WAY.ORDER_BY.PROPERTY, highlight, randomize));
+			//retVal.add(new MergeDescriptor(true, false, N_WAY.ORDER_BY.PROPERTY, highlight, randomize));
+			//retVal.add(new MergeDescriptor(false, true, N_WAY.ORDER_BY.PROPERTY, highlight, randomize));
+			//retVal.add(new MergeDescriptor(false, false, N_WAY.ORDER_BY.PROPERTY, highlight, randomize));
 			return retVal;
 		}
 		retVal.add(new MergeDescriptor(pol, true, N_WAY.ORDER_BY.MODEL_ID));

@@ -60,7 +60,7 @@ public class Statistics
     }
     
     public double getMax(){
-    	double max = 0;
+    	double max = Double.NEGATIVE_INFINITY;
     	for (double d: data){
     		if (d > max){
     			max = d;

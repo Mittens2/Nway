@@ -27,6 +27,7 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 	private RunResult res;
 	private MergeDescriptor md;
 	private GeneticAlgorithm geneticAlgorithm;
+	private BigDecimal threshold = new BigDecimal(0.012);
 
 	public RandomizedMatchMerger(ArrayList<Model> models, MergeDescriptor md, double uniRate, double mutRate){
 		super(models);
@@ -38,7 +39,6 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 		long startTime = System.currentTimeMillis();
 		unusedElements = joinAllModels();
 		solution = execute();
-		//System.out.println(solution);
 		BigDecimal weight = AlgoUtil.calcGroupWeight(solution);
 		long endTime = System.currentTimeMillis();
 		long execTime = endTime - startTime;
@@ -57,11 +57,13 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 		
 		ArrayList<Element> elems = new ArrayList<Element>();
 		if (md.orderBy == N_WAY.ORDER_BY.MODEL_SIZE_ELEMENT_SIZE || md.orderBy == N_WAY.ORDER_BY.PROPERTY){
+			Collections.shuffle(models, new Random(System.nanoTime()));
 			Collections.sort(models, new ModelComparator(md.asc));
 		}
 		for(Model m:models){
 			ArrayList<Element> modelElems = m.getElements();
 			if (md.orderBy == N_WAY.ORDER_BY.MODEL_SIZE_ELEMENT_SIZE){
+				Collections.shuffle(modelElems, new Random(System.nanoTime()));
 				Collections.sort(modelElems, new ElementComparator(md.elementAsc, false));
 			}
 			elems.addAll(modelElems);
@@ -79,6 +81,7 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 			elems = new ArrayList<Element>();
 			for (Model m: models){
 				ArrayList<Element> modelElems = m.getElements();
+				Collections.shuffle(modelElems, new Random(System.nanoTime()));
 				Collections.sort(modelElems, new ElementComparator(md.elementAsc, true));
 				elems.addAll(modelElems);
 			}
@@ -157,12 +160,34 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 	private Element getMaxElement(ArrayList<Element> elems, Tuple best){
 		BigDecimal maxWeight = best.calcWeight(models);
 		Element maxElement = null;
-		for (Element e: elems){
-			Tuple test = best.newExpanded(e, models);
-			if (test.calcWeight(models).compareTo(maxWeight) > 0)
-				{
-				maxElement = e;
-				maxWeight = test.calcWeight(models);
+		if (elems.size() == 0){
+			return null;
+		}
+		if (md.choose == 0){
+			for (Element e: elems){
+				Tuple test = best.newExpanded(e, models);
+				if (test.calcWeight(models).compareTo(maxWeight) > 0)
+					{
+					maxElement = e;
+					maxWeight = test.calcWeight(models);
+				}
+			}
+		}
+		else if (md.choose == 1){
+			Random rand = new Random();
+			maxElement = elems.get(rand.nextInt(elems.size()));
+		}
+		else{
+			for (Element e: elems){
+				Tuple test = best.newExpanded(e, models);
+				if (test.calcWeight(models).divide(best.calcWeight(models)).compareTo(new BigDecimal(1.1)) > 0){
+					return e;
+				}
+				else if (test.calcWeight(models).compareTo(maxWeight) > 0)
+					{
+					maxElement = e;
+					maxWeight = test.calcWeight(models);
+				}
 			}
 		}
 		return maxElement;

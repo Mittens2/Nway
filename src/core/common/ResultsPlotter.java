@@ -15,8 +15,10 @@ import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.CategoryAxis;
+import org.jfree.chart.axis.LogAxis;
 import org.jfree.chart.axis.LogarithmicAxis;
 import org.jfree.chart.axis.NumberAxis;
+import org.jfree.chart.axis.NumberTickUnit;
 import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.labels.BoxAndWhiskerToolTipGenerator;
 import org.jfree.chart.plot.CategoryPlot;
@@ -79,13 +81,15 @@ public class ResultsPlotter extends ApplicationFrame {
 	
 	public void createDataset(double[] alg1, double[] alg2, ArrayList<String> categories){
 		for (int i = 0; i < alg1.length; i++){
-			catDataset.addValue(0.1 * (i + 1) + (1 - alg1[i] / alg2[i]),"% diff", categories.get(i));
-			catDataset.addValue(0.1 * (i + 1), "x = y", categories.get(i));
+			catDataset.addValue(Math.pow(1.01, i) + (alg1[i] / alg2[i] - 1),"% diff", categories.get(i));
+			catDataset.addValue(Math.pow(1.01, i), "x = y", categories.get(i));
 		}
 	}
 	
 	public void createChartSingle(){
-        final LogarithmicAxis rangeAxis = new LogarithmicAxis("SmartHuman");
+        final LogAxis rangeAxis = new LogAxis("SmartHuman");
+        rangeAxis.setBase(1.01);
+        //rangeAxis.setTickUnit(new NumberTickUnit(10));
         //rangeAxis.setAllowNegativesFlag(true);
         //rangeAxis.setUpperBound(0.1);
         final CategoryAxis domainAxis = new CategoryAxis("NwM");
@@ -105,6 +109,7 @@ public class ResultsPlotter extends ApplicationFrame {
             plot,
             true
         );
+        result.removeLegend();
         final ChartPanel chartPanel = new ChartPanel(result);
         setContentPane(chartPanel);
 	}

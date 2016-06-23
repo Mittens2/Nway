@@ -1,20 +1,11 @@
 package core;
 
 import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.GridBagLayout;
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
 
 import org.jfree.ui.RefineryUtilities;
 
-import core.alg.merge.MultiModelHungarian;
-import core.alg.merge.MultiModelMerger;
 import core.common.AlgoUtil;
 import core.common.ResultsPlotter;
 import core.common.Statistics;
@@ -90,43 +81,64 @@ public class Main {
         rp.setVisible(true);
 	}
 	
-	private static void runSimpleExperiment(ArrayList<String> modelsFiles, ArrayList<String> resultsFiles){
+	private static void runSimpleExperiment(ArrayList<String> modelsFiles, ArrayList<String> resultsFiles, 
+			int runsToAvg){
 		double[] nwmScores = {
 				4.595,
 				1.522,
 				0.977, 0.917, 0.839, 0.915, 1.005, 0.991, 1.066, 0.870, 1.077, 0.887,
 				0.998, 0.695, 0.933, 1.055, 0.830, 1.274, 1.049, 0.987, 0.736, 1.027,
-				0.958, 1.001, 0.950, 0.900, 0.893, 0.940, 1.008, 0.974, 0.948, 0.840,
-				0.237,
-				0.279,
-				0.289,
+				0.958, 1.001, 0.950, 0.900, 0.893, 0.940, 1.008, 0.974, 0.948, 0.840
 				};
-		double[] shScores = new double[32];
+		double[] shScores = new double[nwmScores.length];
 		int currInd = 0;
 		ArrayList<String> subcases = new ArrayList<String>();
 		ResultsPlotter rp = new ResultsPlotter("SmartHuman", "NwM");
+		System.out.println(modelsFiles.size());
 		for (int i = 0; i < modelsFiles.size(); i++){
 			String mf = modelsFiles.get(i);
 			String rf = resultsFiles.get(i);
 			String subCase = mf.substring(mf.indexOf("/") + 1, mf.indexOf("."));
+			System.out.println(subCase);
 			if (subCase.charAt(0) == 'm'){
 				subCase = subCase.substring(mf.indexOf("/") + 1);
-				for (double d: multipleBatchRun(mf, rf, 10)[0]){
-					shScores[currInd] = d;
-					currInd++;
-					subcases.add(subCase.charAt(0) + " " + currInd);
+				if (subCase.equals("random"))
+					subCase = "r";
+				else if (subCase.equals("randomLoose"))
+					subCase = "rl";
+				else
+					subCase = "rt";
+				double[][] runScores = new double[10][runsToAvg];
+				for (int j = 0; j < runsToAvg; j++){
+					double[] result = multipleBatchRun(mf, rf, 10)[0];
+					for (int k = 0; k < 10; k++){
+						runScores[k][j] = result[k];
+					}
 				}
+				int run = 0;
+				for (int j = 0; j < runScores.length; j++){
+					Statistics stats = new Statistics(runScores[j]);
+					shScores[currInd] = stats.getMean();
+					currInd++;
+					run++;
+					subcases.add(subCase + "" + run);
+				}
+			
 			}
 			else{
-				ArrayList<RunResult> runResults = singleBatchRun(mf, rf, -1, true);
-				shScores[currInd] = runResults.get(0).weight.doubleValue();
-				currInd++;
-				if (i == 0){
-					rp.setAlg1Label(runResults.get(0).title);
+				double[] runScores = new double[runsToAvg];
+				for (int j = 0; j < runsToAvg; j++){
+					RunResult run = singleBatchRun(mf, rf, -1, true).get(0);
+					if (i == 0 && j == 0){
+						rp.setAlg1Label(run.title);
+					}
+					runScores[j] = run.weight.doubleValue(); 
 				}
+				Statistics stats = new Statistics(runScores);
+				shScores[currInd] = stats.getMean();
+				currInd++;
 				subcases.add(subCase.charAt(0) + "");
-			}
-			
+			}	
 		}
 		rp.createDataset(shScores, nwmScores, subcases);
 		rp.createChartSingle();
@@ -265,13 +277,13 @@ public class Main {
 		results.add(resultsRandom);
 		results.add(resultsRandomLoose);
 		results.add(resultsRandomTight);
-		results.add(resultsLevel2a);
-		results.add(resultsLevel2b);
-		results.add(resultsLevel3a);
+		//results.add(resultsLevel2a);
+		//results.add(resultsLevel2b);
+		//results.add(resultsLevel3a);
 				
 		AlgoUtil.useTreshold(true);
 		
-		runSimpleExperiment(models, results);
+		runSimpleExperiment(models, results, 10);
 		
 		//singleBatchRun(randomTMP, null);
 		

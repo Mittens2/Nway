@@ -491,10 +491,16 @@ public class AlgoUtil {
 				res = res+"hl1/";
 			else
 				res = res+"hl2/";
-			if(md.randomize)
+			if (md.choose == 0)
+				res = res+"ch0)";
+			else if (md.choose == 1)
+				res= res+"ch1)";
+			else
+				res = res+"ch2)";
+			/*if(md.randomize)
 				res = res+"rand)";
 			else
-				res = res+"noRand)";
+				res = res+"noRand)";*/
 		}
 		return res;
 	}

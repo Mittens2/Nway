@@ -6,6 +6,9 @@ import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridBagLayout;
 import java.awt.geom.Ellipse2D;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -13,6 +16,7 @@ import java.util.List;
 
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
+import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.CategoryAxis;
 import org.jfree.chart.axis.LogAxis;
@@ -60,8 +64,8 @@ public class ResultsPlotter extends ApplicationFrame {
 	}
 	
 	public void addDataPoint(double alg1, double alg2, String category){
-		catDataset.addValue(1.0 / Math.log(alg1 / alg2), "% diff", category);
-		catDataset.addValue(cases, "x = y", category);
+		catDataset.addValue(Math.pow(1.01, cases) + (alg1 / alg2 - 1),"% diff", category);
+		catDataset.addValue(Math.pow(1.01, cases), "x = y", category);
 		cases++;
 	}
 	
@@ -89,6 +93,7 @@ public class ResultsPlotter extends ApplicationFrame {
 	public void createChartSingle(){
         final LogAxis rangeAxis = new LogAxis("SmartHuman");
         rangeAxis.setBase(1.01);
+        rangeAxis.setRange(Math.pow(1.01, -25), Math.pow(1.01, 50));
         //rangeAxis.setTickUnit(new NumberTickUnit(10));
         //rangeAxis.setAllowNegativesFlag(true);
         //rangeAxis.setUpperBound(0.1);
@@ -112,6 +117,19 @@ public class ResultsPlotter extends ApplicationFrame {
         result.removeLegend();
         final ChartPanel chartPanel = new ChartPanel(result);
         setContentPane(chartPanel);
+        
+        try{
+        	chartPanel.setMinimumDrawHeight(500);
+            chartPanel.setMinimumDrawWidth(1000);
+        	BufferedImage bi = ScreenImage.createImage(chartPanel);
+        	String picPath = "/home/amit/Documents/Results Webpage/graphs/";
+        	//String picPath = "graphs/";
+        	File file = new File(picPath + this.alg1.substring(alg1.indexOf("(")) +".jpeg");
+        	ChartUtilities.saveChartAsJPEG(file, 1f, result, 1000, 500);
+        }
+        catch (IOException e){
+        	System.out.println(e.getMessage());
+        }
 	}
 	
 	public void createChart(){
@@ -137,8 +155,7 @@ public class ResultsPlotter extends ApplicationFrame {
         );
         chart.removeLegend();
         final ChartPanel chartPanel = new ChartPanel(chart);
-        setContentPane(chartPanel);
-
+       
 	}
 
 }

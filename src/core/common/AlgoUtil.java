@@ -473,34 +473,32 @@ public class AlgoUtil {
 			res = res+"mSize:";
 		
 		if(md.asc)
-			res = res+"asc/";
+			res = res+"asc_";
 		else
-			res = res+"desc/";
+			res = res+"desc_";
 		if (md.orderBy == N_WAY.ORDER_BY.MODEL_SIZE_ELEMENT_SIZE || md.orderBy == N_WAY.ORDER_BY.PROPERTY){
 			if(md.orderBy == N_WAY.ORDER_BY.MODEL_SIZE_ELEMENT_SIZE)
 				res = res+"eSize:";
 			else
 				res =res+"eProp:";
 			if(md.elementAsc)
-				res = res+"asc/";
+				res = res+"asc_";
 			else
-				res = res+"desc/";
+				res = res+"desc_";
+		}
+		if (md.algPolicy == N_WAY.ALG_POLICY.RANDOM){
 			if(md.highlight == 0)
-				res = res+"hl0/";
+				res = res+"hl0_";
 			else if (md.highlight == 1)
-				res = res+"hl1/";
+				res = res+"hl1_";
 			else
-				res = res+"hl2/";
+				res = res+"hl2_";
 			if (md.choose == 0)
 				res = res+"ch0)";
 			else if (md.choose == 1)
 				res= res+"ch1)";
 			else
 				res = res+"ch2)";
-			/*if(md.randomize)
-				res = res+"rand)";
-			else
-				res = res+"noRand)";*/
 		}
 		return res;
 	}

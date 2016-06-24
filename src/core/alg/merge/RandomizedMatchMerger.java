@@ -39,6 +39,7 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 		long startTime = System.currentTimeMillis();
 		unusedElements = joinAllModels();
 		solution = execute();
+		AlgoUtil.printTuples(solution);
 		BigDecimal weight = AlgoUtil.calcGroupWeight(solution);
 		long endTime = System.currentTimeMillis();
 		long execTime = endTime - startTime;

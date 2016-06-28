@@ -27,7 +27,7 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 	private RunResult res;
 	private MergeDescriptor md;
 	private GeneticAlgorithm geneticAlgorithm;
-	private BigDecimal threshold = new BigDecimal(0.012);
+	private boolean doAgain = true;
 
 	public RandomizedMatchMerger(ArrayList<Model> models, MergeDescriptor md, double uniRate, double mutRate){
 		super(models);
@@ -39,7 +39,7 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 		long startTime = System.currentTimeMillis();
 		unusedElements = joinAllModels();
 		solution = execute();
-		AlgoUtil.printTuples(solution);
+		//AlgoUtil.printTuples(solution);
 		BigDecimal weight = AlgoUtil.calcGroupWeight(solution);
 		long endTime = System.currentTimeMillis();
 		long execTime = endTime - startTime;
@@ -111,8 +111,16 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 		while(unusedElements.size() > 0){
 			Element picked = unusedElements.get(0);
 			unusedElements.remove(0);
-			Tuple bestTuple = getBestTuple(new ArrayList<Element>(unusedElements), picked);
+			//Tuple bestTuple = getBestTuple(new ArrayList<Element>(unusedElements), picked);
+			Tuple bestTuple = buildTuple(new ArrayList<Element>(unusedElements), new Tuple().newExpanded(picked, models));
 			result.add(bestTuple);
+		}
+		if (doAgain && md.choose == 2){
+			for (Tuple t: result){
+				if (t.getSize() == 1){
+					unusedElements.add(t.getElements().get(0));
+				}
+			}
 		}
 		if (md.randomize){
 			result = runGeneticAlgorithm(result);
@@ -120,6 +128,13 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 		return result;
 	}
 	
+	/**
+	 * Does randomized merge algorithm described in tex file.
+	 * New function more modular.
+	 *
+	 * @deprecated use {@link #buildTuple()} instead.  
+	 */
+	@Deprecated
 	private Tuple getBestTuple(ArrayList<Element> elems, Element picked){
 		/**
 		 * Variation of the randomized merge algorithm. Instead of only considering elements
@@ -136,7 +151,7 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 			incompatible = AlgoUtil.removeElementsSameModelId(picked, incompatible);
 			partition = AlgoUtil.partitionShared(picked, elems, 1);
 			elems = partition.get(0);
-			// If want to consider larger pool of elements.
+			// Consider all elements that also have tuple.size properties in common with any one of elements in tuple.
 			if (md.highlight == 1){
 				incompatible.addAll(partition.get(1));
 				for (Element e: best.getElements()){
@@ -145,6 +160,7 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 					incompatible = partition.get(1);
 				}
 			}
+			// Consider all elements that have tuple.size elements in common in total with elements in tuple.
 			else if (md.highlight == 2){
 				incompatible.addAll(partition.get(1));
 					partition = AlgoUtil.getElementsWithSharedProperties(best, incompatible, 
@@ -158,42 +174,128 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 		return best;
 	}
 	
+	private Tuple buildTuple(ArrayList<Element> elems, Tuple current){
+		/**
+		 * Variation of the randomized merge algorithm. Instead of only considering elements
+		 * that have one shared property with the current element, the algorithm reconsiders elements
+		 * to append to the tuple if they have at least bestTuple.size() shared properties with any of
+		 * elements in the current tuple.
+		 */
+		ArrayList<Element> incompatible = new ArrayList<Element>();
+		ArrayList<ArrayList<Element>> partition = new ArrayList<ArrayList<Element>>();
+		for (Element e: current.getElements()){
+			elems = AlgoUtil.removeElementsSameModelId(e, elems);
+			incompatible = AlgoUtil.removeElementsSameModelId(e, incompatible);
+			partition = highlightElements(e, elems, incompatible, current);
+			elems = partition.get(0);
+			incompatible = partition.get(1);
+		}
+		while(true){
+			// Consider all elements that also have tuple.size properties in common with any one of elements in tuple.
+			Element picked = getMaxElement(elems, current);
+			if (picked == null){
+				break;
+			}
+			unusedElements.remove(picked);
+			current = current.newExpanded(picked, models);
+			elems = AlgoUtil.removeElementsSameModelId(picked, elems);
+			incompatible = AlgoUtil.removeElementsSameModelId(picked, incompatible);
+			partition = highlightElements(picked, elems, incompatible, current);
+			elems = partition.get(0);
+			incompatible = partition.get(1);
+		}
+		return current;
+	}
+	
+	private ArrayList<ArrayList<Element>> highlightElements(Element picked, ArrayList<Element> elems, 
+			ArrayList<Element> incompatible, Tuple current){
+		if (md.highlight == 0){
+			return AlgoUtil.partitionShared(picked, elems, 1);
+		}
+		else if (md.highlight == 1){
+			ArrayList<ArrayList<Element>> partition = AlgoUtil.partitionShared(picked, elems, 1);
+			elems = partition.get(0);
+			incompatible.addAll(partition.get(1));
+			for (Element e: current.getElements()){
+				partition = AlgoUtil.partitionShared(e, incompatible, current.getSize());
+				elems.addAll(partition.get(0));
+				incompatible = partition.get(1);
+			}
+			partition.set(0, elems);
+			partition.set(1, incompatible);
+			return partition;
+		}
+		else{
+			elems.addAll(incompatible);
+			return AlgoUtil.getElementsWithSharedProperties(current, elems, current.getSize());
+		}
+	}
+	
 	private Element getMaxElement(ArrayList<Element> elems, Tuple best){
-		BigDecimal maxWeight = best.calcWeight(models);
-		Element maxElement = null;
 		if (elems.size() == 0){
 			return null;
 		}
-		if (md.choose == 0){
-			for (Element e: elems){
-				Tuple test = best.newExpanded(e, models);
-				if (test.calcWeight(models).compareTo(maxWeight) > 0)
-					{
-					maxElement = e;
-					maxWeight = test.calcWeight(models);
-				}
-			}
+		if (md.choose == 0){ //Choose element that increases the score the most.
+			return pickMaxElement(elems, best);
 		}
 		else if (md.choose == 1){
-			Random rand = new Random();
-			maxElement = elems.get(rand.nextInt(elems.size()));
+			return pickElementShareProps(elems, best);
 		}
 		else{
-			for (Element e: elems){
-				Tuple test = best.newExpanded(e, models);
-				if (test.calcWeight(models).divide(best.calcWeight(models)).compareTo(new BigDecimal(1.1)) > 0){
-					return e;
-				}
-				else if (test.calcWeight(models).compareTo(maxWeight) > 0)
-					{
-					maxElement = e;
-					maxWeight = test.calcWeight(models);
-				}
+			return pickElementAboveThreshold(elems, best);
+		}
+	}
+	private Element pickMaxElement(ArrayList<Element> elems, Tuple best){
+		BigDecimal maxWeight = best.calcWeight(models);
+		Element maxElement = null;
+		for (Element e: elems){
+			Tuple test = best.newExpanded(e, models);
+			if (test.calcWeight(models).compareTo(maxWeight) > 0)
+				{
+				maxElement = e;
+				maxWeight = test.calcWeight(models);
 			}
 		}
 		return maxElement;
 	}
 	
+	private Element pickElementShareProps(ArrayList<Element> elems, Tuple best){
+		Element maxElement = null;
+		int maxElementSharedProps = 0;
+		for (Element e: elems){
+			ArrayList<Element> tupleElems = new ArrayList<Element>(best.getElements());
+			tupleElems.add(e);
+			HashMap<String, Integer> propFreqs = getSortedProperties(tupleElems);
+			int sharedProps = 0;
+			for (String p: e.getProperties()){
+				sharedProps += propFreqs.get(p);
+			}
+			if (sharedProps > maxElementSharedProps){
+				Tuple test = best.newExpanded(e, models);
+				if (test.calcWeight(models).compareTo(best.calcWeight(models)) > 0){
+					maxElementSharedProps = sharedProps;
+					maxElement = e;
+				}
+			}
+		}
+		return maxElement; 
+	}
+	
+	private Element pickElementAboveThreshold(ArrayList<Element> elems, Tuple best){
+		for (Element e: elems){
+			Tuple test = best.newExpanded(e, models);
+			if (!best.calcWeight(models).equals(BigDecimal.ZERO)){
+				//System.out.println(best.calcWeight(models));
+				if (test.calcWeight(models).divide(best.calcWeight(models), N_WAY.MATH_CTX).compareTo(new BigDecimal(1.1)) > 0)
+					return e;
+			}
+			else if (test.calcWeight(models).compareTo(best.calcWeight(models)) > 0){
+				//System.out.println("here");
+				return e;
+			}
+		}
+		return null;
+	}
 	private ArrayList<Tuple> runGeneticAlgorithm(ArrayList<Tuple> result){
 		Population pop = geneticAlgorithm.evolvePopulation(new Population(result), 0);
 		return pop.convertToTuples();

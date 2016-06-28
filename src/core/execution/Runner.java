@@ -75,7 +75,7 @@ public class Runner extends ResultsWriter{
 		//runOnGreedy(5);
 		}*/
 		//AlgoUtil.COMPUTE_RESULTS_CLASSICALLY = false;
-		results.addAll(runBigHungarian());
+		//results.addAll(runBigHungarian());
 		results.addAll(runRandomizedMatch());
 		
 		
@@ -281,7 +281,7 @@ public class Runner extends ResultsWriter{
 	private ArrayList<MergeDescriptor> allPermOnAlg(N_WAY.ALG_POLICY pol){
 		ArrayList<MergeDescriptor> retVal = new ArrayList<MergeDescriptor>();
 		if (pol == N_WAY.ALG_POLICY.RANDOM){
-			int highlight = 0;
+			int highlight = 2;
 			int choose = 0;
 			boolean randomize = false;
 			retVal.add(new MergeDescriptor(true, true, N_WAY.ORDER_BY.MODEL_ID, highlight, choose, randomize));

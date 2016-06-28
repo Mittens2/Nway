@@ -135,9 +135,9 @@ public class Main {
 			}
 			for (ResultsPlotter rp: rps){
 				rp.createChartSingle();
-				//rp.pack();
-		        //RefineryUtilities.centerFrameOnScreen(rp);
-		        //rp.setVisible(true);
+				/*rp.pack();
+		        RefineryUtilities.centerFrameOnScreen(rp);
+		        rp.setVisible(true);*/
 			}
 		}
 	}
@@ -289,7 +289,7 @@ public class Main {
 		
 		AlgoUtil.useTreshold(true);
 		
-		runOutliers(warehouses, resultsWarehouses, -1);
+		//runOutliers(warehouses, resultsWarehouses, -1);
 		//runOutliers(random, resultsRandom, 9);
 		//runOutliers(randomLoose, resultsRandomLoose, 4);
 		
@@ -309,10 +309,10 @@ public class Main {
 		
 		//AlgoUtil.COMPUTE_RESULTS_CLASSICALLY = false;
 		
-		//singleBatchRun(warehouses, resultsWarehouses,-1, true);	
-		//singleBatchRun(hospitals, resultsHospitals,-1, true);
-		multipleBatchRun(random, resultsRandom, 10);	
-		multipleBatchRun(randomLoose, resultsRandomLoose, 10);	
+		singleBatchRun(warehouses, resultsWarehouses,-1, true);	
+		singleBatchRun(hospitals, resultsHospitals,-1, true);
+		//multipleBatchRun(random, resultsRandom, 10);	
+		//multipleBatchRun(randomLoose, resultsRandomLoose, 10);	
 		//multipleBatchRun(randomTight, resultsRandomTight, 10);
 		//singleBatchRun(level2a, resultsLevel2a,-1, true);
 		//singleBatchRun(level2b, resultsLevel2b,-1, true);

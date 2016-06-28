@@ -470,35 +470,35 @@ public class AlgoUtil {
 		else if(md.orderBy == N_WAY.ORDER_BY.MODEL_ID)
 			res = res+"by id ";
 		else //if (md.orderBy == N_WAY.ORDER_BY.MODEL_SIZE_ELEMENT_SIZE || md.orderBy == N_WAY.ORDER_BY.PROPERTY)
-			res = res+"mSize:";
+			res = res+"mSize-";
 		
 		if(md.asc)
-			res = res+"asc_";
+			res = res+"asc";
 		else
-			res = res+"desc_";
+			res = res+"desc";
 		if (md.orderBy == N_WAY.ORDER_BY.MODEL_SIZE_ELEMENT_SIZE || md.orderBy == N_WAY.ORDER_BY.PROPERTY){
 			if(md.orderBy == N_WAY.ORDER_BY.MODEL_SIZE_ELEMENT_SIZE)
-				res = res+"eSize:";
+				res = res+", eSize";
 			else
-				res =res+"eProp:";
+				res =res+", eProp";
 			if(md.elementAsc)
-				res = res+"asc_";
+				res = res+"-asc";
 			else
-				res = res+"desc_";
+				res = res+"-desc";
 		}
 		if (md.algPolicy == N_WAY.ALG_POLICY.RANDOM){
 			if(md.highlight == 0)
-				res = res+"hl0_";
+				res = res+"_hl0";
 			else if (md.highlight == 1)
-				res = res+"hl1_";
+				res = res+"_hl1";
 			else
-				res = res+"hl2_";
+				res = res+"_hl2";
 			if (md.choose == 0)
-				res = res+"ch0)";
+				res = res+"_ch0)";
 			else if (md.choose == 1)
-				res= res+"ch1)";
+				res= res+"_ch1)";
 			else
-				res = res+"ch2)";
+				res = res+"_ch2)";
 		}
 		return res;
 	}

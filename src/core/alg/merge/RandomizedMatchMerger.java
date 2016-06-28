@@ -121,6 +121,8 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 					unusedElements.add(t.getElements().get(0));
 				}
 			}
+			doAgain = false;
+			execute();
 		}
 		if (md.randomize){
 			result = runGeneticAlgorithm(result);

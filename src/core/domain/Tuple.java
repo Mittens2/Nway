@@ -170,6 +170,15 @@ public class Tuple {
 		return tuple;
 	}
 	
+	public Tuple lessExpanded(Element e, ArrayList<Model> mdls){
+		@SuppressWarnings("unchecked")
+		ArrayList<Element> elems = (ArrayList<Element>) elements.clone();
+		elems.remove(e);
+		Tuple tuple = new Tuple(elems);
+		tuple.setWeight(tuple.calcWeight(mdls));
+		return tuple;
+	}
+	
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();

@@ -315,7 +315,7 @@ public class AlgoUtil {
 		return false;
 	}
 	
-	private static int getCommonProperties(Element e1, Element e2){
+	public static int getCommonProperties(Element e1, Element e2){
 		Set<String> e1Props = e1.getProperties();
 		int count = 0;
 		for(String prp:e2.getProperties()){

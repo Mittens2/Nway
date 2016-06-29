@@ -122,8 +122,8 @@ public class ResultsPlotter extends ApplicationFrame {
         	chartPanel.setMinimumDrawHeight(500);
             chartPanel.setMinimumDrawWidth(1000);
         	BufferedImage bi = ScreenImage.createImage(chartPanel);
-        	//String picPath = "/home/amit/Documents/Results Webpage/graphs/";
-        	String picPath = "graphs/";
+        	String picPath = "/home/amit/Documents/Results Webpage/graphs/";
+        	//String picPath = "graphs/";
         	File file = new File(picPath + this.alg1.substring(alg1.indexOf("(")) +".jpeg");
         	ChartUtilities.saveChartAsJPEG(file, 1f, result, 1000, 500);
         }

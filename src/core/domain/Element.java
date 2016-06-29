@@ -140,6 +140,10 @@ public class Element {
 		return containingTuple;
 	}
 	
+	public void setContaintingTuple(Tuple t){
+		containingTuple = t;
+	}
+	
 	public String getLabel(){
 		return label;
 	}

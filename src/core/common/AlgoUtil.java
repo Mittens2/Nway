@@ -494,11 +494,15 @@ public class AlgoUtil {
 			else
 				res = res+"_hl2";
 			if (md.choose == 0)
-				res = res+"_ch0)";
+				res = res+"_ch0";
 			else if (md.choose == 1)
-				res= res+"_ch1)";
+				res= res+"_ch1";
 			else
-				res = res+"_ch2)";
+				res = res+"_ch2";
+			if (md.switchTuples)
+				res = res+"_st)";
+			else
+				res = res+")";
 		}
 		return res;
 	}

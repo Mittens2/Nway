@@ -28,7 +28,6 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 	private RunResult res;
 	private MergeDescriptor md;
 	private GeneticAlgorithm geneticAlgorithm;
-	private boolean switchTuples = true;
 
 	public RandomizedMatchMerger(ArrayList<Model> models, MergeDescriptor md, double uniRate, double mutRate){
 		super(models);
@@ -132,13 +131,14 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 			unusedElements.remove(0);
 			//Tuple bestTuple = new Tuple();
 			Tuple bestTuple = new Tuple().newExpanded(picked, models);
-			if (switchTuples){
+			if (md.switchTuples){
 				picked.setContaintingTuple(bestTuple);
 				bestTuple = buildTuple(new ArrayList<Element>(allElements), bestTuple);
 			}
 			else{
 				bestTuple = buildTuple(new ArrayList<Element>(unusedElements), bestTuple);
 			}
+			//System.out.println(allElements.size());
 			solution.add(bestTuple);
 		}
 		/*if (doAgain && md.choose == 2){
@@ -231,7 +231,7 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 			}
 			unusedElements.remove(picked);
 			current = current.newExpanded(picked, models);
-			if (switchTuples){
+			if (md.switchTuples){
 				Tuple oldTuple = picked.getContaingTuple();
 				solution.remove(oldTuple);
 				for (Element e: current.getElements()){
@@ -294,12 +294,12 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 		}
 	}
 	private Element pickMaxElement(ArrayList<Element> elems, Tuple best){
-		BigDecimal maxWeight = switchTuples? BigDecimal.ZERO : best.calcWeight(models);
+		BigDecimal maxWeight = md.switchTuples? BigDecimal.ZERO : best.calcWeight(models);
 		Element maxElement = null;
 		for (Element e: elems){
 			Tuple test = best.newExpanded(e, models);
 			BigDecimal currWeight;
-			if (switchTuples){
+			if (md.switchTuples){
 				Tuple ct = e.getContaingTuple();
 				Tuple ctLess = ct.getSize() > 1 ? ct.lessExpanded(e, models) : ct;
 				currWeight = (ctLess.calcWeight(models).add(test.calcWeight(models)))
@@ -328,7 +328,17 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 			}
 			if (sharedProps > maxElementSharedProps){
 				Tuple test = best.newExpanded(e, models);
-				if (test.calcWeight(models).compareTo(best.calcWeight(models)) > 0){
+				BigDecimal currWeight;
+				if (md.switchTuples){
+					Tuple ct = e.getContaingTuple();
+					Tuple ctLess = ct.getSize() > 1 ? ct.lessExpanded(e, models) : ct;
+					currWeight = (ctLess.calcWeight(models).add(test.calcWeight(models)))
+							.subtract(ct.calcWeight(models).add(best.calcWeight(models)));
+					
+				}
+				else currWeight = test.calcWeight(models).subtract(best.calcWeight(models));
+				if (currWeight.compareTo(BigDecimal.ZERO) > 0){
+				//if (test.calcWeight(models).compareTo(best.calcWeight(models)) > 0){
 					maxElementSharedProps = sharedProps;
 					maxElement = e;
 				}

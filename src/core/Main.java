@@ -309,8 +309,8 @@ public class Main {
 		
 		//AlgoUtil.COMPUTE_RESULTS_CLASSICALLY = false;
 		
-		singleBatchRun(warehouses, resultsWarehouses,-1, true);	
-		singleBatchRun(hospitals, resultsHospitals,-1, true);
+		//singleBatchRun(warehouses, resultsWarehouses,-1, true);	
+		//singleBatchRun(hospitals, resultsHospitals,-1, true);
 		//multipleBatchRun(random, resultsRandom, 10);	
 		//multipleBatchRun(randomLoose, resultsRandomLoose, 10);	
 		//multipleBatchRun(randomTight, resultsRandomTight, 10);

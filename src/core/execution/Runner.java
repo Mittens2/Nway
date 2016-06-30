@@ -283,18 +283,21 @@ public class Runner extends ResultsWriter{
 	private ArrayList<MergeDescriptor> allPermOnAlg(N_WAY.ALG_POLICY pol){
 		ArrayList<MergeDescriptor> retVal = new ArrayList<MergeDescriptor>();
 		if (pol == N_WAY.ALG_POLICY.RANDOM){
-			for (int highlight = 0; highlight < 1; highlight++){
-				for (int choose = 0; choose < 1; choose++){
-				boolean randomize = false;
-				retVal.add(new MergeDescriptor(true, true, N_WAY.ORDER_BY.MODEL_ID, highlight, choose, randomize));
-				retVal.add(new MergeDescriptor(true, true, N_WAY.ORDER_BY.MODEL_SIZE_ELEMENT_SIZE, highlight, choose, randomize));
-				retVal.add(new MergeDescriptor(true, false, N_WAY.ORDER_BY.MODEL_SIZE_ELEMENT_SIZE, highlight, choose, randomize));
-				retVal.add(new MergeDescriptor(false, true, N_WAY.ORDER_BY.MODEL_SIZE_ELEMENT_SIZE, highlight, choose, randomize));
-				retVal.add(new MergeDescriptor(false, false, N_WAY.ORDER_BY.MODEL_SIZE_ELEMENT_SIZE, highlight, choose, randomize));
-				retVal.add(new MergeDescriptor(true, true, N_WAY.ORDER_BY.PROPERTY, highlight, choose, randomize));
-				retVal.add(new MergeDescriptor(true, false, N_WAY.ORDER_BY.PROPERTY, highlight, choose, randomize));
-				retVal.add(new MergeDescriptor(false, true, N_WAY.ORDER_BY.PROPERTY, highlight, choose, randomize));
-				retVal.add(new MergeDescriptor(false, false, N_WAY.ORDER_BY.PROPERTY, highlight, choose, randomize));
+			boolean randomize = false;
+			for (int highlight = 0; highlight < 3; highlight++){
+				for (int choose = 0; choose < 2; choose++){
+					for (int st = 0; st < 1; st++){
+						boolean switchTuples = (st == 0);
+						retVal.add(new MergeDescriptor(true, true, N_WAY.ORDER_BY.MODEL_ID, highlight, choose, randomize, switchTuples));
+						retVal.add(new MergeDescriptor(true, true, N_WAY.ORDER_BY.MODEL_SIZE_ELEMENT_SIZE, highlight, choose, randomize, switchTuples));
+						retVal.add(new MergeDescriptor(true, false, N_WAY.ORDER_BY.MODEL_SIZE_ELEMENT_SIZE, highlight, choose, randomize, switchTuples));
+						retVal.add(new MergeDescriptor(false, true, N_WAY.ORDER_BY.MODEL_SIZE_ELEMENT_SIZE, highlight, choose, randomize, switchTuples));
+						retVal.add(new MergeDescriptor(false, false, N_WAY.ORDER_BY.MODEL_SIZE_ELEMENT_SIZE, highlight, choose, randomize, switchTuples));
+						retVal.add(new MergeDescriptor(true, true, N_WAY.ORDER_BY.PROPERTY, highlight, choose, randomize, switchTuples));
+						retVal.add(new MergeDescriptor(true, false, N_WAY.ORDER_BY.PROPERTY, highlight, choose, randomize, switchTuples));
+						retVal.add(new MergeDescriptor(false, true, N_WAY.ORDER_BY.PROPERTY, highlight, choose, randomize, switchTuples));
+						retVal.add(new MergeDescriptor(false, false, N_WAY.ORDER_BY.PROPERTY, highlight, choose, randomize, switchTuples));
+					}
 				}
 			}
 			return retVal;

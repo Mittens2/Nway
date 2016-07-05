@@ -4,6 +4,8 @@ import java.awt.Dimension;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 
+import org.apache.commons.math3.stat.inference.OneWayAnova;
+import org.jfree.data.category.CategoryDataset;
 import org.jfree.ui.RefineryUtilities;
 
 import core.common.AlgoUtil;
@@ -95,6 +97,7 @@ public class Main {
 				0.958, 1.001, 0.950, 0.900, 0.893, 0.940, 1.008, 0.970, 0.948, 0.840
 				};
 		int subcaseID = 0;
+		ArrayList<double[]> datasets = new ArrayList<double[]>();
 		ArrayList<ResultsPlotter> rps = new ArrayList<ResultsPlotter>();
 		for (int i = 0; i < modelsFiles.size(); i++){
 			String mf = modelsFiles.get(i);
@@ -133,13 +136,25 @@ public class Main {
 				subcaseID++;
 				subcaseNum++;
 			}
-			for (ResultsPlotter rp: rps){
-				rp.createChartSingle();
-				/*rp.pack();
-		        RefineryUtilities.centerFrameOnScreen(rp);
-		        rp.setVisible(true);*/
-			}
 		}
+		for (ResultsPlotter rp: rps){
+			CategoryDataset dataset = rp.getDataSet();
+			double[] data = new double[dataset.getColumnKeys().size()];
+			int i = 0;
+			for (Object key: dataset.getColumnKeys()){
+				data[i] = dataset.getValue("% diff", (Comparable) key).doubleValue() / nwmScores[i];
+				i++;
+			}
+			datasets.add(data);
+			rp.createChartSingle();
+			/*rp.pack();
+	        RefineryUtilities.centerFrameOnScreen(rp);
+	        rp.setVisible(true);*/
+		}
+		OneWayAnova owa = new OneWayAnova();
+		System.out.println(owa.anovaFValue(datasets));
+		System.out.println(owa.anovaPValue(datasets));
+		System.out.println(owa.anovaTest(datasets, 0.05));
 	}
 	
 	private static void runOutliers(String modelsFile, String resultsFile, int outlier){
@@ -248,6 +263,9 @@ public class Main {
 		String level2a = "models/level2a.csv";
 		String level2b = "models/level2b.csv";
 		String level3a = "models/level3a.csv";
+		String toycase = "models/toycase.csv";
+		String toycase2 = "models/toycase2.csv";
+		String toycase3 = "models/toycase3.csv";
 		
 		/*String testPath = "models/test.csv";
 		String hospitals = "models/hospitals.csv";
@@ -266,6 +284,9 @@ public class Main {
 		String resultsLevel2a = "results/results_level2a.xls";
 		String resultsLevel2b = "results/results_level2b.xls";
 		String resultsLevel3a = "results/results_level3a.xls";
+		String resultsToycase = "results/toycase_results.xls";
+		String resultsToycase2 = "results/toycase2_results.xls";
+		String resultsToycase3 = "results/toycase3_results.xls";
 		
 		ArrayList<String> models = new ArrayList<String>();
 		models.add(hospitals);
@@ -286,11 +307,12 @@ public class Main {
 		//results.add(resultsLevel2a);
 		//results.add(resultsLevel2b);
 		//results.add(resultsLevel3a);
+		//results.add(resultsToycase);
 		
 		AlgoUtil.useTreshold(true);
 		
 		//runOutliers(warehouses, resultsWarehouses, -1);
-		//runOutliers(random, resultsRandom, 9);
+		//runOutliers(random, resultsRandom, 9); 
 		//runOutliers(randomLoose, resultsRandomLoose, 4);
 		
 		//runSimpleExperiment(models, results, 10, 50, 10);
@@ -317,6 +339,9 @@ public class Main {
 		//singleBatchRun(level2a, resultsLevel2a,-1, true);
 		//singleBatchRun(level2b, resultsLevel2b,-1, true);
 		//singleBatchRun(level3a, resultsLevel3a,-1, true);
+		//singleBatchRun(toycase, resultsToycase, -1, true);
+		//singleBatchRun(toycase2, resultsToycase2, -1, true);
+		singleBatchRun(toycase3, resultsToycase3, -1, true);
 		
 		//workOnBatch(random10, resultRandom10);
 		//workOnBatch("models/randomH.csv", "results/randomH.xls");

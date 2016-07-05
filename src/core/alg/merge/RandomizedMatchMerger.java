@@ -41,9 +41,7 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 		long startTime = System.currentTimeMillis();
 		unusedElements = joinAllModels();
 		allElements.addAll(unusedElements);
-		//solution = execute();
 		execute();
-		//AlgoUtil.printTuples(solution);
 		BigDecimal weight = AlgoUtil.calcGroupWeight(solution);
 		long endTime = System.currentTimeMillis();
 		long execTime = endTime - startTime;
@@ -86,6 +84,16 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 			for (Element e: elems){
 				int score = 0;
 				for (String p: e.getProperties()){
+					/*int propScore = propFreq.get(p);
+					for (Element e2: elems){
+						if (e2.getModelId() == e.getModelId() && e.getId() != e2.getId()){
+							if (e2.getProperties().contains(p)){
+								propScore--;
+							}
+						}
+					}
+					if (propScore == 1) propScore = -1;
+					score += propScore;*/
 					score += propFreq.get(p);
 				}
 				e.setPropScore(score);
@@ -272,9 +280,15 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 			partition.set(1, incompatible);
 			return partition;
 		}
-		else{
+		else if (md.highlight == 2){
 			elems.addAll(incompatible);
 			return AlgoUtil.getElementsWithSharedProperties(current, elems, current.getSize());
+		}
+		else{
+			ArrayList<ArrayList<Element>> partition = new ArrayList<ArrayList<Element>>();
+			partition.add(elems);
+			partition.add(incompatible);
+			return partition;
 		}
 	}
 	

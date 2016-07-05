@@ -63,15 +63,15 @@ public class AlgoUtil {
 	}
 	
 	public static boolean areThereDuplicates(ArrayList<Tuple> tpls){
-	//		HashSet<Element> elems = new HashSet<Element>();
-	//		for(Tuple t:tpls){
-	//			for(Element e:t.getRealElements()){
-	//				if(elems.contains(e)){
-	//					return true;
-	//				}
-	//				elems.add(e);
-	//			}
-	//		}
+			HashSet<Element> elems = new HashSet<Element>();
+			for(Tuple t:tpls){
+				for(Element e:t.getRealElements()){
+					if(elems.contains(e)){
+						return true;
+					}
+					elems.add(e);
+				}
+			}
 			return false;
 		}
 
@@ -491,8 +491,10 @@ public class AlgoUtil {
 				res = res+"_hl0";
 			else if (md.highlight == 1)
 				res = res+"_hl1";
-			else
+			else if (md.highlight == 2)
 				res = res+"_hl2";
+			else
+				res = res+"_hl3";
 			if (md.choose == 0)
 				res = res+"_ch0";
 			else if (md.choose == 1)

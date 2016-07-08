@@ -16,10 +16,18 @@ public class ElementComparator implements Comparator<Element> {
 	public int compare(Element e1, Element e2) {
 		if (prop){
 			if(asc){
-				return e1.getPropScore() - e2.getPropScore();
+				//return e1.getPropScore() - e2.getPropScore();
+				if (e1.getPropScore() > e2.getPropScore())
+					return 1;
+				else
+					return -1;
 			}
 			else{
-				return e2.getPropScore() - e1.getPropScore();
+				//return e2.getPropScore() - e1.getPropScore();
+				if (e2.getPropScore() > e1.getPropScore())
+					return 1;
+				else
+					return 1;
 			}
 
 		}

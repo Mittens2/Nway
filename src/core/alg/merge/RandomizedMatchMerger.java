@@ -7,6 +7,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Random;
+import java.util.Set;
 import java.util.Stack;
 
 import core.alg.Matchable;
@@ -80,9 +81,11 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 			elems.addAll(modelElems);
 		}
 		if (md.orderBy == N_WAY.ORDER_BY.PROPERTY){
-			HashMap<String, Integer> propFreq = getSortedProperties(elems);
+			//HashMap<String, Integer> propFreq = getSortedProperties(elems);
+			HashMap<String, Double> propFreq = getPropFreqs(elems);
 			for (Element e: elems){
-				int score = 0;
+				//int score = 0;
+				double score = 0;
 				for (String p: e.getProperties()){
 					/*int propScore = propFreq.get(p);
 					for (Element e2: elems){
@@ -94,11 +97,12 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 					}
 					if (propScore == 1) propScore = -1;
 					score += propScore;*/
+					//score += propFreq.get(p) == 1? -1: Math.pow(propFreq.get(p), 2);
 					score += propFreq.get(p);
 				}
 				e.setPropScore(score);
 			}
-			//Collections.sort(elems, new ElementComparator(md.asc, true));
+			//Collections.sort(elems, new ElementComparator(md.elementAsc, true));
 			elems = new ArrayList<Element>();
 			for (Model m: models){
 				ArrayList<Element> modelElems = new ArrayList<Element>(m.getElements());
@@ -114,16 +118,36 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 		HashMap<String, Integer> propFreq = new HashMap<String, Integer>();
 		for (Element e: elems){
 			for (String p: e.getProperties()){
-				//int count = propFreq.containsKey(p) ? propFreq.get(p) : 0;
-				//propFreq.put(p, count + 1);
-				if (propFreq.containsKey(p)){
+				int count = propFreq.containsKey(p) ? propFreq.get(p) : 0;
+				propFreq.put(p, count + 1);
+				/*if (propFreq.containsKey(p)){
 					int count = propFreq.get(p);
-					propFreq.put(p, Math.abs(count) + 1);
+					propFreq.put(p, count + 1);
 				}
 				else{
-					propFreq.put(p, -1);
-				}
+					//propFreq.put(p, -1);
+					propFreq.put(p, 1);
+				}*/
 			}
+		}
+		return propFreq;
+	}
+	private HashMap<String, Double> getPropFreqs(ArrayList<Element> elems){
+		HashMap<String, Double> propFreq = new HashMap<String, Double>();
+		HashMap<String, Set<String>> propModels = new HashMap<String, Set<String>>();
+		for (Element e: elems){
+			for (String p: e.getProperties()){
+				double count = propFreq.containsKey(p) ? propFreq.get(p) : 0;
+				Set<String> pModels = propModels.containsKey(p)? propModels.get(p) : new HashSet<String>();
+				pModels.add(e.getModelId());
+				propModels.put(p, pModels);
+				propFreq.put(p, count + 1);
+			}
+		}
+		for (String p: propFreq.keySet()){
+			double newScore = propFreq.get(p) * Math.log(1 + propModels.get(p).size() / models.size());
+			propFreq.put(p, newScore);
+			//propFreq.put(p, propFreq.get(p) * Math.log(propModels.get(p).size() / models.size()));
 		}
 		return propFreq;
 	}
@@ -134,6 +158,30 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 		 * 
 		 * @return The list of Tuples derived from performing randomized merge on given models.
 		 */
+		/*Collections.sort(allElements, new ElementComparator(false, false));
+		int[] bins = new int[allElements.get(0).getSize() + 1];
+		for (Element e: allElements){
+			//System.out.println(e.getSize());
+			bins[e.getSize()]++;
+		}
+		for (int i = 1; i < bins.length; i++){
+			System.out.print("[" + i + "]" + bins[i] + ", ");
+		}
+		Collections.sort(models, new ModelComparator(false));
+		System.out.println();
+		int[] mbins = new int[models.get(0).size() + 1];
+		for (Model m: models){
+			mbins[m.size()]++;
+		}
+		int count = 0;
+		while (mbins[count] == 0){
+			count++;
+		}
+		for (int i = count;i < mbins.length; i++){
+			System.out.print("[" + i + "]" + mbins[i] + ", ");
+		}
+		System.out.println();
+		System.out.println("---------------");*/
 		while(unusedElements.size() > 0){
 			Element picked = unusedElements.get(0);
 			unusedElements.remove(0);
@@ -166,6 +214,13 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 			result = runGeneticAlgorithm(result);
 		}*/
 		//return result;
+		ArrayList<Tuple> newSolution = new ArrayList<Tuple>();
+		for (Tuple t: solution){
+			if (t.getSize() > 1)
+				newSolution.add(t);
+		}
+		solution = newSolution;
+			
 	}
 	
 	/**
@@ -268,6 +323,10 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 			return AlgoUtil.partitionShared(picked, elems, 1);
 		}
 		else if (md.highlight == 1){
+			elems.addAll(incompatible);
+			return AlgoUtil.getElementsWithSharedProperties(current, elems, 1);
+		}
+		/*else if (md.highlight == 1){
 			ArrayList<ArrayList<Element>> partition = AlgoUtil.partitionShared(picked, elems, 1);
 			elems = partition.get(0);
 			incompatible.addAll(partition.get(1));
@@ -279,7 +338,7 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 			partition.set(0, elems);
 			partition.set(1, incompatible);
 			return partition;
-		}
+		}*/
 		else if (md.highlight == 2){
 			elems.addAll(incompatible);
 			return AlgoUtil.getElementsWithSharedProperties(current, elems, current.getSize());

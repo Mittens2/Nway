@@ -331,8 +331,10 @@ public class Main {
 		
 		//AlgoUtil.COMPUTE_RESULTS_CLASSICALLY = false;
 		
-		//singleBatchRun(warehouses, resultsWarehouses,-1, true);	
-		//singleBatchRun(hospitals, resultsHospitals,-1, true);
+		singleBatchRun(warehouses, resultsWarehouses, 16, true);	
+		singleBatchRun(hospitals, resultsHospitals, 8, true);
+		//singleBatchRun(random, resultsRandom, 3, true);	
+		//singleBatchRun(randomLoose, resultsRandomLoose, 3, true);	
 		//multipleBatchRun(random, resultsRandom, 10);	
 		//multipleBatchRun(randomLoose, resultsRandomLoose, 10);	
 		//multipleBatchRun(randomTight, resultsRandomTight, 10);
@@ -341,7 +343,7 @@ public class Main {
 		//singleBatchRun(level3a, resultsLevel3a,-1, true);
 		//singleBatchRun(toycase, resultsToycase, -1, true);
 		//singleBatchRun(toycase2, resultsToycase2, -1, true);
-		singleBatchRun(toycase3, resultsToycase3, -1, true);
+		//singleBatchRun(toycase3, resultsToycase3, -1, true);
 		
 		//workOnBatch(random10, resultRandom10);
 		//workOnBatch("models/randomH.csv", "results/randomH.xls");

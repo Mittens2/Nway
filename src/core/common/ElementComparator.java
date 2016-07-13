@@ -19,6 +19,8 @@ public class ElementComparator implements Comparator<Element> {
 				//return e1.getPropScore() - e2.getPropScore();
 				if (e1.getPropScore() > e2.getPropScore())
 					return 1;
+				else if (e1.getPropScore() == e2.getPropScore())
+					return 0;
 				else
 					return -1;
 			}
@@ -26,8 +28,11 @@ public class ElementComparator implements Comparator<Element> {
 				//return e2.getPropScore() - e1.getPropScore();
 				if (e2.getPropScore() > e1.getPropScore())
 					return 1;
+				else if (e1.getPropScore() == e2.getPropScore())
+					return 0;
+				
 				else
-					return 1;
+					return -1;
 			}
 
 		}

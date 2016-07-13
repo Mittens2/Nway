@@ -1,10 +1,16 @@
 package core;
 
 import java.awt.Dimension;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 
 import org.apache.commons.math3.stat.inference.OneWayAnova;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Row;
 import org.jfree.data.category.CategoryDataset;
 import org.jfree.ui.RefineryUtilities;
 
@@ -14,6 +20,7 @@ import core.common.Statistics;
 import core.domain.Model;
 import core.execution.BatchRunner;
 import core.execution.BatchRunner.BatchRunDescriptor;
+import core.execution.ReshapeData;
 import core.execution.RunResult;
 import core.execution.Runner;
 
@@ -96,8 +103,28 @@ public class Main {
 				0.992, 0.910, 0.933, 1.036, 0.830, 1.278, 1.048, 0.9991, 0.740, 1.027,
 				0.958, 1.001, 0.950, 0.900, 0.893, 0.940, 1.008, 0.970, 0.948, 0.840
 				};
+		FileInputStream fileIn;
+		FileOutputStream fileOut;
+		HSSFWorkbook workbook;
+		HSSFSheet sheet;
+		try{
+			fileIn = new FileInputStream(new File("results/experimentResults.xls"));
+			workbook = new HSSFWorkbook(fileIn);
+			sheet = workbook.getSheetAt(0);
+			if (sheet == null)
+				sheet = workbook.createSheet();
+			Row header = sheet.createRow(0);
+			header.createCell(0).setCellValue("Case");
+			for (int i = 1; i <= 96; i++){
+				header.createCell(i).setCellValue("c" + i);
+			}
+		}
+		catch (Exception e){
+			e.printStackTrace();
+			return;
+		}
 		int subcaseID = 0;
-		ArrayList<double[]> datasets = new ArrayList<double[]>();
+		//ArrayList<double[]> datasets = new ArrayList<double[]>();
 		ArrayList<ResultsPlotter> rps = new ArrayList<ResultsPlotter>();
 		for (int i = 0; i < modelsFiles.size(); i++){
 			String mf = modelsFiles.get(i);
@@ -105,7 +132,7 @@ public class Main {
 			ArrayList<Model> models = Model.readModelsFile(mf);
 			ArrayList<ArrayList<Model>> runModels = new ArrayList<ArrayList<Model>>();
 			String subcase = mf.charAt(mf.indexOf('/') + 1) + "";
-			System.out.println(subcase);
+			//System.out.println(subcase);
 			if (models.size() > divideUp){
 				int ind = mf.lastIndexOf('/');
 				subcase = mf.charAt(ind + 1) + "";
@@ -126,35 +153,44 @@ public class Main {
 					runner.execute();
 					ArrayList<RunResult> rrs = runner.getRunResults();
 					if (scoreSums == null) scoreSums = new double[rrs.size()];
+					
 					for (int k = 0; k < rrs.size(); k++){
 						if (rps.size() == k) rps.add(new ResultsPlotter(rrs.get(k).title, "NwM"));
 						scoreSums[k] += rrs.get(k).weight.doubleValue();
 					}
 				}
-				for (int j = 0; j < scoreSums.length; j++)
+				Row newRow = sheet.createRow(subcaseID + 1);
+				newRow.createCell(0).setCellValue(subcase + subcaseNum);
+				for (int j = 0; j < scoreSums.length; j++){
 					rps.get(j).addDataPoint(scoreSums[j] / runsToAvg, nwmScores[subcaseID], subcase + subcaseNum);
+					newRow.createCell(j + 1).setCellValue(scoreSums[j] / runsToAvg);
+				}
 				subcaseID++;
 				subcaseNum++;
+				System.out.print(subcase + subcaseNum);
 			}
+			System.out.println();
+		}
+		try{
+			fileIn.close();
+			fileOut = new FileOutputStream(new File("results/experimentResults.xls"));
+			workbook.write(fileOut); 
+			fileOut.close();
+		}
+		catch (Exception e){
+			e.printStackTrace();
 		}
 		for (ResultsPlotter rp: rps){
 			CategoryDataset dataset = rp.getDataSet();
 			double[] data = new double[dataset.getColumnKeys().size()];
 			int i = 0;
 			for (Object key: dataset.getColumnKeys()){
-				data[i] = dataset.getValue("% diff", (Comparable) key).doubleValue() / nwmScores[i];
+				//data[i] = dataset.getValue("% diff", (Comparable) key).doubleValue() / nwmScores[i];
 				i++;
 			}
-			datasets.add(data);
+			//datasets.add(data);
 			rp.createChartSingle();
-			/*rp.pack();
-	        RefineryUtilities.centerFrameOnScreen(rp);
-	        rp.setVisible(true);*/
 		}
-		OneWayAnova owa = new OneWayAnova();
-		System.out.println(owa.anovaFValue(datasets));
-		System.out.println(owa.anovaPValue(datasets));
-		System.out.println(owa.anovaTest(datasets, 0.05));
 	}
 	
 	private static void runOutliers(String modelsFile, String resultsFile, int outlier){
@@ -316,6 +352,9 @@ public class Main {
 		//runOutliers(randomLoose, resultsRandomLoose, 4);
 		
 		//runSimpleExperiment(models, results, 10, 50, 10);
+		
+		//ReshapeData rd = new ReshapeData("/home/amit/SASUniversityEdition/myfolders/choose_worst.xls");
+		//rd.reshapeData();
 		
 		//singleBatchRun(randomTMP, null)
 		//singleBatchRun(runningExample, resultsRunningExample);

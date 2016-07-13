@@ -64,8 +64,8 @@ public class ResultsPlotter extends ApplicationFrame {
 	}
 	
 	public void addDataPoint(double alg1, double alg2, String category){
-		catDataset.addValue(Math.pow(1.01, cases) + (alg1 / alg2 - 1),"% diff", category);
-		catDataset.addValue(Math.pow(1.01, cases), "x = y", category);
+		catDataset.addValue(Math.max(Math.pow(1.01, cases - 16) + (alg1 / alg2 - 1), Math.pow(1.01,  -65)),"% diff", category);
+		catDataset.addValue(Math.pow(1.01, cases - 16), "x = y", category);
 		cases++;
 	}
 	
@@ -85,7 +85,7 @@ public class ResultsPlotter extends ApplicationFrame {
 	
 	public void createDataset(double[] alg1, double[] alg2, ArrayList<String> categories){
 		for (int i = 0; i < alg1.length; i++){
-			catDataset.addValue(Math.pow(1.01, i) + (alg1[i] / alg2[i] - 1),"% diff", categories.get(i));
+			catDataset.addValue(Math.max(Math.pow(1.01, i) + (alg1[i] / alg2[i] - 1), Math.pow(1.01, -45)),"% diff", categories.get(i));
 			catDataset.addValue(Math.pow(1.01, i), "x = y", categories.get(i));
 		}
 	}
@@ -93,7 +93,7 @@ public class ResultsPlotter extends ApplicationFrame {
 	public void createChartSingle(){
         final LogAxis rangeAxis = new LogAxis("SmartHuman");
         rangeAxis.setBase(1.01);
-        rangeAxis.setRange(Math.pow(1.01, -25), Math.pow(1.01, 50));
+        rangeAxis.setRange(Math.pow(1.01, -70), Math.pow(1.01, 70));
         //rangeAxis.setTickUnit(new NumberTickUnit(10));
         //rangeAxis.setAllowNegativesFlag(true);
         //rangeAxis.setUpperBound(0.1);
@@ -118,7 +118,7 @@ public class ResultsPlotter extends ApplicationFrame {
         final ChartPanel chartPanel = new ChartPanel(result);
         setContentPane(chartPanel);
         
-       /*try{
+       try{
         	chartPanel.setMinimumDrawHeight(500);
             chartPanel.setMinimumDrawWidth(1000);
         	BufferedImage bi = ScreenImage.createImage(chartPanel);
@@ -129,7 +129,7 @@ public class ResultsPlotter extends ApplicationFrame {
         }
         catch (IOException e){
         	System.out.println(e.getMessage());
-        }*/
+        }
 	}
 	
 	public void createChart(){

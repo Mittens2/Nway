@@ -456,37 +456,34 @@ public class AlgoUtil {
 		if(md.algPolicy == N_WAY.ALG_POLICY.GREEDY) res = "G";
 		if(md.algPolicy == N_WAY.ALG_POLICY.REPLACE_FIRST) res = "LS, ";
 		if(md.algPolicy == N_WAY.ALG_POLICY.REPLACE_BEST) res = "GTLS, ";
-		if(md.algPolicy == N_WAY.ALG_POLICY.RANDOM) res = "SH (";
-		if(splitSize > 2)
-			res = res+splitSize+", ";
-		if(md.orderBy == N_WAY.ORDER_BY.MODEL_SIZE)
-			res = res+"size ";
-		else if(md.orderBy == N_WAY.ORDER_BY.COHESIVENESS)
-			res = res+"cohesiveness ";
-		else if(md.orderBy == N_WAY.ORDER_BY.MATCH_QUALITY)
-			res = res+"Best Match ";
-		else if(md.orderBy == N_WAY.ORDER_BY.SPARSITY)
-			res = res+"Most sparse ";
-		else if(md.orderBy == N_WAY.ORDER_BY.MODEL_ID)
-			res = res+"by id ";
-		else //if (md.orderBy == N_WAY.ORDER_BY.MODEL_SIZE_ELEMENT_SIZE || md.orderBy == N_WAY.ORDER_BY.PROPERTY)
-			res = res+"mSize-";
-		
-		if(md.asc)
-			res = res+"asc";
-		else
-			res = res+"desc";
-		if (md.orderBy == N_WAY.ORDER_BY.MODEL_SIZE_ELEMENT_SIZE || md.orderBy == N_WAY.ORDER_BY.PROPERTY){
-			if(md.orderBy == N_WAY.ORDER_BY.MODEL_SIZE_ELEMENT_SIZE)
-				res = res+", eSize";
-			else
-				res =res+", eProp";
-			if(md.elementAsc)
-				res = res+"-asc";
-			else
-				res = res+"-desc";
-		}
 		if (md.algPolicy == N_WAY.ALG_POLICY.RANDOM){
+			res = "SH (";
+			switch (md.seed){
+				case 0: res = res+"sd0";
+						break;
+				case 1: res = res+"sd1";
+						break;
+				case 2: res = res+"sd2";
+						break;
+				case 3: res = res+"sd3";
+						break;
+				case 4: res = res+"sd4";
+						break;
+				case 5: res = res+"sd5";
+						break;
+			}
+			if (md.seed == 4){
+				if (md.asc)
+					res = res+"-a";
+				else
+					res = res+"-d";
+			}
+			if (md.seed == 1 || md.seed == 3 || md.seed == 4 || md.seed == 5){
+				if (md.elementAsc)
+					res = res+"-a";
+				else
+					res = res+"-d";
+			}
 			if(md.highlight == 0)
 				res = res+"_hl0";
 			else if (md.highlight == 1)
@@ -505,6 +502,28 @@ public class AlgoUtil {
 				res = res+"_st)";
 			else
 				res = res+")";
+		}
+		else{
+			if(splitSize > 2)
+				res = res+splitSize+", ";
+			if(md.orderBy == N_WAY.ORDER_BY.MODEL_SIZE)
+				res = res+"size ";
+			else if(md.orderBy == N_WAY.ORDER_BY.COHESIVENESS)
+				res = res+"cohesiveness ";
+			else if(md.orderBy == N_WAY.ORDER_BY.MATCH_QUALITY)
+				res = res+"Best Match ";
+			else if(md.orderBy == N_WAY.ORDER_BY.SPARSITY)
+				res = res+"Most sparse ";
+			else if(md.orderBy == N_WAY.ORDER_BY.MODEL_ID)
+				res = res+"by id ";
+			else //if (md.orderBy == N_WAY.ORDER_BY.MODEL_SIZE_ELEMENT_SIZE || md.orderBy == N_WAY.ORDER_BY.PROPERTY)
+				res = res+"mSize-";
+			
+			if(md.asc)
+				res = res+"asc";
+			else
+				res = res+"desc";
+			
 		}
 		return res;
 	}

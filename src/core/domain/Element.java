@@ -75,7 +75,7 @@ public class Element {
 	    label = properties.toString().replace(" ", "");
 	}
 	
-	public Element(String lbl,String props, String mId){ // used when read from file
+	public Element(String lbl, String props, String mId){ // used when read from file
 		this(mId);
 		String[]pr = props.split(";");
 		sortedProps = new ArrayList<String>();

@@ -22,16 +22,14 @@ public class MergeDescriptor {
 		this.orderBy = orderBy;
 	}
 	
-	public MergeDescriptor(boolean modelAsc, boolean elementAsc, N_WAY.ORDER_BY orderBy, 
-			int highlight, int choose, boolean randomize, boolean switchTuples, int seed) {
+	public MergeDescriptor(boolean modelAsc, boolean elementAsc,
+			int highlight, int choose, boolean switchTuples, int seed) {
 		this.algPolicy = N_WAY.ALG_POLICY.RANDOM;
 		this.seed = seed;
 		this.asc = modelAsc;
 		this.elementAsc = elementAsc;
-		this.orderBy = orderBy;
 		this.highlight = highlight;
 		this.choose = choose;
-		this.randomize = randomize;
 		this.switchTuples = switchTuples;
 	}
 	

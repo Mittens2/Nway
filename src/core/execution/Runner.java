@@ -257,7 +257,7 @@ public class Runner extends ResultsWriter{
 			double rate = min + i * ((max - min) / 10);
 			for (int j = 0; j < 10; j++){*/
 				for(MergeDescriptor md:mds){
-					RunResult rr = runRandomMatch(md, 0.006, 0.01);
+					RunResult rr = runRandomMatch(md);
 					results.add(rr);
 					//data[j] = rr.weight.doubleValue();
 				}
@@ -269,15 +269,15 @@ public class Runner extends ResultsWriter{
 		return results;
 	}
 	
-	private RunResult runRandomMatch(MergeDescriptor md, double uR, double mR){
-		RandomizedMatchMerger rmm = new RandomizedMatchMerger((ArrayList<Model>) models.clone(), md, uR, mR);
+	private RunResult runRandomMatch(MergeDescriptor md){
+		RandomizedMatchMerger rmm = new RandomizedMatchMerger((ArrayList<Model>) models.clone(), md);
 		//System.out.println(models);
 		rmm.run();
 		RunResult rr = rmm.getRunResult(models.size());
 		//System.out.println(models.size());
 		rr.setTitle(AlgoUtil.nameOfMergeDescription(md, -1));
 		System.out.println(rr);
-		AlgoUtil.printTuples(rmm.getTuplesInMatch());
+		//AlgoUtil.printTuples(rmm.getTuplesInMatch());
 		return rr;
 	}
 	
@@ -285,9 +285,9 @@ public class Runner extends ResultsWriter{
 		ArrayList<MergeDescriptor> retVal = new ArrayList<MergeDescriptor>();
 		if (pol == N_WAY.ALG_POLICY.RANDOM){
 			boolean randomize = false;
-			for (int highlight = 0; highlight < 1; highlight+=2){
-				for (int choose = 0; choose < 1; choose++){
-					for (int st = 1; st < 2; st++){
+			for (int highlight = 0; highlight < 4; highlight++){
+				for (int choose = 1; choose < 2; choose++){
+					for (int st = 0; st < 2; st++){
 						boolean switchTuples = (st == 1);
 						//retVal.add(new MergeDescriptor(true, true, N_WAY.ORDER_BY.MODEL_ID, highlight, choose, randomize, switchTuples));
 						//retVal.add(new MergeDescriptor(true, true, N_WAY.ORDER_BY.MODEL_SIZE_ELEMENT_SIZE, highlight, choose, randomize, switchTuples));
@@ -299,18 +299,18 @@ public class Runner extends ResultsWriter{
 						//retVal.add(new MergeDescriptor(false, true, N_WAY.ORDER_BY.PROPERTY, highlight, choose, randomize, switchTuples));
 						//retVal.add(new MergeDescriptor(false, false, N_WAY.ORDER_BY.PROPERTY, highlight, choose, randomize, switchTuples));
 						// By convention if parameter is not used set to false
-						retVal.add(new MergeDescriptor(false, false, N_WAY.ORDER_BY.PROPERTY, highlight, choose, randomize, switchTuples, 0));
-						//retVal.add(new MergeDescriptor(false, true, N_WAY.ORDER_BY.PROPERTY, highlight, choose, randomize, switchTuples, 1));
-						//retVal.add(new MergeDescriptor(false, false, N_WAY.ORDER_BY.PROPERTY, highlight, choose, randomize, switchTuples, 1));
-						//retVal.add(new MergeDescriptor(false, false, N_WAY.ORDER_BY.PROPERTY, highlight, choose, randomize, switchTuples, 2));
-						//retVal.add(new MergeDescriptor(false, true, N_WAY.ORDER_BY.PROPERTY, highlight, choose, randomize, switchTuples, 3));
-						//retVal.add(new MergeDescriptor(false, false, N_WAY.ORDER_BY.PROPERTY, highlight, choose, randomize, switchTuples, 3));
-						//retVal.add(new MergeDescriptor(true, true, N_WAY.ORDER_BY.PROPERTY, highlight, choose, randomize, switchTuples, 4));
-						//retVal.add(new MergeDescriptor(true, false, N_WAY.ORDER_BY.PROPERTY, highlight, choose, randomize, switchTuples, 4));
-						//retVal.add(new MergeDescriptor(false, true, N_WAY.ORDER_BY.PROPERTY, highlight, choose, randomize, switchTuples, 4));
-						//retVal.add(new MergeDescriptor(false, false, N_WAY.ORDER_BY.PROPERTY, highlight, choose, randomize, switchTuples, 4));
-						//retVal.add(new MergeDescriptor(false, true, N_WAY.ORDER_BY.PROPERTY, highlight, choose, randomize, switchTuples, 5));
-						//retVal.add(new MergeDescriptor(false, false, N_WAY.ORDER_BY.PROPERTY, highlight, choose, randomize, switchTuples, 5));
+						retVal.add(new MergeDescriptor(false, false, highlight, choose, switchTuples, 0));
+						retVal.add(new MergeDescriptor(false, true, highlight, choose, switchTuples, 1));
+						retVal.add(new MergeDescriptor(false, false, highlight, choose, switchTuples, 1));
+						retVal.add(new MergeDescriptor(false, false, highlight, choose, switchTuples, 2));
+						retVal.add(new MergeDescriptor(false, true, highlight, choose, switchTuples, 3));
+						retVal.add(new MergeDescriptor(false, false, highlight, choose, switchTuples, 3));
+						retVal.add(new MergeDescriptor(true, true, highlight, choose, switchTuples, 4));
+						retVal.add(new MergeDescriptor(true, false, highlight, choose, switchTuples, 4));
+						retVal.add(new MergeDescriptor(false, true, highlight, choose, switchTuples, 4));
+						retVal.add(new MergeDescriptor(false, false, highlight, choose, switchTuples, 4));
+						retVal.add(new MergeDescriptor(false, true, highlight, choose, switchTuples, 5));
+						retVal.add(new MergeDescriptor(false, false, highlight, choose, switchTuples, 5));
 					}
 				}
 			}

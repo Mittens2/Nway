@@ -2,6 +2,7 @@ package core.alg.merge;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -30,12 +31,12 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 	private MergeDescriptor md;
 	private GeneticAlgorithm geneticAlgorithm;
 
-	public RandomizedMatchMerger(ArrayList<Model> models, MergeDescriptor md, double uniRate, double mutRate){
+	public RandomizedMatchMerger(ArrayList<Model> models, MergeDescriptor md){
 		super(models);
 		solution = new ArrayList<Tuple>();
 		allElements = new ArrayList<Element>();
 		this.md = md;
-		geneticAlgorithm = new GeneticAlgorithm(uniRate, mutRate, 2000);
+		//geneticAlgorithm = new GeneticAlgorithm(uniRate, mutRate, 2000);
 	}
 	
 	public void run(){
@@ -201,7 +202,6 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 		 * 
 		 * @return The list of Tuples derived from performing randomized merge on given models.
 		 */
-		System.out.println(unusedElements.size());
 		while(unusedElements.size() > 0){
 			Element picked = unusedElements.get(0);
 			unusedElements.remove(0);
@@ -357,7 +357,7 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 			return pickMaxElement(elems, best);
 		}
 		else if (md.choose == 1){
-			return pickRandomElement(elems);
+			return pickRandomElement(elems, best);
 		}
 		else{
 			return pickWorstElement(elems, best);
@@ -392,8 +392,28 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 		return maxElement;
 	}
 	
-	private Element pickRandomElement(ArrayList<Element> elems){
-		return elems.get(new Random().nextInt(elems.size()));
+	private Element pickRandomElement(ArrayList<Element> elems, Tuple best){
+		ArrayList<Integer> randList = new ArrayList<Integer>();
+		for (int i = 0; i < elems.size(); i++){
+			randList.add(i);
+		}
+		Collections.shuffle(randList);
+		while (randList.size() > 0){
+			Element random = elems.get(randList.get(randList.size() - 1));
+			randList.remove(randList.size() - 1);
+			Tuple test = best.newExpanded(random, models);
+			BigDecimal currWeight;
+			if (md.switchTuples){
+				Tuple ct = random.getContaingTuple();
+				Tuple ctLess = ct.getSize() > 1 ? ct.lessExpanded(random, models) : ct;
+				currWeight = (ctLess.calcWeight(models).add(test.calcWeight(models)))
+						.subtract(ct.calcWeight(models).add(best.calcWeight(models)));
+			}
+			else currWeight = test.calcWeight(models).subtract(best.calcWeight(models));
+			if (currWeight.compareTo(BigDecimal.ZERO) > 0)
+				return random;
+		}
+		return null;
 	}
 	
 	private Element pickWorstElement(ArrayList<Element> elems, Tuple best){
@@ -409,8 +429,8 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 						.subtract(ct.calcWeight(models).add(best.calcWeight(models)));
 				
 			}
-			else currWeight = test.calcWeight(models);
-			if (currWeight.compareTo(minWeight) <= 0){
+			else currWeight = test.calcWeight(models).subtract(best.calcWeight(models));
+			if (currWeight.compareTo(BigDecimal.ZERO) > 0 && currWeight.compareTo(minWeight) < 0){
 				minElement = e;
 				minWeight = currWeight;
 			}

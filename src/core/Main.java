@@ -181,14 +181,14 @@ public class Main {
 			e.printStackTrace();
 		}
 		for (ResultsPlotter rp: rps){
-			CategoryDataset dataset = rp.getDataSet();
+			/*CategoryDataset dataset = rp.getDataSet();
 			double[] data = new double[dataset.getColumnKeys().size()];
 			int i = 0;
 			for (Object key: dataset.getColumnKeys()){
 				//data[i] = dataset.getValue("% diff", (Comparable) key).doubleValue() / nwmScores[i];
 				i++;
 			}
-			//datasets.add(data);
+			//datasets.add(data);*/
 			rp.createChartSingle();
 		}
 	}
@@ -351,10 +351,10 @@ public class Main {
 		//runOutliers(random, resultsRandom, 9); 
 		//runOutliers(randomLoose, resultsRandomLoose, 4);
 		
-		//runSimpleExperiment(models, results, 10, 50, 10);
+		runSimpleExperiment(models, results, 10, 50, 10);
 		
-		//ReshapeData rd = new ReshapeData("/home/amit/SASUniversityEdition/myfolders/choose_worst.xls");
-		//rd.reshapeData();
+		ReshapeData rd = new ReshapeData("results/experimentResults.xls");
+		rd.reshapeData();
 		
 		//singleBatchRun(randomTMP, null)
 		//singleBatchRun(runningExample, resultsRunningExample);
@@ -370,8 +370,8 @@ public class Main {
 		
 		//AlgoUtil.COMPUTE_RESULTS_CLASSICALLY = false;
 		
-		singleBatchRun(warehouses, resultsWarehouses, 16, true);	
-		singleBatchRun(hospitals, resultsHospitals, 8, true);
+		//singleBatchRun(warehouses, resultsWarehouses, 16, true);	
+		//singleBatchRun(hospitals, resultsHospitals, 8, true);
 		//singleBatchRun(random, resultsRandom, 3, true);	
 		//singleBatchRun(randomLoose, resultsRandomLoose, 3, true);	
 		//multipleBatchRun(random, resultsRandom, 10);	

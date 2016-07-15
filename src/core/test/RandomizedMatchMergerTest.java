@@ -53,6 +53,7 @@ public class RandomizedMatchMergerTest {
 
 	@Test
 	public void testExpectedMatchesAndScore(){
+		double epsilon = 0.0000001;
 		ArrayList<Tuple> soln = new ArrayList<Tuple>();
 		//Test 1
 		for (Model m: toycase4Models){
@@ -79,7 +80,8 @@ public class RandomizedMatchMergerTest {
 		rmm1 = new RandomizedMatchMerger((ArrayList<Model>) toycase5Models.clone(), md_hl0_sd2);
 		rmm1.run();
 		assertEquals(soln, rmm1.getTuplesInMatch());
-		assertEquals(new BigDecimal(2.0 / 3.0, N_WAY.MATH_CTX), AlgoUtil.calcGroupWeight(rmm1.getTuplesInMatch()));
+		assertEquals(new BigDecimal(2.0 / 3.0, N_WAY.MATH_CTX).doubleValue(), 
+				AlgoUtil.calcGroupWeight(rmm1.getTuplesInMatch()).doubleValue(), 0);
 
 	}
 

@@ -23,6 +23,7 @@ import core.execution.BatchRunner.BatchRunDescriptor;
 import core.execution.ReshapeData;
 import core.execution.RunResult;
 import core.execution.Runner;
+import core.execution.UMLParser;
 
 
 
@@ -351,10 +352,12 @@ public class Main {
 		//runOutliers(random, resultsRandom, 9); 
 		//runOutliers(randomLoose, resultsRandomLoose, 4);
 		
-		runSimpleExperiment(models, results, 10, 50, 10);
+		//runSimpleExperiment(models, results, 10, 50, 10);
 		
-		ReshapeData rd = new ReshapeData("results/experimentResults.xls");
-		rd.reshapeData();
+		//ReshapeData rd = new ReshapeData("results/experimentResults.xls");
+		//rd.reshapeData();
+		UMLParser umlp = new UMLParser();
+		umlp.parseUML("/home/amit/Downloads/SuperimpositionExamples/UML/AudioControlSystem/AudioControlSystemComp/ClassDiagram.xmi");
 		
 		//singleBatchRun(randomTMP, null)
 		//singleBatchRun(runningExample, resultsRunningExample);

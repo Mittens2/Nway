@@ -356,8 +356,7 @@ public class Main {
 		
 		//ReshapeData rd = new ReshapeData("results/experimentResults.xls");
 		//rd.reshapeData();
-		UMLParser umlp = new UMLParser();
-		umlp.parseUML("/home/amit/Downloads/SuperimpositionExamples/UML/AudioControlSystem/AudioControlSystemComp/ClassDiagram.xmi");
+		UMLParser.UMLtoXLS();
 		
 		//singleBatchRun(randomTMP, null)
 		//singleBatchRun(runningExample, resultsRunningExample);

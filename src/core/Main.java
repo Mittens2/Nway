@@ -303,6 +303,9 @@ public class Main {
 		String toycase = "models/toycase.csv";
 		String toycase2 = "models/toycase2.csv";
 		String toycase3 = "models/toycase3.csv";
+		String gasBoilerSystem = "models/GasBoilerSystem.csv";
+		String audioControlSystem = "models/AudioControlSystem.csv";
+		String conferenceManagementSystem = "models/ConferenceManagementSystem.csv";
 		
 		/*String testPath = "models/test.csv";
 		String hospitals = "models/hospitals.csv";
@@ -324,6 +327,10 @@ public class Main {
 		String resultsToycase = "results/toycase_results.xls";
 		String resultsToycase2 = "results/toycase2_results.xls";
 		String resultsToycase3 = "results/toycase3_results.xls";
+		String resultsGasBoilerSystem = "results/gasBoilerSystem_results.xls";
+		String resultsAudioControlSystem = "results/audioControlSystem_results.xls";
+		String resultsConferenceManagementSystem = "results/conferenceManagementSystem.xls";
+		
 		
 		ArrayList<String> models = new ArrayList<String>();
 		models.add(hospitals);
@@ -356,7 +363,17 @@ public class Main {
 		
 		//ReshapeData rd = new ReshapeData("results/experimentResults.xls");
 		//rd.reshapeData();
-		UMLParser.UMLtoXLS();
+		
+		
+		UMLParser.creatFeatureListFiles("/home/amit/Downloads/SuperimpositionExamples/Java/" 
+					+ "AJStats" + "/" + "AJStats" + "Comp", true, 15);
+		//UMLParser.creatFeatureListFiles("/home/amit/Downloads/SuperimpositionExamples/UML/" 
+			//	+ "ConferenceManagementSystem" + "/" + "ConferenceManagementSystem" + "Comp", false, -1);
+		//UMLParser.creatFeatureListFiles("/home/amit/Downloads/SuperimpositionExamples/UML/" 
+		//								+ "AudioControlSystem" + "/" + "AudioControlSystem" + "Comp", false, -1);
+		//UMLParser.creatFeatureListFiles("/home/amit/Downloads/SuperimpositionExamples/UML/" 
+		//+ "GasBoilerSystem" + "/" + "GasBoilerSystem" + "Comp", 12);
+		//UMLParser.UMLtoCSV();
 		
 		//singleBatchRun(randomTMP, null)
 		//singleBatchRun(runningExample, resultsRunningExample);
@@ -385,6 +402,9 @@ public class Main {
 		//singleBatchRun(toycase, resultsToycase, -1, true);
 		//singleBatchRun(toycase2, resultsToycase2, -1, true);
 		//singleBatchRun(toycase3, resultsToycase3, -1, true);
+		//singleBatchRun(gasBoilerSystem, resultsGasBoilerSystem, -1, true);
+		//singleBatchRun(audioControlSystem, audioControlSystem, -1, true);
+		//singleBatchRun(conferenceManagementSystem, conferenceManagementSystem, -1, true);
 		
 		//workOnBatch(random10, resultRandom10);
 		//workOnBatch("models/randomH.csv", "results/randomH.xls");

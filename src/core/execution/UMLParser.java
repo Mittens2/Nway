@@ -39,7 +39,7 @@ public class UMLParser {
 		ABSTRACTION
 	}
 	
-	public static ArrayList<UMLClass> parseUML(String filePath){
+	private static ArrayList<UMLClass> parseUML(String filePath){
 		ArrayList<UMLClass> modelClasses = new ArrayList<UMLClass>();
 		Map<String, String> classes = new HashMap<String, String>();
 		//Map<String, ArrayList<String>> dependencies = new HashMap<String, ArrayList<String>>();
@@ -66,10 +66,14 @@ public class UMLParser {
 			   		}
 			   	}
 			   	else if (reading == READING.CLASS){
-			   		if (line.matches("^UML:Attribute.*") || line.matches("^UML:Operation.*"))
-			   			currClass.properties.add(getName(line));
-			   		else if (line.matches("^UML:Abstraction.*"))
+			   		if (line.matches("^UML:Attribute.*") || line.matches("^UML:Operation.*")){
+			   			//if (!getName(line).equals("variable") && getName(line).equals("reg")){
+			   				currClass.properties.add(getName(line));
+			   			//}
+			   		}
+			   		else if (line.matches("^UML:Abstraction.*")){
 			   			currClass.depID = getID(line).substring(3);
+			   		}
 			   		else if (line.matches("^/UML:Class.*")){
 			   			modelClasses.add(currClass);
 			   			reading = READING.NONE;
@@ -119,19 +123,19 @@ public class UMLParser {
 		return newLine.substring(0, newLine.indexOf('"'));
 	}
 	
-	public static void UMLtoXLS(){
-		String caseName = "GasBoilerSystem";
-		creatFeatureListFiles("/home/amit/Downloads/SuperimpositionExamples/UML/" 
-		+ caseName + "/" + caseName + "Comp", 12);
+	public static void UMLtoCSV(){
+		String caseName = "ConferenceManagementSystem";
+		//creatFeatureListFiles("/home/amit/Downloads/SuperimpositionExamples/UML/" 
+		//+ caseName + "/" + caseName + "Comp", 12);
 		ArrayList<ArrayList<UMLClass>> umlcs = new ArrayList<ArrayList<UMLClass>>();
-		for (int i = 0; i < 8; i++){
+		for (int i = 0; i < 15; i++){
 			umlcs.add(parseUML("/home/amit/Downloads/SuperimpositionExamples/UML/" +
-					caseName + "/" + caseName + "Comp" + i + "/boiler.xmi"));
+					caseName + "/" + caseName + "Comp" + i + "/ClassDiagram.xmi"));
 		}
 		writeToFile(umlcs, caseName);
 	}
 	
-	public static void writeToFile(ArrayList<ArrayList<UMLClass>> umlclasses, String modelName){
+	private static void writeToFile(ArrayList<ArrayList<UMLClass>> umlclasses, String modelName){
 		try{
 			
 			PrintWriter writer = new PrintWriter("models/" + modelName + ".csv", "utf-8");
@@ -154,7 +158,7 @@ public class UMLParser {
 		}
 	}
 	
-	public static void creatFeatureListFiles(String filePath, int desired){
+	public static void creatFeatureListFiles(String filePath, boolean random, int desired){
 		try{
 			// Scan features from file.
 			ArrayList<String> features = new ArrayList<String>();
@@ -164,31 +168,62 @@ public class UMLParser {
 				features.add(feature);
 			}
 			scan.close();
-			// Randomly choose 1 - features.size() features.
-			ArrayList<Integer> seeds = new ArrayList<Integer>();
-			ArrayList<String> featsChosen = new ArrayList<String>();
-			for (int i = 0; i < features.size(); i++) seeds.add(i);
-			int numFeatures = new Random().nextInt(features.size() - 1) + 1;
-			for (int i = 0; i < numFeatures; i++){
-				Collections.shuffle(seeds);
-				featsChosen.add(features.get(seeds.get(seeds.size() - 1)));
-				seeds.remove(seeds.size() - 1);
+			// Randomly choose 1 to features.size() features.
+			ArrayList<ArrayList<String>> featureCombs = new ArrayList<ArrayList<String>>();
+			if (random){
+				for (int j = 0; j < desired; j++){
+					ArrayList<Integer> seeds = new ArrayList<Integer>();
+					ArrayList<String> featsChosen = new ArrayList<String>();
+					//featsChosen.add(features.get(0));
+					Random rand = new Random();
+					for (int i = 0; i < features.size(); i++) seeds.add(i);
+					int numFeatures = rand.nextInt(features.size() - features.size() / 2) + features.size() / 2;
+					Collections.shuffle(seeds);
+					for (int i = 0; i < numFeatures; i++){
+						featsChosen.add(features.get(seeds.get(seeds.size() - 1)));
+						seeds.remove(seeds.size() - 1);
+					}
+					featureCombs.add(featsChosen);
+				}
 			}
-			// Write randomly chosen features to new file.
-			for (int j = 0; j < desired; j++){
+			else{
+				ArrayList<String> featureBase = new ArrayList<String>(features.subList(0, 5));
+				featureCombs = getAllFeatureCombs(new ArrayList<String>(), new ArrayList<String>(features.subList(5,  9)));
+				for (ArrayList<String> feats: featureCombs)
+					feats.addAll(featureBase);
+			}
+			int count = 0;
+			Runtime rt = Runtime.getRuntime();
+			for (ArrayList<String> featureList: featureCombs){
+				// Write randomly chosen features to new file.
 				//Path file = Paths.get("filePath" + j + ".features");
 				//Files.createFile(file);
-				PrintWriter writer = new PrintWriter(filePath + j + ".features", "utf-8");
-				for (String feature: featsChosen) {
+				PrintWriter writer = new PrintWriter(filePath + count + ".features", "utf-8");
+				for (String feature: featureList) {
 					writer.println(feature);
 					System.out.println(feature);
 				}
+				count++;
 				writer.close();
 			}
-			
 		} catch (Exception e){
 			e.printStackTrace();
 		}
 	}
-	
+	private static ArrayList<ArrayList<String>> getAllFeatureCombs(ArrayList<String> soFar, ArrayList<String> features)
+	{
+	    ArrayList<ArrayList<String>> combs=new ArrayList<ArrayList<String>>();
+	    // Loop through the first list looking for elements
+	    for(int i = features.size() - 1; i >= 0; i--)
+	    {
+	       ArrayList<String> temp = new ArrayList<String>(soFar);
+	       temp.add(features.get(i));
+	       features.remove(i);
+	       if (features.size() >= 1) {
+	           combs.addAll(getAllFeatureCombs(temp, new ArrayList<String>(features)));
+	       } 
+	       combs.add(temp);
+	    }
+	    return combs;
+	}
 }

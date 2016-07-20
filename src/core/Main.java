@@ -306,6 +306,8 @@ public class Main {
 		String gasBoilerSystem = "models/GasBoilerSystem.csv";
 		String audioControlSystem = "models/AudioControlSystem.csv";
 		String conferenceManagementSystem = "models/ConferenceManagementSystem.csv";
+		String ajStats = "models/AJStats.csv";
+		String tankWar = "models/TankWar.csv";
 		
 		/*String testPath = "models/test.csv";
 		String hospitals = "models/hospitals.csv";
@@ -329,7 +331,9 @@ public class Main {
 		String resultsToycase3 = "results/toycase3_results.xls";
 		String resultsGasBoilerSystem = "results/gasBoilerSystem_results.xls";
 		String resultsAudioControlSystem = "results/audioControlSystem_results.xls";
-		String resultsConferenceManagementSystem = "results/conferenceManagementSystem.xls";
+		String resultsConferenceManagementSystem = "results/conferenceManagementSystem_results.xls";
+		String resultsAJStats = "results/AJStats_results.xls";
+		String resultsTankWar = "results/TankWar_results.xls";
 		
 		
 		ArrayList<String> models = new ArrayList<String>();
@@ -364,9 +368,10 @@ public class Main {
 		//ReshapeData rd = new ReshapeData("results/experimentResults.xls");
 		//rd.reshapeData();
 		
-		
-		UMLParser.creatFeatureListFiles("/home/amit/Downloads/SuperimpositionExamples/Java/" 
-					+ "AJStats" + "/" + "AJStats" + "Comp", true, 15);
+		//UMLParser.creatFeatureListFiles("/home/amit/Downloads/SuperimpositionExamples/Java/" 
+				//+ "TankWar" + "/" + "TankWar" + "Comp", true, 10);
+		//UMLParser.creatFeatureListFiles("/home/amit/Downloads/SuperimpositionExamples/Java/" 
+					//+ "AJStats" + "/" + "AJStats" + "Comp", true, 15);
 		//UMLParser.creatFeatureListFiles("/home/amit/Downloads/SuperimpositionExamples/UML/" 
 			//	+ "ConferenceManagementSystem" + "/" + "ConferenceManagementSystem" + "Comp", false, -1);
 		//UMLParser.creatFeatureListFiles("/home/amit/Downloads/SuperimpositionExamples/UML/" 
@@ -405,6 +410,8 @@ public class Main {
 		//singleBatchRun(gasBoilerSystem, resultsGasBoilerSystem, -1, true);
 		//singleBatchRun(audioControlSystem, audioControlSystem, -1, true);
 		//singleBatchRun(conferenceManagementSystem, conferenceManagementSystem, -1, true);
+		//singleBatchRun(ajStats, resultsAJStats, -1, true);
+		singleBatchRun(tankWar, resultsTankWar, -1, true);
 		
 		//workOnBatch(random10, resultRandom10);
 		//workOnBatch("models/randomH.csv", "results/randomH.xls");

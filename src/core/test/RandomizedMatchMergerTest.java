@@ -29,7 +29,7 @@ public class RandomizedMatchMergerTest {
 	protected MergeDescriptor md_hl2_sd2;
 	protected MergeDescriptor md_hl2_sd5d;
 	protected MergeDescriptor md_hl3_sd2;
-	protected RandomizedMatchMerger rmm1;
+	protected RandomizedMatchMerger rmm;
 	
 	
 	@Before
@@ -55,6 +55,11 @@ public class RandomizedMatchMergerTest {
 	public void testExpectedMatchesAndScore(){
 		double epsilon = 0.0000001;
 		ArrayList<Tuple> soln = new ArrayList<Tuple>();
+		Model m1;
+		Model m2;
+		Model m3;
+		Tuple t1;
+		Tuple t2;
 		//Test 1
 		for (Model m: toycase4Models){
 			for (Element e: m.getElements()){
@@ -62,27 +67,68 @@ public class RandomizedMatchMergerTest {
 				soln.add(t);
 			}
 		}
-		rmm1 = new RandomizedMatchMerger((ArrayList<Model>) toycase4Models.clone(), md_hl0_sd2);
-		rmm1.run();
-		assertEquals(soln, rmm1.getTuplesInMatch());
-		assertEquals(AlgoUtil.calcGroupWeight(rmm1.getTuplesInMatch()), BigDecimal.ZERO);
+		rmm = new RandomizedMatchMerger((ArrayList<Model>) toycase4Models.clone(), md_hl0_sd2);
+		rmm.run();
+		assertEquals(soln, rmm.getTuplesInMatch());
+		assertEquals(AlgoUtil.calcGroupWeight(rmm.getTuplesInMatch()), BigDecimal.ZERO);
 		
 		// Test 2
 		soln = new ArrayList<Tuple>();
-		Model mod1 = toycase5Models.get(0);
-		Model mod2 = toycase5Models.get(1);
-		Tuple t1 = new Tuple().newExpanded(mod1.getElementByLabel('"' + "[1,2]" + '"'), toycase5Models);
-		t1 = t1.newExpanded(mod2.getElementByLabel('"' + "[2,3]" + '"'), toycase5Models);
-		Tuple t2 = new Tuple().newExpanded(mod1.getElementByLabel('"' + "[3,4]" + '"'), toycase5Models);
-		t2 = t2.newExpanded(mod2.getElementByLabel('"' + "[4,5]" + '"'), toycase5Models);
+		m1 = toycase5Models.get(0);
+		m2 = toycase5Models.get(1);
+		t1 = new Tuple().newExpanded(m1.getElementByLabel('"' + "[1,2]" + '"'), toycase5Models);
+		t1 = t1.newExpanded(m2.getElementByLabel('"' + "[2,3]" + '"'), toycase5Models);
+		t2 = new Tuple().newExpanded(m1.getElementByLabel('"' + "[3,4]" + '"'), toycase5Models);
+		t2 = t2.newExpanded(m2.getElementByLabel('"' + "[4,5]" + '"'), toycase5Models);
 		soln.add(t1);
 		soln.add(t2);
-		rmm1 = new RandomizedMatchMerger((ArrayList<Model>) toycase5Models.clone(), md_hl0_sd2);
-		rmm1.run();
-		assertEquals(soln, rmm1.getTuplesInMatch());
+		rmm = new RandomizedMatchMerger((ArrayList<Model>) toycase5Models.clone(), md_hl0_sd2);
+		rmm.run();
+		assertEquals(soln, rmm.getTuplesInMatch());
 		assertEquals(new BigDecimal(2.0 / 3.0, N_WAY.MATH_CTX).doubleValue(), 
-				AlgoUtil.calcGroupWeight(rmm1.getTuplesInMatch()).doubleValue(), 0);
-
+				AlgoUtil.calcGroupWeight(rmm.getTuplesInMatch()).doubleValue(), epsilon);
+		
+		// Test 3
+		soln = new ArrayList<Tuple>();
+		m1 = toycase2Models.get(0);
+		m2 = toycase2Models.get(1);
+		m3 = toycase2Models.get(2);
+		t1 = new Tuple().newExpanded(m1.getElements().get(0), toycase2Models);
+		t1 = t1.newExpanded(m2.getElements().get(0), toycase2Models);
+		t2 = new Tuple().newExpanded(m3.getElements().get(0), toycase2Models);
+		soln.add(t1);
+		soln.add(t2);
+		rmm = new RandomizedMatchMerger((ArrayList<Model>) toycase2Models.clone(), md_hl0_sd2);
+		rmm.run();
+		assertEquals(soln, rmm.getTuplesInMatch());
+		assertEquals(new BigDecimal(4.0 / 18.0, N_WAY.MATH_CTX).doubleValue(), 
+				AlgoUtil.calcGroupWeight(rmm.getTuplesInMatch()).doubleValue(), epsilon);
+		
+		// Test 4
+		ArrayList<Tuple> soln1 = new ArrayList<Tuple>();
+		ArrayList<Tuple> soln2 = new ArrayList<Tuple>();
+		t1 = new Tuple().newExpanded(m2.getElements().get(0), toycase2Models);
+		t1 = t1.newExpanded(m1.getElements().get(0), toycase2Models);
+		t2 = new Tuple().newExpanded(m3.getElements().get(0), toycase2Models);
+		soln1.add(t1);
+		soln1.add(t2);
+		t1 = new Tuple().newExpanded(m2.getElements().get(0), toycase2Models);
+		t1 = t1.newExpanded(m3.getElements().get(0), toycase2Models);
+		t2 = new Tuple().newExpanded(m1.getElements().get(0), toycase2Models);
+		soln2.add(t1);
+		soln2.add(t2);
+		System.out.println(soln1);
+		System.out.println(soln2);
+		rmm = new RandomizedMatchMerger((ArrayList<Model>) toycase2Models.clone(), md_hl0_sd1d);
+		rmm.run();
+		System.out.println(rmm.getTuplesInMatch());
+		assertTrue(soln1.equals(rmm.getTuplesInMatch()) || soln2.equals(rmm.getTuplesInMatch()));
+		assertEquals(new BigDecimal(4.0 / 18.0, N_WAY.MATH_CTX).doubleValue(), 
+				AlgoUtil.calcGroupWeight(rmm.getTuplesInMatch()).doubleValue(), epsilon);
+		
+		
+		
+		
 	}
 
 	@Test

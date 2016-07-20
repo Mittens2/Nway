@@ -54,43 +54,47 @@ public class UMLParser {
 			    String line = scan.next();
 				//System.out.println(line);
 			   	if (reading == READING.NONE){
-			   		if (line.matches("^UML:Class i.*") || 
-			   				(line.matches("^UML:Interface.*") && getName(line) != null)){
+			   		if (line.contains("ClassDeclaration") || line.contains("InterfaceDeclaration")){
+			   		//if (line.matches("^UML:Class i.*") || 
+			   		   //(line.matches("^UML:Interface.*") && getName(line) != null)){
 			   			reading = READING.CLASS;
 			   			currClass = new UMLClass(getName(line));
 			   			classes.put(getID(line), currClass.name);
 			   		}
-			   		else if (line.matches("^UML:Abstraction.*")){
+			   		/*else if (line.matches("^UML:Abstraction.*")){
 			   			reading = READING.ABSTRACTION;
 			   			currAbs = getIDAbs(line);
-			   		}
+			   		}*/
 			   	}
 			   	else if (reading == READING.CLASS){
-			   		if (line.matches("^UML:Attribute.*") || line.matches("^UML:Operation.*")){
-			   			//if (!getName(line).equals("variable") && getName(line).equals("reg")){
+			   		if (line.contains("MethodDeclaration"))
+			   			currClass.properties.add(getName(line));
+			   		/*if (line.matches("^UML:Attribute.*") || line.matches("^UML:Operation.*")){
+			   			if (!getName(line).equals("variable") && getName(line).equals("reg")){
 			   				currClass.properties.add(getName(line));
-			   			//}
-			   		}
-			   		else if (line.matches("^UML:Abstraction.*")){
+			   			}
+			   		}*/
+			   		/*else if (line.matches("^UML:Abstraction.*")){
 			   			currClass.depID = getID(line).substring(3);
-			   		}
-			   		else if (line.matches("^/UML:Class.*")){
+			   		}*/
+			   		else if (line.contains("/ownedElements")){
+			   		//else if (line.matches("^/UML:Class.*")){
 			   			modelClasses.add(currClass);
 			   			reading = READING.NONE;
 			   		}
 			   	}
-			   	else{
+			   	/*else{
 			   		if (line.matches("^UML:Interface.*")){
 			   			String longID = getID(line).substring(9);
 			   			dependencies.put(currAbs, longID);
 			   		}
 			   		else if (line.matches("^/UML:Abstraction.*"))
 			   			reading = READING.NONE;
-			   	}
+			   	}*/
 			}
 			for (UMLClass umlc: modelClasses){
-				if (umlc.depID != null)
-					umlc.properties.add("ex_" + dependencies.get(umlc.depID));
+				//if (umlc.depID != null)
+					//umlc.properties.add("ex_" + dependencies.get(umlc.depID));
 				System.out.print(umlc.name + ":");
 				for (String p: umlc.properties)
 					System.out.print(p + ",");
@@ -124,13 +128,16 @@ public class UMLParser {
 	}
 	
 	public static void UMLtoCSV(){
-		String caseName = "ConferenceManagementSystem";
+		String caseName = "TankWar";
 		//creatFeatureListFiles("/home/amit/Downloads/SuperimpositionExamples/UML/" 
 		//+ caseName + "/" + caseName + "Comp", 12);
 		ArrayList<ArrayList<UMLClass>> umlcs = new ArrayList<ArrayList<UMLClass>>();
-		for (int i = 0; i < 15; i++){
-			umlcs.add(parseUML("/home/amit/Downloads/SuperimpositionExamples/UML/" +
-					caseName + "/" + caseName + "Comp" + i + "/ClassDiagram.xmi"));
+		//for (int i = 0; i < 15; i++){
+			//umlcs.add(parseUML("/home/amit/Downloads/SuperimpositionExamples/UML/" +
+					//caseName + "/" + caseName + "Comp" + i + "/ClassDiagram.xmi"));
+		//}
+		for (int i = 1; i < 10; i++){
+			umlcs.add(parseUML("/home/amit/workspace/" + caseName + i + "/" + caseName + i + "_java.xmi"));
 		}
 		writeToFile(umlcs, caseName);
 	}

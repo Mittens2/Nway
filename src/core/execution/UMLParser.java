@@ -128,7 +128,7 @@ public class UMLParser {
 	}
 	
 	public static void UMLtoCSV(){
-		String caseName = "TankWar";
+		String caseName = "GameOfLife";
 		//creatFeatureListFiles("/home/amit/Downloads/SuperimpositionExamples/UML/" 
 		//+ caseName + "/" + caseName + "Comp", 12);
 		ArrayList<ArrayList<UMLClass>> umlcs = new ArrayList<ArrayList<UMLClass>>();
@@ -136,7 +136,7 @@ public class UMLParser {
 			//umlcs.add(parseUML("/home/amit/Downloads/SuperimpositionExamples/UML/" +
 					//caseName + "/" + caseName + "Comp" + i + "/ClassDiagram.xmi"));
 		//}
-		for (int i = 1; i < 10; i++){
+		for (int i = 0; i < 8; i++){
 			umlcs.add(parseUML("/home/amit/workspace/" + caseName + i + "/" + caseName + i + "_java.xmi"));
 		}
 		writeToFile(umlcs, caseName);

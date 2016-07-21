@@ -308,6 +308,7 @@ public class Main {
 		String conferenceManagementSystem = "models/ConferenceManagementSystem.csv";
 		String ajStats = "models/AJStats.csv";
 		String tankWar = "models/TankWar.csv";
+		String gameOfLife = "models/GameOfLife.csv";
 		
 		/*String testPath = "models/test.csv";
 		String hospitals = "models/hospitals.csv";
@@ -334,6 +335,7 @@ public class Main {
 		String resultsConferenceManagementSystem = "results/conferenceManagementSystem_results.xls";
 		String resultsAJStats = "results/AJStats_results.xls";
 		String resultsTankWar = "results/TankWar_results.xls";
+		String resultsGameOfLife = "results/gameOfLife_results.xls";
 		
 		
 		ArrayList<String> models = new ArrayList<String>();
@@ -369,7 +371,7 @@ public class Main {
 		//rd.reshapeData();
 		
 		//UMLParser.creatFeatureListFiles("/home/amit/Downloads/SuperimpositionExamples/Java/" 
-				//+ "TankWar" + "/" + "TankWar" + "Comp", true, 10);
+			//	+ "GameOfLife" + "/" + "GameOfLife" + "Comp", true, 8);
 		//UMLParser.creatFeatureListFiles("/home/amit/Downloads/SuperimpositionExamples/Java/" 
 					//+ "AJStats" + "/" + "AJStats" + "Comp", true, 15);
 		//UMLParser.creatFeatureListFiles("/home/amit/Downloads/SuperimpositionExamples/UML/" 
@@ -407,11 +409,12 @@ public class Main {
 		//singleBatchRun(toycase, resultsToycase, -1, true);
 		//singleBatchRun(toycase2, resultsToycase2, -1, true);
 		//singleBatchRun(toycase3, resultsToycase3, -1, true);
-		//singleBatchRun(gasBoilerSystem, resultsGasBoilerSystem, -1, true);
+		singleBatchRun(gasBoilerSystem, resultsGasBoilerSystem, -1, true);
 		//singleBatchRun(audioControlSystem, audioControlSystem, -1, true);
 		//singleBatchRun(conferenceManagementSystem, conferenceManagementSystem, -1, true);
-		//singleBatchRun(ajStats, resultsAJStats, -1, true);
+		singleBatchRun(ajStats, resultsAJStats, -1, true);
 		singleBatchRun(tankWar, resultsTankWar, -1, true);
+		singleBatchRun(gameOfLife, resultsGameOfLife, -1, true);
 		
 		//workOnBatch(random10, resultRandom10);
 		//workOnBatch("models/randomH.csv", "results/randomH.xls");

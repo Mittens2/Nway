@@ -117,8 +117,6 @@ public class RandomizedMatchMergerTest {
 		t2 = new Tuple().newExpanded(m1.getElements().get(0), toycase2Models);
 		soln2.add(t1);
 		soln2.add(t2);
-		System.out.println(soln1);
-		System.out.println(soln2);
 		rmm = new RandomizedMatchMerger((ArrayList<Model>) toycase2Models.clone(), md_hl0_sd1d);
 		rmm.run();
 		System.out.println(rmm.getTuplesInMatch());
@@ -126,6 +124,41 @@ public class RandomizedMatchMergerTest {
 		assertEquals(new BigDecimal(4.0 / 18.0, N_WAY.MATH_CTX).doubleValue(), 
 				AlgoUtil.calcGroupWeight(rmm.getTuplesInMatch()).doubleValue(), epsilon);
 		
+		// Test 5
+		rmm = new RandomizedMatchMerger((ArrayList<Model>) toycase2Models.clone(), md_hl2_sd2);
+		rmm.run();
+		assertEquals(soln, rmm.getTuplesInMatch());
+		assertEquals(new BigDecimal(4.0 / 18.0, N_WAY.MATH_CTX).doubleValue(), 
+				AlgoUtil.calcGroupWeight(rmm.getTuplesInMatch()).doubleValue(), epsilon);
+		
+		// Test 6
+		rmm = new RandomizedMatchMerger((ArrayList<Model>) toycase2Models.clone(), md_hl2_sd5d);
+		rmm.run();
+		System.out.println(rmm.getTuplesInMatch());
+		assertTrue(soln1.equals(rmm.getTuplesInMatch()) || soln2.equals(rmm.getTuplesInMatch()));
+		assertEquals(new BigDecimal(4.0 / 18.0, N_WAY.MATH_CTX).doubleValue(), 
+				AlgoUtil.calcGroupWeight(rmm.getTuplesInMatch()).doubleValue(), epsilon);
+		
+		// Test 7
+		soln = new ArrayList<Tuple>();
+		t1 = new Tuple().newExpanded(m1.getElements().get(0), toycase2Models);
+		t1 = t1.newExpanded(m2.getElements().get(0), toycase2Models);
+		t1 = t1.newExpanded(m3.getElements().get(0), toycase2Models);
+		soln.add(t1);
+		rmm = new RandomizedMatchMerger((ArrayList<Model>) toycase2Models.clone(), md_hl3_sd2);
+		rmm.run();
+		assertEquals(soln, rmm.getTuplesInMatch());
+		assertEquals(new BigDecimal(4.0 / 9.0, N_WAY.MATH_CTX).doubleValue(), 
+				AlgoUtil.calcGroupWeight(rmm.getTuplesInMatch()).doubleValue(), epsilon);
+		
+		// Test 8
+		rmm = new RandomizedMatchMerger((ArrayList<Model>) toycase2Models.clone(), md_hl1_sd2);
+		rmm.run();
+		assertEquals(soln, rmm.getTuplesInMatch());
+		assertEquals(new BigDecimal(4.0 / 9.0, N_WAY.MATH_CTX).doubleValue(), 
+				AlgoUtil.calcGroupWeight(rmm.getTuplesInMatch()).doubleValue(), epsilon);
+				
+
 		
 		
 		

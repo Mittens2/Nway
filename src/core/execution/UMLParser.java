@@ -3,6 +3,7 @@ package core.execution;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -18,6 +19,12 @@ import java.util.regex.Pattern;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Row;
+import org.eclipse.emf.common.util.URI;
+import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.emf.ecore.xmi.XMIResource;
+import org.eclipse.emf.ecore.xmi.XMLResource;
+import org.eclipse.emf.ecore.xmi.impl.XMIResourceImpl;
 
 
 public class UMLParser {
@@ -37,6 +44,27 @@ public class UMLParser {
 		NONE,
 		CLASS,
 		ABSTRACTION
+	}
+	
+	public static void XMItoEMF(String path){
+	     URI uri = URI.createFileURI(path);
+	     
+        Resource resource = new XMIResourceImpl();
+     
+        resource.unload();
+        resource.setURI(uri);
+ 
+        try {
+            resource.load(null);
+             
+            //XMIModel : Create a class for XMI Model
+            EObject e = resource.getContents().get(0);
+            System.out.print(e);
+            //Iterate on the XMI Model or Convert it to a tree
+ 
+        } catch (IOException e) {
+            System.err.println("Exception occured while loading the resource file for configuration model: " + e.getMessage()); 
+        }
 	}
 	
 	private static ArrayList<UMLClass> parseUML(String filePath){
@@ -68,7 +96,13 @@ public class UMLParser {
 			   	}
 			   	else if (reading == READING.CLASS){
 			   		if (line.contains("MethodDeclaration"))
-			   			currClass.properties.add(getName(line));
+			   			currClass.properties.add("m_" + getName(line));
+			   		else if (line.contains("FieldDeclaration")){
+			   			while(scan.hasNext() && (!line.contains("fragment") || line.contains("bodyDeclaration")))
+			   				line = scan.next();
+			   			if (getName(line) != null)
+			   				currClass.properties.add("f_" + getName(line));
+			   		}	
 			   		/*if (line.matches("^UML:Attribute.*") || line.matches("^UML:Operation.*")){
 			   			if (!getName(line).equals("variable") && getName(line).equals("reg")){
 			   				currClass.properties.add(getName(line));
@@ -128,7 +162,7 @@ public class UMLParser {
 	}
 	
 	public static void UMLtoCSV(){
-		String caseName = "GameOfLife";
+		String caseName = "TankWar";
 		//creatFeatureListFiles("/home/amit/Downloads/SuperimpositionExamples/UML/" 
 		//+ caseName + "/" + caseName + "Comp", 12);
 		ArrayList<ArrayList<UMLClass>> umlcs = new ArrayList<ArrayList<UMLClass>>();
@@ -136,7 +170,7 @@ public class UMLParser {
 			//umlcs.add(parseUML("/home/amit/Downloads/SuperimpositionExamples/UML/" +
 					//caseName + "/" + caseName + "Comp" + i + "/ClassDiagram.xmi"));
 		//}
-		for (int i = 0; i < 8; i++){
+		for (int i = 0; i < 15; i++){
 			umlcs.add(parseUML("/home/amit/workspace/" + caseName + i + "/" + caseName + i + "_java.xmi"));
 		}
 		writeToFile(umlcs, caseName);
@@ -181,10 +215,10 @@ public class UMLParser {
 				for (int j = 0; j < desired; j++){
 					ArrayList<Integer> seeds = new ArrayList<Integer>();
 					ArrayList<String> featsChosen = new ArrayList<String>();
-					//featsChosen.add(features.get(0));
+					featsChosen.add(features.get(0));
 					Random rand = new Random();
-					for (int i = 0; i < features.size(); i++) seeds.add(i);
-					int numFeatures = rand.nextInt(features.size() - features.size() / 2) + features.size() / 2;
+					for (int i = 1; i < features.size(); i++) seeds.add(i);
+					int numFeatures = rand.nextInt(features.size() - 1);
 					Collections.shuffle(seeds);
 					for (int i = 0; i < numFeatures; i++){
 						featsChosen.add(features.get(seeds.get(seeds.size() - 1)));

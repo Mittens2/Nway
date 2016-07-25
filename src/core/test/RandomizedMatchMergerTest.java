@@ -16,6 +16,7 @@ import core.common.N_WAY;
 import core.domain.Element;
 import core.domain.Model;
 import core.domain.Tuple;
+import core.execution.RunResult;
 
 public class RandomizedMatchMergerTest {
 	
@@ -44,7 +45,7 @@ public class RandomizedMatchMergerTest {
 		md_hl1_sd2 = new MergeDescriptor(false, false, 1, 0, true, 2);
 		md_hl2_sd2 = new MergeDescriptor(false, false, 2, 0, true, 2);
 		md_hl2_sd5d = new MergeDescriptor(false, false, 2, 0, true, 5);
-		md_hl3_sd2 = new MergeDescriptor(false, false, 2, 0, true, 2);
+		md_hl3_sd2 = new MergeDescriptor(false, false, 3, 0, true, 2);
 	}
 
 	@After
@@ -156,12 +157,7 @@ public class RandomizedMatchMergerTest {
 		rmm.run();
 		assertEquals(soln, rmm.getTuplesInMatch());
 		assertEquals(new BigDecimal(4.0 / 9.0, N_WAY.MATH_CTX).doubleValue(), 
-				AlgoUtil.calcGroupWeight(rmm.getTuplesInMatch()).doubleValue(), epsilon);
-				
-
-		
-		
-		
+				AlgoUtil.calcGroupWeight(rmm.getTuplesInMatch()).doubleValue(), epsilon);		
 	}
 
 	@Test
@@ -195,8 +191,33 @@ public class RandomizedMatchMergerTest {
 	}
 	
 	@Test
-	public void testRMMandNWMdiff(){
-		
+	public void testRMMandNWMdiff(String modelsFile){
+		ArrayList<Model> models = Model.readModelsFile(modelsFile);
+		RandomizedMatchMerger rmm1 = new RandomizedMatchMerger((ArrayList<Model>) models.clone(), md_hl0_sd2);
+		RandomizedMatchMerger rmm2 = new RandomizedMatchMerger((ArrayList<Model>) models.clone(), md_hl3_sd2);
+		rmm1.run();
+		rmm2.run();
+		ArrayList<Tuple> rmm1Tuples = rmm1.getTuplesInMatch();
+		ArrayList<Tuple> rmm2Tuples = rmm2.getTuplesInMatch();
+		ArrayList<Tuple> union = new ArrayList<Tuple>(rmm1Tuples);
+		union.addAll(rmm2Tuples);
+		ArrayList<Tuple> intersection = new ArrayList<Tuple>(rmm1Tuples);
+		intersection.retainAll(rmm2Tuples);
+		ArrayList<Tuple> rmm1Only = new ArrayList<Tuple>(union);
+		ArrayList<Tuple> rmm2Only = new ArrayList<Tuple>(union);
+		rmm1Only.removeAll(intersection);
+		rmm2Only.removeAll(intersection);
+		rmm1Only.retainAll(rmm1Tuples);
+		rmm2Only.retainAll(rmm2Tuples);
+		RunResult rr1 = rmm1.getRunResult(models.size());
+		RunResult rr2 = rmm2.getRunResult(models.size());
+		rr1.setTitle(AlgoUtil.nameOfMergeDescription(md_hl0_sd2, -1));
+		rr2.setTitle(AlgoUtil.nameOfMergeDescription(md_hl3_sd2, -1));
+		System.out.println("Tuples belonging exclusively to " + rr1);
+		AlgoUtil.printTuples(rmm1Only);
+		System.out.println();
+		System.out.println("Tuples belonging exclusively to " + rr2);
+		AlgoUtil.printTuples(rmm2Only);
 	}
 
 }

@@ -65,7 +65,7 @@ public class Runner extends ResultsWriter{
 	//	runOnLocalSearch(N_WAY.ALG_POLICY.REPLACE_FIRST_BY_SQUARES, "LS triwise");
 		//addManualRun();
 		AlgoUtil.COMPUTE_RESULTS_CLASSICALLY = true;
-		//runOnPairs();
+		runOnPairs();
 		if(!toChunkify){
 		//	runOnGreedy(models.size());
 		}
@@ -75,7 +75,7 @@ public class Runner extends ResultsWriter{
 		//runOnGreedy(5);
 		}
 		AlgoUtil.COMPUTE_RESULTS_CLASSICALLY = false;
-		//results.addAll(runBigHungarian());
+		results.addAll(runBigHungarian());
 		results.addAll(runRandomizedMatch());
 		
 		
@@ -285,7 +285,7 @@ public class Runner extends ResultsWriter{
 		ArrayList<MergeDescriptor> retVal = new ArrayList<MergeDescriptor>();
 		if (pol == N_WAY.ALG_POLICY.RANDOM){
 			boolean randomize = false;
-			for (int highlight = 0; highlight < 4; highlight++){
+			for (int highlight = 0; highlight < 1; highlight++){
 				for (int choose = 0; choose < 1; choose++){
 					for (int st = 1; st < 2; st++){
 						boolean switchTuples = (st == 1);
@@ -299,18 +299,18 @@ public class Runner extends ResultsWriter{
 						//retVal.add(new MergeDescriptor(false, true, N_WAY.ORDER_BY.PROPERTY, highlight, choose, randomize, switchTuples));
 						//retVal.add(new MergeDescriptor(false, false, N_WAY.ORDER_BY.PROPERTY, highlight, choose, randomize, switchTuples));
 						// By convention if parameter is not used set to false
-						//retVal.add(new MergeDescriptor(false, false, highlight, choose, switchTuples, 0));
-						//retVal.add(new MergeDescriptor(false, true, highlight, choose, switchTuples, 1));
-						//retVal.add(new MergeDescriptor(false, false, highlight, choose, switchTuples, 1));
+						retVal.add(new MergeDescriptor(false, false, highlight, choose, switchTuples, 0));
+						retVal.add(new MergeDescriptor(false, true, highlight, choose, switchTuples, 1));
+						retVal.add(new MergeDescriptor(false, false, highlight, choose, switchTuples, 1));
 						retVal.add(new MergeDescriptor(false, false, highlight, choose, switchTuples, 2));
-						/*retVal.add(new MergeDescriptor(false, true, highlight, choose, switchTuples, 3));
+						retVal.add(new MergeDescriptor(false, true, highlight, choose, switchTuples, 3));
 						retVal.add(new MergeDescriptor(false, false, highlight, choose, switchTuples, 3));
 						retVal.add(new MergeDescriptor(true, true, highlight, choose, switchTuples, 4));
 						retVal.add(new MergeDescriptor(true, false, highlight, choose, switchTuples, 4));
 						retVal.add(new MergeDescriptor(false, true, highlight, choose, switchTuples, 4));
 						retVal.add(new MergeDescriptor(false, false, highlight, choose, switchTuples, 4));
 						retVal.add(new MergeDescriptor(false, true, highlight, choose, switchTuples, 5));
-						retVal.add(new MergeDescriptor(false, false, highlight, choose, switchTuples, 5));*/
+						retVal.add(new MergeDescriptor(false, false, highlight, choose, switchTuples, 5));
 					}
 				}
 			}

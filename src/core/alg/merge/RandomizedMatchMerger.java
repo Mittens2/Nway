@@ -106,60 +106,6 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 		return elems;
 	}
 	
-	/*private ArrayList<Element> joinAllModels() {
-		/**
-		 * Joins all of the merger's models into a single Elements list.
-		 * 
-		 * @return The list of all of the models' Elements.
-		 **/
-		/*
-		ArrayList<Element> elems = new ArrayList<Element>();
-		if (md.orderBy == N_WAY.ORDER_BY.MODEL_SIZE_ELEMENT_SIZE || md.orderBy == N_WAY.ORDER_BY.PROPERTY){
-			Collections.shuffle(models, new Random(System.nanoTime()));
-			Collections.sort(models, new ModelComparator(md.asc));
-		}
-		for(Model m:models){
-			ArrayList<Element> modelElems = new ArrayList<Element>(m.getElements());
-			if (md.orderBy == N_WAY.ORDER_BY.MODEL_SIZE_ELEMENT_SIZE){
-				Collections.shuffle(modelElems, new Random(System.nanoTime()));
-				Collections.sort(modelElems, new ElementComparator(md.elementAsc, false));
-			}
-			elems.addAll(modelElems);
-		}
-		if (md.orderBy == N_WAY.ORDER_BY.PROPERTY){
-			//HashMap<String, Integer> propFreq = getSortedProperties(elems);
-			HashMap<String, Double> propFreq = getPropFreqs(elems);
-			for (Element e: elems){
-				//int score = 0;
-				double score = 0;
-				for (String p: e.getProperties()){
-					int propScore = propFreq.get(p);
-					for (Element e2: elems){
-						if (e2.getModelId() == e.getModelId() && e.getId() != e2.getId()){
-							if (e2.getProperties().contains(p)){
-								propScore--;
-							}
-						}
-					}
-					if (propScore == 1) propScore = -1;
-					score += propScore;
-					//score += propFreq.get(p) == 1? -1: Math.pow(propFreq.get(p), 2);
-					score += propFreq.get(p);
-				}
-				e.setPropScore(score);
-			}
-			//Collections.sort(elems, new ElementComparator(md.elementAsc, true));
-			elems = new ArrayList<Element>();
-			for (Model m: models){
-				ArrayList<Element> modelElems = new ArrayList<Element>(m.getElements());
-				Collections.shuffle(modelElems, new Random(System.nanoTime()));
-				Collections.sort(modelElems, new ElementComparator(md.elementAsc, true));
-				elems.addAll(modelElems);
-			}
-		}
-		return elems;
-	}*/
-	
 	private HashMap<String, Integer> getSortedProperties(ArrayList<Element> elems){
 		HashMap<String, Integer> propFreq = new HashMap<String, Integer>();
 		for (Element e: elems){
@@ -308,9 +254,11 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 			}
 			elems = AlgoUtil.removeElementsSameModelId(picked, elems);
 			incompatible = AlgoUtil.removeElementsSameModelId(picked, incompatible);
+			// System.out.println(elems.size());
 			partition = highlightElements(picked, elems, incompatible, current);
 			elems = partition.get(0);
 			incompatible = partition.get(1);
+			//System.out.println(current);
 		}
 		return current;
 	}
@@ -373,6 +321,7 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 	private Element pickMaxElement(ArrayList<Element> elems, Tuple best){
 		BigDecimal maxWeight = md.switchTuples? BigDecimal.ZERO : best.calcWeight(models);
 		Element maxElement = null;
+		int count = 0;
 		for (Element e: elems){
 			Tuple test = best.newExpanded(e, models);
 			BigDecimal currWeight;
@@ -384,11 +333,15 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 				
 			}
 			else currWeight = test.calcWeight(models);
+			if (currWeight.compareTo(BigDecimal.ZERO) > 0)
+				count++;
 			if (currWeight.compareTo(maxWeight) > 0){
+				//System.out.println(currWeight + "," + maxWeight);
 				maxElement = e;
 				maxWeight = currWeight;
 			}
 		}
+		//System.out.println(count);
 		return maxElement;
 	}
 	

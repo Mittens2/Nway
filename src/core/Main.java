@@ -24,6 +24,7 @@ import core.execution.ReshapeData;
 import core.execution.RunResult;
 import core.execution.Runner;
 import core.execution.UMLParser;
+import core.test.RandomizedMatchMergerTest;
 
 
 
@@ -371,7 +372,9 @@ public class Main {
 		//rd.reshapeData();
 		
 		//UMLParser.creatFeatureListFiles("/home/amit/Downloads/SuperimpositionExamples/Java/" 
-			//	+ "GameOfLife" + "/" + "GameOfLife" + "Comp", true, 8);
+				//+ "GameOfLife" + "/" + "GameOfLife" + "Comp", true, 12);
+		//UMLParser.creatFeatureListFiles("/home/amit/Downloads/SuperimpositionExamples/Java/" 
+		//+ "TankWar" + "/" + "TankWar" + "Comp", true, 16);
 		//UMLParser.creatFeatureListFiles("/home/amit/Downloads/SuperimpositionExamples/Java/" 
 					//+ "AJStats" + "/" + "AJStats" + "Comp", true, 15);
 		//UMLParser.creatFeatureListFiles("/home/amit/Downloads/SuperimpositionExamples/UML/" 
@@ -396,6 +399,13 @@ public class Main {
 		
 		//AlgoUtil.COMPUTE_RESULTS_CLASSICALLY = false;
 		
+		//RandomizedMatchMergerTest test = new RandomizedMatchMergerTest();
+		/*try{
+			test.setUp();
+			test.testRMMandNWMdiff(ajStats);
+		} catch (Exception e){
+			e.printStackTrace();
+		}*/
 		//singleBatchRun(warehouses, resultsWarehouses, 16, true);	
 		//singleBatchRun(hospitals, resultsHospitals, 8, true);
 		//singleBatchRun(random, resultsRandom, 3, true);	
@@ -409,12 +419,12 @@ public class Main {
 		//singleBatchRun(toycase, resultsToycase, -1, true);
 		//singleBatchRun(toycase2, resultsToycase2, -1, true);
 		//singleBatchRun(toycase3, resultsToycase3, -1, true);
-		singleBatchRun(gasBoilerSystem, resultsGasBoilerSystem, -1, true);
+		//singleBatchRun(gasBoilerSystem, resultsGasBoilerSystem, -1, true);
 		//singleBatchRun(audioControlSystem, audioControlSystem, -1, true);
 		//singleBatchRun(conferenceManagementSystem, conferenceManagementSystem, -1, true);
-		singleBatchRun(ajStats, resultsAJStats, -1, true);
+		//singleBatchRun(ajStats, resultsAJStats, -1, true);
 		singleBatchRun(tankWar, resultsTankWar, -1, true);
-		singleBatchRun(gameOfLife, resultsGameOfLife, -1, true);
+		//singleBatchRun(gameOfLife, resultsGameOfLife, -1, true);
 		
 		//workOnBatch(random10, resultRandom10);
 		//workOnBatch("models/randomH.csv", "results/randomH.xls");

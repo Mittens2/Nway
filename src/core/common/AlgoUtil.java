@@ -274,6 +274,14 @@ public class AlgoUtil {
 		}
 		return false;
 	}
+	
+	public static int commonModel(Element e, Tuple t){
+		for (int i = 0; i < t.getElements().size(); i++){
+			if (t.getElements().get(i).getModelId() == e.getModelId())
+				return i;
+		}
+		return -1;
+	}
 
 	private static boolean haveLowQualityElement(Tuple t, double elemQualityThreshold) {
 		for(Element e:t.getRealElements()){

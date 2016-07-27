@@ -373,8 +373,7 @@ public class Main {
 		
 		//UMLParser.creatFeatureListFiles("/home/amit/Downloads/SuperimpositionExamples/Java/" 
 				//+ "GameOfLife" + "/" + "GameOfLife" + "Comp", true, 12);
-		//UMLParser.creatFeatureListFiles("/home/amit/Downloads/SuperimpositionExamples/Java/" 
-		//+ "TankWar" + "/" + "TankWar" + "Comp", true, 16);
+		UMLParser.creatFeatureListFiles("TankWar", true, 16);
 		//UMLParser.creatFeatureListFiles("/home/amit/Downloads/SuperimpositionExamples/Java/" 
 					//+ "AJStats" + "/" + "AJStats" + "Comp", true, 15);
 		//UMLParser.creatFeatureListFiles("/home/amit/Downloads/SuperimpositionExamples/UML/" 
@@ -399,10 +398,10 @@ public class Main {
 		
 		//AlgoUtil.COMPUTE_RESULTS_CLASSICALLY = false;
 		
-		//RandomizedMatchMergerTest test = new RandomizedMatchMergerTest();
-		/*try{
+		/*RandomizedMatchMergerTest test = new RandomizedMatchMergerTest();
+		try{
 			test.setUp();
-			test.testRMMandNWMdiff(ajStats);
+			test.testRMMandNWMdiff(level3a);
 		} catch (Exception e){
 			e.printStackTrace();
 		}*/
@@ -420,10 +419,8 @@ public class Main {
 		//singleBatchRun(toycase2, resultsToycase2, -1, true);
 		//singleBatchRun(toycase3, resultsToycase3, -1, true);
 		//singleBatchRun(gasBoilerSystem, resultsGasBoilerSystem, -1, true);
-		//singleBatchRun(audioControlSystem, audioControlSystem, -1, true);
-		//singleBatchRun(conferenceManagementSystem, conferenceManagementSystem, -1, true);
 		//singleBatchRun(ajStats, resultsAJStats, -1, true);
-		singleBatchRun(tankWar, resultsTankWar, -1, true);
+		//singleBatchRun(tankWar, resultsTankWar, -1, true);
 		//singleBatchRun(gameOfLife, resultsGameOfLife, -1, true);
 		
 		//workOnBatch(random10, resultRandom10);

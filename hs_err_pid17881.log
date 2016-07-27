@@ -1,0 +1,882 @@
+#
+# A fatal error has been detected by the Java Runtime Environment:
+#
+#  SIGSEGV (0xb) at pc=0x00007f8316c56d10, pid=17881, tid=140200711296768
+#
+# JRE version: OpenJDK Runtime Environment (7.0_101) (build 1.7.0_101-b00)
+# Java VM: OpenJDK 64-Bit Server VM (24.95-b01 mixed mode linux-amd64 compressed oops)
+# Derivative: IcedTea 2.6.6
+# Distribution: Ubuntu 14.04 LTS, package 7u101-2.6.6-0ubuntu0.14.04.1
+# Problematic frame:
+# V  [libjvm.so+0x645d10]
+#
+# Failed to write core dump. Core dumps have been disabled. To enable core dumping, try "ulimit -c unlimited" before starting Java again
+#
+# If you would like to submit a bug report, please include
+# instructions on how to reproduce the bug and visit:
+#   http://icedtea.classpath.org/bugzilla
+#
+
+---------------  T H R E A D  ---------------
+
+Current thread (0x00007f83100d3000):  JavaThread "JDWP Transport Listener: dt_socket" daemon [_thread_in_vm, id=17902, stack(0x00007f8305881000,0x00007f8305982000)]
+
+siginfo:si_signo=SIGSEGV: si_errno=0, si_code=1 (SEGV_MAPERR), si_addr=0x0000000000000120
+
+Registers:
+RAX=0x0000000000000063, RBX=0x00007f83100117a0, RCX=0x00007f8317854320, RDX=0x0000000000000001
+RSP=0x00007f83059809d0, RBP=0x00007f8305980a30, RSI=0x00007f83100d3000, RDI=0x00007f83100117a0
+R8 =0x0000000000000000, R9 =0x00007f82c80069f0, R10=0x00007f8310211dc1, R11=0x00007f8317bd5360
+R12=0x0000000000000120, R13=0x00007f8305980a97, R14=0x00007f83100d3000, R15=0x00007f83059809e0
+RIP=0x00007f8316c56d10, EFLAGS=0x0000000000010202, CSGSFS=0x0000000000000033, ERR=0x0000000000000004
+  TRAPNO=0x000000000000000e
+
+Top of Stack: (sp=0x00007f83059809d0)
+0x00007f83059809d0:   00007f83174069ac 00007f8316ca4206
+0x00007f83059809e0:   00007f83100d3000 0000000000000000
+0x00007f83059809f0:   00007f8300000000 0000000000000000
+0x00007f8305980a00:   00007f8305980b80 00007f8305980a97
+0x00007f8305980a10:   00007f83157a8f00 0000000000000120
+0x00007f8305980a20:   00007f8305980a97 00007f8305980a9c
+0x00007f8305980a30:   00007f8305980a60 00007f8315594aa9
+0x00007f8305980a40:   00007f8305980a60 000000000000000a
+0x00007f8305980a50:   00007f8305980b80 0000000000000120
+0x00007f8305980a60:   00007f8305980af0 00007f83155755f8
+0x00007f8305980a70:   00007f8305980ab0 00007f8305980ab0
+0x00007f8305980a80:   00007f8305980ab8 000000011557a4c9
+0x00007f8305980a90:   00007f8305980b50 0000000a0000000b
+0x00007f8305980aa0:   00007f82c8006af0 0000000000000000
+0x00007f8305980ab0:   0000000000000000 0000000000000000
+0x00007f8305980ac0:   00007f8305980b50 00000000000f0200
+0x00007f8305980ad0:   00007f8305980b50 0000000000000002
+0x00007f8305980ae0:   00007f8305980b80 00007f83157a8f00
+0x00007f8305980af0:   00007f8305980d40 00007f831557f688
+0x00007f8305980b00:   0000083900000013 00007f82c80f0200
+0x00007f8305980b10:   00007f82c0000fb0 00007f8316c0bc5c
+0x00007f8305980b20:   00007f83100d52b0 00007f82c000080f
+0x00007f8305980b30:   0000083900000013 00007f82c80f0200
+0x00007f8305980b40:   00007f82c0000fb0 00007f83100ca3e8
+0x00007f8305980b50:   00007f82c0000fb8 000000000000000b
+0x00007f8305980b60:   0000083900000013 00007f82c80f0200
+0x00007f8305980b70:   00007f82c0000fb0 00007f82c80040f0
+0x00007f8305980b80:   00007f82c800762d 00000000000003d3
+0x00007f8305980b90:   00007f82c8006040 00007f830000012c
+0x00007f8305980ba0:   00007f8305980bd0 00007f82c8004720
+0x00007f8305980bb0:   00007f0000000000 000008390000001c
+0x00007f8305980bc0:   00007f8300000c80 00007f8305980bd0 
+
+Instructions: (pc=0x00007f8316c56d10)
+0x00007f8316c56cf0:   48 c1 e8 04 23 02 48 8d 15 63 b2 7a 00 48 03 02
+0x00007f8316c56d00:   c7 00 01 00 00 00 e9 a6 fe ff ff 4d 85 e4 74 3b
+0x00007f8316c56d10:   4d 8b 24 24 48 b8 fe fe fe fe fe fe fe fe 49 39
+0x00007f8316c56d20:   c4 74 28 4d 85 e4 74 23 48 8d 05 a4 59 7a 00 80 
+
+Register to memory mapping:
+
+RAX=0x0000000000000063 is an unknown value
+RBX=0x00007f83100117a0 is an unknown value
+RCX=0x00007f8317854320: <offset 0x219320> in /lib/x86_64-linux-gnu/libpthread.so.0 at 0x00007f831763b000
+RDX=0x0000000000000001 is an unknown value
+RSP=0x00007f83059809d0 is pointing into the stack for thread: 0x00007f83100d3000
+RBP=0x00007f8305980a30 is pointing into the stack for thread: 0x00007f83100d3000
+RSI=0x00007f83100d3000 is a thread
+RDI=0x00007f83100117a0 is an unknown value
+R8 =0x0000000000000000 is an unknown value
+R9 =0x00007f82c80069f0 is an unknown value
+R10=0x00007f8310211dc1 is an unknown value
+R11=0x00007f8317bd5360: <offset 0x178360> in /lib/x86_64-linux-gnu/libc.so.6 at 0x00007f8317a5d000
+R12=0x0000000000000120 is an unknown value
+R13=0x00007f8305980a97 is pointing into the stack for thread: 0x00007f83100d3000
+R14=0x00007f83100d3000 is a thread
+R15=0x00007f83059809e0 is pointing into the stack for thread: 0x00007f83100d3000
+
+
+Stack: [0x00007f8305881000,0x00007f8305982000],  sp=0x00007f83059809d0,  free space=1022k
+Native frames: (J=compiled Java code, j=interpreted, Vv=VM code, C=native code)
+V  [libjvm.so+0x645d10]
+C  [libjdwp.so+0x26aa9]
+C  [libjdwp.so+0x75f8]
+C  [libjdwp.so+0x11688]
+C  [libjdwp.so+0x23785]
+V  [libjvm.so+0x6b223b]
+V  [libjvm.so+0x9085f0]
+V  [libjvm.so+0x908861]
+V  [libjvm.so+0x7cdb62]
+
+
+---------------  P R O C E S S  ---------------
+
+Java Threads: ( => current thread )
+  0x00007f83100de000 JavaThread "Service Thread" daemon [_thread_blocked, id=17911, stack(0x00007f830537c000,0x00007f830547d000)]
+  0x00007f83100dc000 JavaThread "C2 CompilerThread1" daemon [_thread_blocked, id=17910, stack(0x00007f830547d000,0x00007f830557e000)]
+  0x00007f83100d9000 JavaThread "C2 CompilerThread0" daemon [_thread_blocked, id=17909, stack(0x00007f830557e000,0x00007f830567f000)]
+  0x00007f82c8001000 JavaThread "JDWP Command Reader" daemon [_thread_in_native, id=17906, stack(0x00007f830567f000,0x00007f8305780000)]
+  0x00007f83100d6800 JavaThread "JDWP Event Helper Thread" daemon [_thread_blocked, id=17904, stack(0x00007f8305780000,0x00007f8305881000)]
+=>0x00007f83100d3000 JavaThread "JDWP Transport Listener: dt_socket" daemon [_thread_in_vm, id=17902, stack(0x00007f8305881000,0x00007f8305982000)]
+  0x00007f83100bf000 JavaThread "Signal Dispatcher" daemon [_thread_blocked, id=17900, stack(0x00007f8305b87000,0x00007f8305c88000)]
+  0x00007f8310095000 JavaThread "Finalizer" daemon [_thread_blocked, id=17898, stack(0x00007f8305c88000,0x00007f8305d89000)]
+  0x00007f8310093000 JavaThread "Reference Handler" daemon [_thread_blocked, id=17897, stack(0x00007f8305d89000,0x00007f8305e8a000)]
+  0x00007f831001a000 JavaThread "main" [_thread_blocked, id=17886, stack(0x00007f8318132000,0x00007f8318233000)]
+
+Other Threads:
+  0x00007f831008e800 VMThread [stack: 0x00007f8305e8a000,0x00007f8305f8b000] [id=17896]
+  0x00007f83100f1000 WatcherThread [stack: 0x00007f830527b000,0x00007f830537c000] [id=17912]
+
+VM state:not at safepoint (normal execution)
+
+VM Mutex/Monitor currently owned by a thread: None
+
+Heap
+ PSYoungGen      total 36864K, used 6545K [0x00000007d7080000, 0x00000007d9980000, 0x0000000800000000)
+  eden space 31744K, 20% used [0x00000007d7080000,0x00000007d76e4790,0x00000007d8f80000)
+  from space 5120K, 0% used [0x00000007d9480000,0x00000007d9480000,0x00000007d9980000)
+  to   space 5120K, 0% used [0x00000007d8f80000,0x00000007d8f80000,0x00000007d9480000)
+ ParOldGen       total 83456K, used 0K [0x0000000785200000, 0x000000078a380000, 0x00000007d7080000)
+  object space 83456K, 0% used [0x0000000785200000,0x0000000785200000,0x000000078a380000)
+ PSPermGen       total 21504K, used 4463K [0x000000077ac00000, 0x000000077c100000, 0x0000000785200000)
+  object space 21504K, 20% used [0x000000077ac00000,0x000000077b05bf38,0x000000077c100000)
+
+Card table byte_map: [0x00007f830cbd5000,0x00007f830d000000] byte_map_base: 0x00007f8308fff000
+
+Polling page: 0x00007f831824f000
+
+Code Cache  [0x00007f830d000000, 0x00007f830d270000, 0x00007f8310000000)
+ total_blobs=218 nmethods=16 adapters=164 free_code_cache=48731Kb largest_free_block=49888896
+
+Compilation events (10 events):
+Event: 0.159 Thread 0x00007f83100dc000 nmethod 12 0x00007f830d065410 code [0x00007f830d0655a0, 0x00007f830d0659c8]
+Event: 0.159 Thread 0x00007f83100d9000 nmethod 11% 0x00007f830d062650 code [0x00007f830d0627c0, 0x00007f830d062c68]
+Event: 0.160 Thread 0x00007f83100dc000   13             java.io.UnixFileSystem::normalize (75 bytes)
+Event: 0.160 Thread 0x00007f83100d9000   14 %           java.lang.String::hashCode @ 24 (55 bytes)
+Event: 0.163 Thread 0x00007f83100dc000 nmethod 13 0x00007f830d067190 code [0x00007f830d067300, 0x00007f830d0675e8]
+Event: 0.164 Thread 0x00007f83100d9000 nmethod 14% 0x00007f830d066b10 code [0x00007f830d066c80, 0x00007f830d066ff8]
+Event: 0.164 Thread 0x00007f83100dc000   15             java.lang.String::hashCode (55 bytes)
+Event: 0.167 Thread 0x00007f83100dc000 nmethod 15 0x00007f830d062210 code [0x00007f830d062360, 0x00007f830d062558]
+Event: 0.186 Thread 0x00007f83100d9000   16             java.lang.Object::<init> (1 bytes)
+Event: 0.186 Thread 0x00007f83100d9000 nmethod 16 0x00007f830d0668d0 code [0x00007f830d066a00, 0x00007f830d066a98]
+
+GC Heap History (0 events):
+No events
+
+Deoptimization events (3 events):
+Event: 0.129 Thread 0x00007f831001a000 Uncommon trap: reason=unstable_if action=reinterpret pc=0x00007f830d063ae8 method=java.io.UnixFileSystem.normalize(Ljava/lang/String;)Ljava/lang/String; @ 60
+Event: 0.131 Thread 0x00007f831001a000 Uncommon trap: reason=unstable_if action=reinterpret pc=0x00007f830d05e168 method=java.lang.String.hashCode()I @ 14
+Event: 0.203 Thread 0x00007f831001a000 Uncommon trap: reason=unstable_if action=reinterpret pc=0x00007f830d061684 method=java.lang.String.indexOf([CII[CIII)I @ 3
+
+Internal exceptions (10 events):
+Event: 0.150 Thread 0x00007f831001a000 Threw 0x00000007d732f3d8 at /build/openjdk-7-9duhBW/openjdk-7-7u101-2.6.6/build/openjdk/hotspot/src/share/vm/prims/jvm.cpp:1322
+Event: 0.150 Thread 0x00007f831001a000 Threw 0x00000007d7331050 at /build/openjdk-7-9duhBW/openjdk-7-7u101-2.6.6/build/openjdk/hotspot/src/share/vm/prims/jvm.cpp:1322
+Event: 0.151 Thread 0x00007f831001a000 Threw 0x00000007d7338458 at /build/openjdk-7-9duhBW/openjdk-7-7u101-2.6.6/build/openjdk/hotspot/src/share/vm/prims/jvm.cpp:1322
+Event: 0.179 Thread 0x00007f831001a000 Threw 0x00000007d75e3400 at /build/openjdk-7-9duhBW/openjdk-7-7u101-2.6.6/build/openjdk/hotspot/src/share/vm/prims/jvm.cpp:1322
+Event: 0.200 Thread 0x00007f831001a000 Threw 0x00000007d76371b0 at /build/openjdk-7-9duhBW/openjdk-7-7u101-2.6.6/build/openjdk/hotspot/src/share/vm/prims/jvm.cpp:1322
+Event: 0.200 Thread 0x00007f831001a000 Threw 0x00000007d76372d8 at /build/openjdk-7-9duhBW/openjdk-7-7u101-2.6.6/build/openjdk/hotspot/src/share/vm/prims/jvm.cpp:1322
+Event: 0.200 Thread 0x00007f831001a000 Threw 0x00000007d7639888 at /build/openjdk-7-9duhBW/openjdk-7-7u101-2.6.6/build/openjdk/hotspot/src/share/vm/prims/jvm.cpp:1322
+Event: 0.200 Thread 0x00007f831001a000 Threw 0x00000007d76399b0 at /build/openjdk-7-9duhBW/openjdk-7-7u101-2.6.6/build/openjdk/hotspot/src/share/vm/prims/jvm.cpp:1322
+Event: 0.200 Thread 0x00007f831001a000 Threw 0x00000007d763a2b0 at /build/openjdk-7-9duhBW/openjdk-7-7u101-2.6.6/build/openjdk/hotspot/src/share/vm/prims/jvm.cpp:1322
+Event: 0.200 Thread 0x00007f831001a000 Threw 0x00000007d763a3d8 at /build/openjdk-7-9duhBW/openjdk-7-7u101-2.6.6/build/openjdk/hotspot/src/share/vm/prims/jvm.cpp:1322
+
+Events (10 events):
+Event: 2244.093 Executing VM operation: GetCurrentLocation
+Event: 2244.094 Executing VM operation: GetCurrentLocation done
+Event: 2244.094 Executing VM operation: EnterInterpOnlyMode
+Event: 2244.094 Executing VM operation: EnterInterpOnlyMode done
+Event: 2244.094 Executing VM operation: ChangeSingleStep
+Event: 2244.094 Executing VM operation: ChangeSingleStep done
+Event: 2244.094 Executing VM operation: ChangeSingleStep
+Event: 2244.094 Executing VM operation: ChangeSingleStep done
+Event: 2244.097 Executing VM operation: RedefineClasses
+Event: 2244.097 Executing VM operation: RedefineClasses done
+
+
+Dynamic libraries:
+00400000-00401000 r-xp 00000000 08:01 24249929                           /usr/lib/jvm/java-7-openjdk-amd64/jre/bin/java
+00600000-00601000 r--p 00000000 08:01 24249929                           /usr/lib/jvm/java-7-openjdk-amd64/jre/bin/java
+00601000-00602000 rw-p 00001000 08:01 24249929                           /usr/lib/jvm/java-7-openjdk-amd64/jre/bin/java
+01ded000-01e0e000 rw-p 00000000 00:00 0                                  [heap]
+77ac00000-77c100000 rw-p 00000000 00:00 0 
+77c100000-785200000 rw-p 00000000 00:00 0 
+785200000-78a380000 rw-p 00000000 00:00 0 
+78a380000-7d7080000 rw-p 00000000 00:00 0 
+7d7080000-7d9980000 rw-p 00000000 00:00 0 
+7d9980000-800000000 rw-p 00000000 00:00 0 
+7f82ac000000-7f82ac021000 rw-p 00000000 00:00 0 
+7f82ac021000-7f82b0000000 ---p 00000000 00:00 0 
+7f82b0000000-7f82b0021000 rw-p 00000000 00:00 0 
+7f82b0021000-7f82b4000000 ---p 00000000 00:00 0 
+7f82b4000000-7f82b4140000 rw-p 00000000 00:00 0 
+7f82b4140000-7f82b8000000 ---p 00000000 00:00 0 
+7f82b8000000-7f82b80b3000 rw-p 00000000 00:00 0 
+7f82b80b3000-7f82bc000000 ---p 00000000 00:00 0 
+7f82bc000000-7f82bc021000 rw-p 00000000 00:00 0 
+7f82bc021000-7f82c0000000 ---p 00000000 00:00 0 
+7f82c0000000-7f82c0021000 rw-p 00000000 00:00 0 
+7f82c0021000-7f82c4000000 ---p 00000000 00:00 0 
+7f82c4000000-7f82c4021000 rw-p 00000000 00:00 0 
+7f82c4021000-7f82c8000000 ---p 00000000 00:00 0 
+7f82c8000000-7f82c802c000 rw-p 00000000 00:00 0 
+7f82c802c000-7f82cc000000 ---p 00000000 00:00 0 
+7f82cc000000-7f82cc021000 rw-p 00000000 00:00 0 
+7f82cc021000-7f82d0000000 ---p 00000000 00:00 0 
+7f82d0000000-7f82d0021000 rw-p 00000000 00:00 0 
+7f82d0021000-7f82d4000000 ---p 00000000 00:00 0 
+7f82d4000000-7f82d4021000 rw-p 00000000 00:00 0 
+7f82d4021000-7f82d8000000 ---p 00000000 00:00 0 
+7f82dbd60000-7f82e0000000 rw-p 00000000 00:00 0 
+7f82e0000000-7f82e0021000 rw-p 00000000 00:00 0 
+7f82e0021000-7f82e4000000 ---p 00000000 00:00 0 
+7f82e8000000-7f82e8021000 rw-p 00000000 00:00 0 
+7f82e8021000-7f82ec000000 ---p 00000000 00:00 0 
+7f82ec000000-7f82ec021000 rw-p 00000000 00:00 0 
+7f82ec021000-7f82f0000000 ---p 00000000 00:00 0 
+7f82f0000000-7f82f0021000 rw-p 00000000 00:00 0 
+7f82f0021000-7f82f4000000 ---p 00000000 00:00 0 
+7f82f4000000-7f82f4021000 rw-p 00000000 00:00 0 
+7f82f4021000-7f82f8000000 ---p 00000000 00:00 0 
+7f82f8000000-7f82f8021000 rw-p 00000000 00:00 0 
+7f82f8021000-7f82fc000000 ---p 00000000 00:00 0 
+7f82ff78d000-7f82ff79d000 r-xp 00000000 08:01 24249978                   /usr/lib/jvm/java-7-openjdk-amd64/jre/lib/amd64/libnio.so
+7f82ff79d000-7f82ff99d000 ---p 00010000 08:01 24249978                   /usr/lib/jvm/java-7-openjdk-amd64/jre/lib/amd64/libnio.so
+7f82ff99d000-7f82ff99e000 r--p 00010000 08:01 24249978                   /usr/lib/jvm/java-7-openjdk-amd64/jre/lib/amd64/libnio.so
+7f82ff99e000-7f82ff99f000 rw-p 00011000 08:01 24249978                   /usr/lib/jvm/java-7-openjdk-amd64/jre/lib/amd64/libnio.so
+7f82ff99f000-7f82ff9dc000 r-xp 00000000 08:01 27529385                   /lib/x86_64-linux-gnu/libpcre.so.3.13.1
+7f82ff9dc000-7f82ffbdb000 ---p 0003d000 08:01 27529385                   /lib/x86_64-linux-gnu/libpcre.so.3.13.1
+7f82ffbdb000-7f82ffbdc000 r--p 0003c000 08:01 27529385                   /lib/x86_64-linux-gnu/libpcre.so.3.13.1
+7f82ffbdc000-7f82ffbdd000 rw-p 0003d000 08:01 27529385                   /lib/x86_64-linux-gnu/libpcre.so.3.13.1
+7f82ffbdd000-7f82ffbe4000 r-xp 00000000 08:01 19144408                   /usr/lib/x86_64-linux-gnu/libffi.so.6.0.1
+7f82ffbe4000-7f82ffde3000 ---p 00007000 08:01 19144408                   /usr/lib/x86_64-linux-gnu/libffi.so.6.0.1
+7f82ffde3000-7f82ffde4000 r--p 00006000 08:01 19144408                   /usr/lib/x86_64-linux-gnu/libffi.so.6.0.1
+7f82ffde4000-7f82ffde5000 rw-p 00007000 08:01 19144408                   /usr/lib/x86_64-linux-gnu/libffi.so.6.0.1
+7f82ffde5000-7f82ffdfc000 r-xp 00000000 08:01 27525125                   /lib/x86_64-linux-gnu/libresolv-2.19.so
+7f82ffdfc000-7f82ffffc000 ---p 00017000 08:01 27525125                   /lib/x86_64-linux-gnu/libresolv-2.19.so
+7f82ffffc000-7f82ffffd000 r--p 00017000 08:01 27525125                   /lib/x86_64-linux-gnu/libresolv-2.19.so
+7f82ffffd000-7f82ffffe000 rw-p 00018000 08:01 27525125                   /lib/x86_64-linux-gnu/libresolv-2.19.so
+7f82ffffe000-7f8300000000 rw-p 00000000 00:00 0 
+7f8300000000-7f8300021000 rw-p 00000000 00:00 0 
+7f8300021000-7f8304000000 ---p 00000000 00:00 0 
+7f8304193000-7f83041c4000 rw-p 00000000 00:00 0 
+7f83041c4000-7f83041e4000 r-xp 00000000 08:01 27529532                   /lib/x86_64-linux-gnu/libselinux.so.1
+7f83041e4000-7f83043e3000 ---p 00020000 08:01 27529532                   /lib/x86_64-linux-gnu/libselinux.so.1
+7f83043e3000-7f83043e4000 r--p 0001f000 08:01 27529532                   /lib/x86_64-linux-gnu/libselinux.so.1
+7f83043e4000-7f83043e5000 rw-p 00020000 08:01 27529532                   /lib/x86_64-linux-gnu/libselinux.so.1
+7f83043e5000-7f83043e7000 rw-p 00000000 00:00 0 
+7f83043e7000-7f83043ea000 r-xp 00000000 08:01 19144521                   /usr/lib/x86_64-linux-gnu/libgmodule-2.0.so.0.4002.0
+7f83043ea000-7f83045e9000 ---p 00003000 08:01 19144521                   /usr/lib/x86_64-linux-gnu/libgmodule-2.0.so.0.4002.0
+7f83045e9000-7f83045ea000 r--p 00002000 08:01 19144521                   /usr/lib/x86_64-linux-gnu/libgmodule-2.0.so.0.4002.0
+7f83045ea000-7f83045eb000 rw-p 00003000 08:01 19144521                   /usr/lib/x86_64-linux-gnu/libgmodule-2.0.so.0.4002.0
+7f83045eb000-7f83046f1000 r-xp 00000000 08:01 27529433                   /lib/x86_64-linux-gnu/libglib-2.0.so.0.4002.0
+7f83046f1000-7f83048f0000 ---p 00106000 08:01 27529433                   /lib/x86_64-linux-gnu/libglib-2.0.so.0.4002.0
+7f83048f0000-7f83048f1000 r--p 00105000 08:01 27529433                   /lib/x86_64-linux-gnu/libglib-2.0.so.0.4002.0
+7f83048f1000-7f83048f2000 rw-p 00106000 08:01 27529433                   /lib/x86_64-linux-gnu/libglib-2.0.so.0.4002.0
+7f83048f2000-7f83048f3000 rw-p 00000000 00:00 0 
+7f83048f3000-7f8304942000 r-xp 00000000 08:01 19144537                   /usr/lib/x86_64-linux-gnu/libgobject-2.0.so.0.4002.0
+7f8304942000-7f8304b42000 ---p 0004f000 08:01 19144537                   /usr/lib/x86_64-linux-gnu/libgobject-2.0.so.0.4002.0
+7f8304b42000-7f8304b43000 r--p 0004f000 08:01 19144537                   /usr/lib/x86_64-linux-gnu/libgobject-2.0.so.0.4002.0
+7f8304b43000-7f8304b44000 rw-p 00050000 08:01 19144537                   /usr/lib/x86_64-linux-gnu/libgobject-2.0.so.0.4002.0
+7f8304b44000-7f8304cb0000 r-xp 00000000 08:01 19144509                   /usr/lib/x86_64-linux-gnu/libgio-2.0.so.0.4002.0
+7f8304cb0000-7f8304eaf000 ---p 0016c000 08:01 19144509                   /usr/lib/x86_64-linux-gnu/libgio-2.0.so.0.4002.0
+7f8304eaf000-7f8304eb3000 r--p 0016b000 08:01 19144509                   /usr/lib/x86_64-linux-gnu/libgio-2.0.so.0.4002.0
+7f8304eb3000-7f8304eb5000 rw-p 0016f000 08:01 19144509                   /usr/lib/x86_64-linux-gnu/libgio-2.0.so.0.4002.0
+7f8304eb5000-7f8304eb7000 rw-p 00000000 00:00 0 
+7f8304ecd000-7f8304ecf000 rw-p 00000000 00:00 0 
+7f8304ecf000-7f8304ee6000 r-xp 00000000 08:01 24249954                   /usr/lib/jvm/java-7-openjdk-amd64/jre/lib/amd64/libnet.so
+7f8304ee6000-7f83050e5000 ---p 00017000 08:01 24249954                   /usr/lib/jvm/java-7-openjdk-amd64/jre/lib/amd64/libnet.so
+7f83050e5000-7f83050e6000 r--p 00016000 08:01 24249954                   /usr/lib/jvm/java-7-openjdk-amd64/jre/lib/amd64/libnet.so
+7f83050e6000-7f83050e7000 rw-p 00017000 08:01 24249954                   /usr/lib/jvm/java-7-openjdk-amd64/jre/lib/amd64/libnet.so
+7f83050e7000-7f83050ed000 r--s 00047000 08:01 31197858                   /home/amit/Downloads/emf-xsd-Update-2.12.0/plugins/org.eclipse.emf.gwt.common_2.9.0.v20160526-0356.jar
+7f83050ed000-7f83050ef000 r--s 00015000 08:01 31197860                   /home/amit/Downloads/emf-xsd-Update-2.12.0/plugins/org.eclipse.emf.gwt.ecore.change.source_2.8.0.v20160526-0356.jar
+7f83050ef000-7f83050f2000 r--s 00022000 08:01 31197861                   /home/amit/Downloads/emf-xsd-Update-2.12.0/plugins/org.eclipse.emf.gwt.ecore.change_2.8.0.v20160526-0356.jar
+7f83050f2000-7f83050f5000 r--s 00014000 08:01 31197863                   /home/amit/Downloads/emf-xsd-Update-2.12.0/plugins/org.eclipse.emf.gwt.ecore.edit.source_2.8.0.v20160526-0356.jar
+7f83050f5000-7f83050fb000 r--s 0002e000 08:01 31197864                   /home/amit/Downloads/emf-xsd-Update-2.12.0/plugins/org.eclipse.emf.gwt.ecore.edit_2.8.0.v20160526-0356.jar
+7f83050fb000-7f8305101000 r--s 0009d000 08:01 31197866                   /home/amit/Downloads/emf-xsd-Update-2.12.0/plugins/org.eclipse.emf.gwt.ecore.source_2.9.0.v20160526-0356.jar
+7f8305101000-7f8305117000 r--s 00186000 08:01 31197867                   /home/amit/Downloads/emf-xsd-Update-2.12.0/plugins/org.eclipse.emf.gwt.ecore_2.9.0.v20160526-0356.jar
+7f8305117000-7f830511a000 r--s 00031000 08:01 31197869                   /home/amit/Downloads/emf-xsd-Update-2.12.0/plugins/org.eclipse.emf.gwt.edit.source_2.8.0.v20160526-0356.jar
+7f830511a000-7f830511b000 r--s 00005000 08:01 31197870                   /home/amit/Downloads/emf-xsd-Update-2.12.0/plugins/org.eclipse.emf.gwt.edit.ui.source_2.7.0.v20160526-0356.jar
+7f830511b000-7f830511e000 r--s 00018000 08:01 31197871                   /home/amit/Downloads/emf-xsd-Update-2.12.0/plugins/org.eclipse.emf.gwt.edit.ui_2.7.0.v20160526-0356.jar
+7f830511e000-7f8305126000 r--s 00066000 08:01 31197873                   /home/amit/Downloads/emf-xsd-Update-2.12.0/plugins/org.eclipse.emf.gwt.edit_2.8.0.v20160526-0356.jar
+7f8305126000-7f8305127000 r--s 00002000 08:01 31197875                   /home/amit/Downloads/emf-xsd-Update-2.12.0/plugins/org.eclipse.emf.gwt_2.6.0.v20160526-0356.jar
+7f8305127000-7f8305128000 r--s 00004000 08:01 31197876                   /home/amit/Downloads/emf-xsd-Update-2.12.0/plugins/org.eclipse.emf.importer.ecore.source_2.8.0.v20160526-0356.jar
+7f8305128000-7f8305129000 r--s 00006000 08:01 31197877                   /home/amit/Downloads/emf-xsd-Update-2.12.0/plugins/org.eclipse.emf.importer.ecore_2.8.0.v20160526-0356.jar
+7f8305129000-7f830512b000 r--s 0000a000 08:01 31197879                   /home/amit/Downloads/emf-xsd-Update-2.12.0/plugins/org.eclipse.emf.importer.java.source_2.7.0.v20160526-0356.jar
+7f830512b000-7f830512d000 r--s 0000f000 08:01 31197880                   /home/amit/Downloads/emf-xsd-Update-2.12.0/plugins/org.eclipse.emf.importer.java_2.7.0.v20160526-0356.jar
+7f830512d000-7f830512f000 r--s 00010000 08:01 31197882                   /home/amit/Downloads/emf-xsd-Update-2.12.0/plugins/org.eclipse.emf.importer.rose.source_2.8.0.v20160526-0356.jar
+7f830512f000-7f8305131000 r--s 00019000 08:01 31197883                   /home/amit/Downloads/emf-xsd-Update-2.12.0/plugins/org.eclipse.emf.importer.rose_2.8.0.v20160526-0356.jar
+7f8305131000-7f8305133000 r--s 00008000 08:01 31197885                   /home/amit/Downloads/emf-xsd-Update-2.12.0/plugins/org.eclipse.emf.importer.source_2.9.0.v20160526-0356.jar
+7f8305133000-7f8305135000 r--s 00012000 08:01 31197886                   /home/amit/Downloads/emf-xsd-Update-2.12.0/plugins/org.eclipse.emf.importer_2.9.0.v20160526-0356.jar
+7f8305135000-7f8305136000 r--s 00006000 08:01 31197888                   /home/amit/Downloads/emf-xsd-Update-2.12.0/plugins/org.eclipse.emf.java.edit.source_2.6.0.v20160526-0356.jar
+7f8305136000-7f8305138000 r--s 00009000 08:01 31197889                   /home/amit/Downloads/emf-xsd-Update-2.12.0/plugins/org.eclipse.emf.java.edit_2.6.0.v20160526-0356.jar
+7f8305138000-7f8305139000 r--s 00005000 08:01 31197891                   /home/amit/Downloads/emf-xsd-Update-2.12.0/plugins/org.eclipse.emf.java.editor.source_2.6.0.v20160526-0356.jar
+7f8305139000-7f830513b000 r--s 0000d000 08:01 31197892                   /home/amit/Downloads/emf-xsd-Update-2.12.0/plugins/org.eclipse.emf.java.editor_2.6.0.v20160526-0356.jar
+7f830513b000-7f830513d000 r--s 00011000 08:01 31197894                   /home/amit/Downloads/emf-xsd-Update-2.12.0/plugins/org.eclipse.emf.java.source_2.6.0.v20160526-0356.jar
+7f830513d000-7f830513f000 r--s 00018000 08:01 31197895                   /home/amit/Downloads/emf-xsd-Update-2.12.0/plugins/org.eclipse.emf.java_2.6.0.v20160526-0356.jar
+7f830513f000-7f8305140000 r--s 00002000 08:01 31197897                   /home/amit/Downloads/emf-xsd-Update-2.12.0/plugins/org.eclipse.emf.mapping.ecore.editor_2.6.0.v20160526-0356.jar
+7f8305140000-7f8305142000 r--s 00004000 08:01 31197898                   /home/amit/Downloads/emf-xsd-Update-2.12.0/plugins/org.eclipse.emf.mapping.ecore2ecore.editor.source_2.7.0.v20160526-0356.jar
+7f8305142000-7f8305144000 r--s 0000a000 08:01 31197899                   /home/amit/Downloads/emf-xsd-Update-2.12.0/plugins/org.eclipse.emf.mapping.ecore2ecore.editor_2.7.0.v20160526-0356.jar
+7f8305144000-7f8305145000 r--s 00009000 08:01 31197901                   /home/amit/Downloads/emf-xsd-Update-2.12.0/plugins/org.eclipse.emf.mapping.ecore2ecore.source_2.9.0.v20160526-0356.jar
+7f8305145000-7f8305146000 r--s 00006000 08:01 31197902                   /home/amit/Downloads/emf-xsd-Update-2.12.0/plugins/org.eclipse.emf.mapping.ecore2ecore_2.9.0.v20160526-0356.jar
+7f8305146000-7f8305148000 r--s 0000b000 08:01 31197904                   /home/amit/Downloads/emf-xsd-Update-2.12.0/plugins/org.eclipse.emf.mapping.ecore2xml.source_2.9.0.v20160526-0356.jar
+7f8305148000-7f8305149000 r--s 00009000 08:01 31197905                   /home/amit/Downloads/emf-xsd-Update-2.12.0/plugins/org.eclipse.emf.mapping.ecore2xml.ui.source_2.8.0.v20160526-0356.jar
+7f8305149000-7f830514c000 r--s 00016000 08:01 31197906                   /home/amit/Downloads/emf-xsd-Update-2.12.0/plugins/org.eclipse.emf.mapping.ecore2xml.ui_2.8.0.v20160526-0356.jar
+7f830514c000-7f830514e000 r--s 00008000 08:01 31197908                   /home/amit/Downloads/emf-xsd-Update-2.12.0/plugins/org.eclipse.emf.mapping.ecore2xml_2.9.0.v20160526-0356.jar
+7f830514e000-7f830514f000 r--s 00002000 08:01 31197910                   /home/amit/Downloads/emf-xsd-Update-2.12.0/plugins/org.eclipse.emf.mapping.ecore_2.6.0.v20160526-0356.jar
+7f830514f000-7f8305151000 r--s 0001a000 08:01 31197911                   /home/amit/Downloads/emf-xsd-Update-2.12.0/plugins/org.eclipse.emf.mapping.source_2.9.0.v20160526-0356.jar
+7f8305151000-7f8305152000 r--s 0000a000 08:01 31197912                   /home/amit/Downloads/emf-xsd-Update-2.12.0/plugins/org.eclipse.emf.mapping.ui.source_2.7.0.v20160526-0356.jar
+7f8305152000-7f8305157000 r--s 00020000 08:01 31197913                   /home/amit/Downloads/emf-xsd-Update-2.12.0/plugins/org.eclipse.emf.mapping.ui_2.7.0.v20160526-0356.jar
+7f8305157000-7f8305159000 r--s 00002000 08:01 31197915                   /home/amit/Downloads/emf-xsd-Update-2.12.0/plugins/org.eclipse.emf.mapping.xsd2ecore.editor.source_2.6.0.v20160526-0356.jar
+7f8305159000-7f830515b000 r--s 00004000 08:01 31197916                   /home/amit/Downloads/emf-xsd-Update-2.12.0/plugins/org.eclipse.emf.mapping.xsd2ecore.editor_2.6.0.v20160526-0356.jar
+7f830515b000-7f830515d000 r--s 00005000 08:01 31197918                   /home/amit/Downloads/emf-xsd-Update-2.12.0/plugins/org.eclipse.emf.mapping.xsd2ecore.source_2.6.0.v20160526-0356.jar
+7f830515d000-7f830515f000 r--s 00006000 08:01 31197919                   /home/amit/Downloads/emf-xsd-Update-2.12.0/plugins/org.eclipse.emf.mapping.xsd2ecore_2.6.0.v20160526-0356.jar
+7f830515f000-7f8305164000 r--s 0002a000 08:01 31197921                   /home/amit/Downloads/emf-xsd-Update-2.12.0/plugins/org.eclipse.emf.mapping_2.9.0.v20160526-0356.jar
+7f8305164000-7f8305166000 r--s 00005000 08:01 31197923                   /home/amit/Downloads/emf-xsd-Update-2.12.0/plugins/org.eclipse.emf.oda.ecore.source_1.2.0.v20160526-0356.jar
+7f8305166000-7f8305168000 r--s 00004000 08:01 31197924                   /home/amit/Downloads/emf-xsd-Update-2.12.0/plugins/org.eclipse.emf.oda.ecore.ui.source_1.2.0.v20160526-0356.jar
+7f8305168000-7f830516a000 r--s 0000c000 08:01 31197925                   /home/amit/Downloads/emf-xsd-Update-2.12.0/plugins/org.eclipse.emf.oda.ecore.ui_1.2.0.v20160526-0356.jar
+7f830516a000-7f830516c000 r--s 00009000 08:01 31197927                   /home/amit/Downloads/emf-xsd-Update-2.12.0/plugins/org.eclipse.emf.oda.ecore_1.2.0.v20160526-0356.jar
+7f830516c000-7f830516d000 r--s 00002000 08:01 31197929                   /home/amit/Downloads/emf-xsd-Update-2.12.0/plugins/org.eclipse.emf.oda_1.2.0.v20160526-0356.jar
+7f830516d000-7f830516f000 r--s 0000a000 08:01 31197930                   /home/amit/Downloads/emf-xsd-Update-2.12.0/plugins/org.eclipse.emf.rap.common.ui.source_2.9.0.v20160526-0356.jar
+7f830516f000-7f8305171000 r--s 00011000 08:01 31197931                   /home/amit/Downloads/emf-xsd-Update-2.12.0/plugins/org.eclipse.emf.rap.common.ui_2.9.0.v20160526-0356.jar
+7f8305171000-7f8305173000 r--s 00013000 08:01 31197933                   /home/amit/Downloads/emf-xsd-Update-2.12.0/plugins/org.eclipse.emf.rap.edit.ui.source_2.9.0.v20160526-0356.jar
+7f8305173000-7f8305177000 r--s 00021000 08:01 31197934                   /home/amit/Downloads/emf-xsd-Update-2.12.0/plugins/org.eclipse.emf.rap.edit.ui_2.9.0.v20160526-0356.jar
+7f8305177000-7f8305178000 r--s 00002000 08:01 31197936                   /home/amit/Downloads/emf-xsd-Update-2.12.0/plugins/org.eclipse.emf.rap_2.6.0.v20160526-0356.jar
+7f8305178000-7f8305179000 r--s 00002000 08:01 31197937                   /home/amit/Downloads/emf-xsd-Update-2.12.0/plugins/org.eclipse.emf_2.6.0.v20160526-0356.jar
+7f8305179000-7f830517a000 r--s 00001000 08:01 31197938                   /home/amit/Downloads/emf-xsd-Update-2.12.0/plugins/org.eclipse.xsd.cheatsheets.source_2.6.0.v20160526-0356.jar
+7f830517a000-7f830517b000 r--s 00002000 08:01 31197939                   /home/amit/Downloads/emf-xsd-Update-2.12.0/plugins/org.eclipse.xsd.cheatsheets_2.6.0.v20160526-0356.jar
+7f830517b000-7f8305182000 r--s 001af000 08:01 31197940                   /home/amit/Downloads/emf-xsd-Update-2.12.0/plugins/org.eclipse.xsd.doc_2.7.0.v20160526-0356.jar
+7f8305182000-7f8305183000 r--s 00002000 08:01 31197941                   /home/amit/Downloads/emf-xsd-Update-2.12.0/plugins/org.eclipse.xsd.ecore.converter_2.6.0.v20160526-0356.jar
+7f8305183000-7f8305185000 r--s 00002000 08:01 31197942                   /home/amit/Downloads/emf-xsd-Update-2.12.0/plugins/org.eclipse.xsd.ecore.exporter.source_2.5.0.v20160526-0356.jar
+7f8305185000-7f8305186000 r--s 00004000 08:01 31197943                   /home/amit/Downloads/emf-xsd-Update-2.12.0/plugins/org.eclipse.xsd.ecore.exporter_2.5.0.v20160526-0356.jar
+7f8305186000-7f8305188000 r--s 00005000 08:01 31197945                   /home/amit/Downloads/emf-xsd-Update-2.12.0/plugins/org.eclipse.xsd.ecore.importer.source_2.7.0.v20160526-0356.jar
+7f8305188000-7f830518a000 r--s 00007000 08:01 31197946                   /home/amit/Downloads/emf-xsd-Update-2.12.0/plugins/org.eclipse.xsd.ecore.importer_2.7.0.v20160526-0356.jar
+7f830518a000-7f830518c000 r--s 00019000 08:01 31197948                   /home/amit/Downloads/emf-xsd-Update-2.12.0/plugins/org.eclipse.xsd.edit.source_2.8.0.v20160526-0356.jar
+7f830518c000-7f8305192000 r--s 00031000 08:01 31197949                   /home/amit/Downloads/emf-xsd-Update-2.12.0/plugins/org.eclipse.xsd.edit_2.8.0.v20160526-0356.jar
+7f8305192000-7f8305193000 r--s 00007000 08:01 31197951                   /home/amit/Downloads/emf-xsd-Update-2.12.0/plugins/org.eclipse.xsd.editor.source_2.8.0.v20160526-0356.jar
+7f8305193000-7f8305196000 r--s 00016000 08:01 31197952                   /home/amit/Downloads/emf-xsd-Update-2.12.0/plugins/org.eclipse.xsd.editor_2.8.0.v20160526-0356.jar
+7f8305196000-7f8305199000 r--s 0000e000 08:01 31197954                   /home/amit/Downloads/emf-xsd-Update-2.12.0/plugins/org.eclipse.xsd.example.installer_1.2.0.v20160526-0356.jar
+7f8305199000-7f830519a000 r--s 00005000 08:01 31197955                   /home/amit/Downloads/emf-xsd-Update-2.12.0/plugins/org.eclipse.xsd.example.source_2.6.0.v20160526-0356.jar
+7f830519a000-7f830519c000 r--s 0000e000 08:01 31197956                   /home/amit/Downloads/emf-xsd-Update-2.12.0/plugins/org.eclipse.xsd.example_2.6.0.v20160526-0356.jar
+7f830519c000-7f830519d000 r--s 00002000 08:01 31197958                   /home/amit/Downloads/emf-xsd-Update-2.12.0/plugins/org.eclipse.xsd.mapping.editor_2.7.0.v20160526-0356.jar
+7f830519d000-7f830519e000 r--s 00002000 08:01 31197959                   /home/amit/Downloads/emf-xsd-Update-2.12.0/plugins/org.eclipse.xsd.mapping_2.6.0.v20160526-0356.jar
+7f830519e000-7f83051a3000 r--s 000b3000 08:01 31197960                   /home/amit/Downloads/emf-xsd-Update-2.12.0/plugins/org.eclipse.xsd.source_2.12.0.v20160526-0356.jar
+7f83051a3000-7f83051ab000 r--s 000ec000 08:01 31197961                   /home/amit/Downloads/emf-xsd-Update-2.12.0/plugins/org.eclipse.xsd_2.12.0.v20160526-0356.jar
+7f83051ab000-7f83051ad000 r--s 00003000 08:01 31197613                   /home/amit/Downloads/mdt-uml2-Update-5.2.0/plugins/org.eclipse.uml2.ant.source_1.0.0.v20160516-0939.jar
+7f83051ad000-7f83051ae000 r--s 00007000 08:01 31197614                   /home/amit/Downloads/mdt-uml2-Update-5.2.0/plugins/org.eclipse.uml2.ant_1.0.0.v20160516-0939.jar
+7f83051ae000-7f83051b1000 r--s 0002d000 08:01 31197616                   /home/amit/Downloads/mdt-uml2-Update-5.2.0/plugins/org.eclipse.uml2.codegen.ecore.source_2.2.0.v20160516-0939.jar
+7f83051b1000-7f83051b3000 r--s 00006000 08:01 31197617                   /home/amit/Downloads/mdt-uml2-Update-5.2.0/plugins/org.eclipse.uml2.codegen.ecore.ui.source_2.1.0.v20160516-0939.jar
+7f83051b3000-7f83051b5000 r--s 00007000 08:01 31197618                   /home/amit/Downloads/mdt-uml2-Update-5.2.0/plugins/org.eclipse.uml2.codegen.ecore.ui_2.1.0.v20160516-0939.jar
+7f83051b5000-7f83051ba000 r--s 0005e000 08:01 31197620                   /home/amit/Downloads/mdt-uml2-Update-5.2.0/plugins/org.eclipse.uml2.codegen.ecore_2.2.0.v20160516-0939.jar
+7f83051ba000-7f83051bb000 r--s 00004000 08:01 31197622                   /home/amit/Downloads/mdt-uml2-Update-5.2.0/plugins/org.eclipse.uml2.common.edit.source_2.1.0.v20160516-0939.jar
+7f83051bb000-7f83051bd000 r--s 00006000 08:01 31197623                   /home/amit/Downloads/mdt-uml2-Update-5.2.0/plugins/org.eclipse.uml2.common.edit_2.1.0.v20160516-0939.jar
+7f83051bd000-7f83051be000 r--s 00009000 08:01 31197625                   /home/amit/Downloads/mdt-uml2-Update-5.2.0/plugins/org.eclipse.uml2.common.source_2.1.0.v20160516-0939.jar
+7f83051be000-7f83051c1000 r--s 00014000 08:01 31197626                   /home/amit/Downloads/mdt-uml2-Update-5.2.0/plugins/org.eclipse.uml2.common_2.1.0.v20160516-0939.jar
+7f83051c1000-7f83051c2000 r--s 00003000 08:01 31197628                   /home/amit/Downloads/mdt-uml2-Update-5.2.0/plugins/org.eclipse.uml2.doc_5.0.0.v20160516-0939.jar
+7f83051c2000-7f83051c3000 r--s 00001000 08:01 31197629                   /home/amit/Downloads/mdt-uml2-Update-5.2.0/plugins/org.eclipse.uml2.examples.source_5.0.0.v20160516-0939.jar
+7f83051c3000-7f83051c4000 r--s 00009000 08:01 31197630                   /home/amit/Downloads/mdt-uml2-Update-5.2.0/plugins/org.eclipse.uml2.examples.uml.ui.source_5.0.0.v20160516-0939.jar
+7f83051c4000-7f83051c7000 r--s 00038000 08:01 31197631                   /home/amit/Downloads/mdt-uml2-Update-5.2.0/plugins/org.eclipse.uml2.examples.uml.ui_5.0.0.v20160516-0939.jar
+7f83051c7000-7f83051c8000 r--s 00002000 08:01 31197633                   /home/amit/Downloads/mdt-uml2-Update-5.2.0/plugins/org.eclipse.uml2.examples_5.0.0.v20160516-0939.jar
+7f83051c8000-7f83051c9000 r--s 0002b000 08:01 31197634                   /home/amit/Downloads/mdt-uml2-Update-5.2.0/plugins/org.eclipse.uml2.source_5.2.0.v20160516-0939.jar
+7f83051c9000-7f83051cb000 r--s 00003000 08:01 31197635                   /home/amit/Downloads/mdt-uml2-Update-5.2.0/plugins/org.eclipse.uml2.types.source_2.0.0.v20160516-0939.jar
+7f83051cb000-7f83051cc000 r--s 00004000 08:01 31197636                   /home/amit/Downloads/mdt-uml2-Update-5.2.0/plugins/org.eclipse.uml2.types_2.0.0.v20160516-0939.jar
+7f83051cc000-7f83051cd000 r--s 00003000 08:01 31197638                   /home/amit/Downloads/mdt-uml2-Update-5.2.0/plugins/org.eclipse.uml2.uml.ecore.exporter.source_3.0.0.v20160516-0939.jar
+7f83051cd000-7f83051ce000 r--s 00006000 08:01 31197639                   /home/amit/Downloads/mdt-uml2-Update-5.2.0/plugins/org.eclipse.uml2.uml.ecore.exporter_3.0.0.v20160516-0939.jar
+7f83051ce000-7f83051cf000 r--s 00006000 08:01 31197641                   /home/amit/Downloads/mdt-uml2-Update-5.2.0/plugins/org.eclipse.uml2.uml.ecore.importer.source_3.1.0.v20160516-0939.jar
+7f83051cf000-7f83051d7000 r--s 00083000 08:01 31197644                   /home/amit/Downloads/mdt-uml2-Update-5.2.0/plugins/org.eclipse.uml2.uml.edit.source_5.1.100.v20160516-0939.jar
+7f83051d7000-7f83051e4000 r--s 000c6000 08:01 31197645                   /home/amit/Downloads/mdt-uml2-Update-5.2.0/plugins/org.eclipse.uml2.uml.edit_5.1.100.v20160516-0939.jar
+7f83051e4000-7f83051e6000 r--s 00011000 08:01 31197647                   /home/amit/Downloads/mdt-uml2-Update-5.2.0/plugins/org.eclipse.uml2.uml.editor.source_5.2.0.v20160516-0939.jar
+7f83051e6000-7f83051eb000 r--s 00030000 08:01 31197648                   /home/amit/Downloads/mdt-uml2-Update-5.2.0/plugins/org.eclipse.uml2.uml.editor_5.2.0.v20160516-0939.jar
+7f83051eb000-7f83051ef000 r--s 00022000 08:01 31197650                   /home/amit/Downloads/mdt-uml2-Update-5.2.0/plugins/org.eclipse.uml2.uml.profile.standard.source_1.0.100.v20160516-0939.jar
+7f83051ef000-7f83051f3000 r--s 0001e000 08:01 31197651                   /home/amit/Downloads/mdt-uml2-Update-5.2.0/plugins/org.eclipse.uml2.uml.profile.standard_1.0.100.v20160516-0939.jar
+7f83051f3000-7f83051f5000 r--s 00002000 08:01 31197653                   /home/amit/Downloads/mdt-uml2-Update-5.2.0/plugins/org.eclipse.uml2.uml.resources.source_5.2.0.v20160516-0939.jar
+7f83051f5000-7f83051f7000 r--s 0003f000 08:01 31197654                   /home/amit/Downloads/mdt-uml2-Update-5.2.0/plugins/org.eclipse.uml2.uml.resources_5.2.0.v20160516-0939.jar
+7f83051f7000-7f830520c000 r--s 002c8000 08:01 31197656                   /home/amit/Downloads/mdt-uml2-Update-5.2.0/plugins/org.eclipse.uml2.uml.source_5.2.0.v20160516-0939.jar
+7f830520c000-7f8305223000 r--s 00334000 08:01 31197660                   /home/amit/Downloads/mdt-uml2-Update-5.2.0/plugins/org.eclipse.uml2.uml_5.2.0.v20160516-0939.jar
+7f8305223000-7f830522a000 r--s 00037000 08:01 24256890                   /home/amit/Downloads/junit-4.10.jar
+7f830522a000-7f8305251000 r--s 001f6000 08:01 28705002                   /home/amit/Downloads/commons-math3-3.6.1/commons-math3-3.6.1.jar
+7f8305251000-7f8305255000 r--s 0002f000 08:01 26610272                   /home/amit/Downloads/commons-io-2.5/commons-io-2.5.jar
+7f8305255000-7f830525b000 r--s 0004b000 08:01 25559719                   /home/amit/Downloads/jfreechart-1.0.19/lib/jcommon-1.0.23.jar
+7f830525b000-7f830527b000 r--s 001a9000 08:01 31198657                   /home/amit/workspace/Nway/lib/poi-3.9-20121203.jar
+7f830527b000-7f830527c000 ---p 00000000 00:00 0 
+7f830527c000-7f830537c000 rw-p 00000000 00:00 0 
+7f830537c000-7f830537f000 ---p 00000000 00:00 0 
+7f830537f000-7f830547d000 rw-p 00000000 00:00 0 
+7f830547d000-7f8305480000 ---p 00000000 00:00 0 
+7f8305480000-7f830557e000 rw-p 00000000 00:00 0 
+7f830557e000-7f8305581000 ---p 00000000 00:00 0 
+7f8305581000-7f830567f000 rw-p 00000000 00:00 0 
+7f830567f000-7f8305682000 ---p 00000000 00:00 0 
+7f8305682000-7f8305780000 rw-p 00000000 00:00 0 
+7f8305780000-7f8305783000 ---p 00000000 00:00 0 
+7f8305783000-7f8305881000 rw-p 00000000 00:00 0 
+7f8305881000-7f8305884000 ---p 00000000 00:00 0 
+7f8305884000-7f8305982000 rw-p 00000000 00:00 0 
+7f8305982000-7f8305986000 r-xp 00000000 08:01 24249972                   /usr/lib/jvm/java-7-openjdk-amd64/jre/lib/amd64/libdt_socket.so
+7f8305986000-7f8305b85000 ---p 00004000 08:01 24249972                   /usr/lib/jvm/java-7-openjdk-amd64/jre/lib/amd64/libdt_socket.so
+7f8305b85000-7f8305b86000 r--p 00003000 08:01 24249972                   /usr/lib/jvm/java-7-openjdk-amd64/jre/lib/amd64/libdt_socket.so
+7f8305b86000-7f8305b87000 rw-p 00004000 08:01 24249972                   /usr/lib/jvm/java-7-openjdk-amd64/jre/lib/amd64/libdt_socket.so
+7f8305b87000-7f8305b8a000 ---p 00000000 00:00 0 
+7f8305b8a000-7f8305c88000 rw-p 00000000 00:00 0 
+7f8305c88000-7f8305c8b000 ---p 00000000 00:00 0 
+7f8305c8b000-7f8305d89000 rw-p 00000000 00:00 0 
+7f8305d89000-7f8305d8c000 ---p 00000000 00:00 0 
+7f8305d8c000-7f8305e8a000 rw-p 00000000 00:00 0 
+7f8305e8a000-7f8305e8b000 ---p 00000000 00:00 0 
+7f8305e8b000-7f8308000000 rw-p 00000000 00:00 0 
+7f8308000000-7f8308021000 rw-p 00000000 00:00 0 
+7f8308021000-7f830c000000 ---p 00000000 00:00 0 
+7f830c000000-7f830c001000 r--s 0000a000 08:01 31197642                   /home/amit/Downloads/mdt-uml2-Update-5.2.0/plugins/org.eclipse.uml2.uml.ecore.importer_3.1.0.v20160516-0939.jar
+7f830c001000-7f830c003000 r--s 00003000 08:01 31197657                   /home/amit/Downloads/mdt-uml2-Update-5.2.0/plugins/org.eclipse.uml2.uml.validation.source_5.0.0.v20160516-0939.jar
+7f830c003000-7f830c005000 r--s 00009000 08:01 25559718                   /home/amit/Downloads/jfreechart-1.0.19/lib/hamcrest-core-1.3.jar
+7f830c005000-7f830c016000 r--s 0016f000 08:01 25559722                   /home/amit/Downloads/jfreechart-1.0.19/lib/jfreechart-1.0.19.jar
+7f830c016000-7f830c1c8000 r--s 01d32000 08:01 24249993                   /usr/lib/jvm/java-7-openjdk-amd64/jre/lib/rt.jar
+7f830c1c8000-7f830c23e000 rw-p 00000000 00:00 0 
+7f830c23e000-7f830c23f000 ---p 00000000 00:00 0 
+7f830c23f000-7f830c33f000 rw-p 00000000 00:00 0 
+7f830c33f000-7f830c340000 ---p 00000000 00:00 0 
+7f830c340000-7f830c440000 rw-p 00000000 00:00 0 
+7f830c440000-7f830c441000 ---p 00000000 00:00 0 
+7f830c441000-7f830c541000 rw-p 00000000 00:00 0 
+7f830c541000-7f830c542000 ---p 00000000 00:00 0 
+7f830c542000-7f830c642000 rw-p 00000000 00:00 0 
+7f830c642000-7f830c643000 ---p 00000000 00:00 0 
+7f830c643000-7f830c743000 rw-p 00000000 00:00 0 
+7f830c743000-7f830c744000 ---p 00000000 00:00 0 
+7f830c744000-7f830c844000 rw-p 00000000 00:00 0 
+7f830c844000-7f830c845000 ---p 00000000 00:00 0 
+7f830c845000-7f830c96e000 rw-p 00000000 00:00 0 
+7f830c96e000-7f830cbd5000 rw-p 00000000 00:00 0 
+7f830cbd5000-7f830cbe0000 rw-p 00000000 00:00 0 
+7f830cbe0000-7f830cc28000 rw-p 00000000 00:00 0 
+7f830cc28000-7f830cc51000 rw-p 00000000 00:00 0 
+7f830cc51000-7f830ceb7000 rw-p 00000000 00:00 0 
+7f830ceb7000-7f830cecc000 rw-p 00000000 00:00 0 
+7f830cecc000-7f830cfff000 rw-p 00000000 00:00 0 
+7f830cfff000-7f830d000000 rw-p 00000000 00:00 0 
+7f830d000000-7f830d270000 rwxp 00000000 00:00 0 
+7f830d270000-7f83106e6000 rw-p 00000000 00:00 0 
+7f83106e6000-7f8314000000 ---p 00000000 00:00 0 
+7f8314000000-7f8314001000 r--s 00005000 08:01 31197658                   /home/amit/Downloads/mdt-uml2-Update-5.2.0/plugins/org.eclipse.uml2.uml.validation_5.0.0.v20160516-0939.jar
+7f8314001000-7f83140f0000 rw-p 00000000 00:00 0 
+7f83140f0000-7f83140f1000 ---p 00000000 00:00 0 
+7f83140f1000-7f83141fc000 rw-p 00000000 00:00 0 
+7f83141fc000-7f8314244000 rw-p 00000000 00:00 0 
+7f8314244000-7f831424c000 r-xp 00000000 08:01 24249960                   /usr/lib/jvm/java-7-openjdk-amd64/jre/lib/amd64/libzip.so
+7f831424c000-7f831444b000 ---p 00008000 08:01 24249960                   /usr/lib/jvm/java-7-openjdk-amd64/jre/lib/amd64/libzip.so
+7f831444b000-7f831444c000 r--p 00007000 08:01 24249960                   /usr/lib/jvm/java-7-openjdk-amd64/jre/lib/amd64/libzip.so
+7f831444c000-7f831444d000 rw-p 00008000 08:01 24249960                   /usr/lib/jvm/java-7-openjdk-amd64/jre/lib/amd64/libzip.so
+7f831444d000-7f8314457000 r-xp 00000000 08:01 27525223                   /lib/x86_64-linux-gnu/libnss_files-2.19.so
+7f8314457000-7f8314656000 ---p 0000a000 08:01 27525223                   /lib/x86_64-linux-gnu/libnss_files-2.19.so
+7f8314656000-7f8314657000 r--p 00009000 08:01 27525223                   /lib/x86_64-linux-gnu/libnss_files-2.19.so
+7f8314657000-7f8314658000 rw-p 0000a000 08:01 27525223                   /lib/x86_64-linux-gnu/libnss_files-2.19.so
+7f8314658000-7f8314663000 r-xp 00000000 08:01 27525215                   /lib/x86_64-linux-gnu/libnss_nis-2.19.so
+7f8314663000-7f8314862000 ---p 0000b000 08:01 27525215                   /lib/x86_64-linux-gnu/libnss_nis-2.19.so
+7f8314862000-7f8314863000 r--p 0000a000 08:01 27525215                   /lib/x86_64-linux-gnu/libnss_nis-2.19.so
+7f8314863000-7f8314864000 rw-p 0000b000 08:01 27525215                   /lib/x86_64-linux-gnu/libnss_nis-2.19.so
+7f8314864000-7f831487b000 r-xp 00000000 08:01 27525211                   /lib/x86_64-linux-gnu/libnsl-2.19.so
+7f831487b000-7f8314a7a000 ---p 00017000 08:01 27525211                   /lib/x86_64-linux-gnu/libnsl-2.19.so
+7f8314a7a000-7f8314a7b000 r--p 00016000 08:01 27525211                   /lib/x86_64-linux-gnu/libnsl-2.19.so
+7f8314a7b000-7f8314a7c000 rw-p 00017000 08:01 27525211                   /lib/x86_64-linux-gnu/libnsl-2.19.so
+7f8314a7c000-7f8314a7e000 rw-p 00000000 00:00 0 
+7f8314a7e000-7f8314a87000 r-xp 00000000 08:01 27525210                   /lib/x86_64-linux-gnu/libnss_compat-2.19.so
+7f8314a87000-7f8314c86000 ---p 00009000 08:01 27525210                   /lib/x86_64-linux-gnu/libnss_compat-2.19.so
+7f8314c86000-7f8314c87000 r--p 00008000 08:01 27525210                   /lib/x86_64-linux-gnu/libnss_compat-2.19.so
+7f8314c87000-7f8314c88000 rw-p 00009000 08:01 27525210                   /lib/x86_64-linux-gnu/libnss_compat-2.19.so
+7f8314c88000-7f831536a000 r--p 00000000 08:01 19143167                   /usr/lib/locale/locale-archive
+7f831536a000-7f831536c000 r-xp 00000000 08:01 24249940                   /usr/lib/jvm/java-7-openjdk-amd64/jre/lib/amd64/libnpt.so
+7f831536c000-7f831556c000 ---p 00002000 08:01 24249940                   /usr/lib/jvm/java-7-openjdk-amd64/jre/lib/amd64/libnpt.so
+7f831556c000-7f831556d000 r--p 00002000 08:01 24249940                   /usr/lib/jvm/java-7-openjdk-amd64/jre/lib/amd64/libnpt.so
+7f831556d000-7f831556e000 rw-p 00003000 08:01 24249940                   /usr/lib/jvm/java-7-openjdk-amd64/jre/lib/amd64/libnpt.so
+7f831556e000-7f83155a8000 r-xp 00000000 08:01 24249941                   /usr/lib/jvm/java-7-openjdk-amd64/jre/lib/amd64/libjdwp.so
+7f83155a8000-7f83157a7000 ---p 0003a000 08:01 24249941                   /usr/lib/jvm/java-7-openjdk-amd64/jre/lib/amd64/libjdwp.so
+7f83157a7000-7f83157a8000 r--p 00039000 08:01 24249941                   /usr/lib/jvm/java-7-openjdk-amd64/jre/lib/amd64/libjdwp.so
+7f83157a8000-7f83157a9000 rw-p 0003a000 08:01 24249941                   /usr/lib/jvm/java-7-openjdk-amd64/jre/lib/amd64/libjdwp.so
+7f83157a9000-7f83157d4000 r-xp 00000000 08:01 24249945                   /usr/lib/jvm/java-7-openjdk-amd64/jre/lib/amd64/libjava.so
+7f83157d4000-7f83159d4000 ---p 0002b000 08:01 24249945                   /usr/lib/jvm/java-7-openjdk-amd64/jre/lib/amd64/libjava.so
+7f83159d4000-7f83159d5000 r--p 0002b000 08:01 24249945                   /usr/lib/jvm/java-7-openjdk-amd64/jre/lib/amd64/libjava.so
+7f83159d5000-7f83159d7000 rw-p 0002c000 08:01 24249945                   /usr/lib/jvm/java-7-openjdk-amd64/jre/lib/amd64/libjava.so
+7f83159d7000-7f83159e7000 r-xp 00000000 08:01 24249946                   /usr/lib/jvm/java-7-openjdk-amd64/jre/lib/amd64/libverify.so
+7f83159e7000-7f8315be6000 ---p 00010000 08:01 24249946                   /usr/lib/jvm/java-7-openjdk-amd64/jre/lib/amd64/libverify.so
+7f8315be6000-7f8315be8000 r--p 0000f000 08:01 24249946                   /usr/lib/jvm/java-7-openjdk-amd64/jre/lib/amd64/libverify.so
+7f8315be8000-7f8315be9000 rw-p 00011000 08:01 24249946                   /usr/lib/jvm/java-7-openjdk-amd64/jre/lib/amd64/libverify.so
+7f8315be9000-7f8315bf0000 r-xp 00000000 08:01 27525219                   /lib/x86_64-linux-gnu/librt-2.19.so
+7f8315bf0000-7f8315def000 ---p 00007000 08:01 27525219                   /lib/x86_64-linux-gnu/librt-2.19.so
+7f8315def000-7f8315df0000 r--p 00006000 08:01 27525219                   /lib/x86_64-linux-gnu/librt-2.19.so
+7f8315df0000-7f8315df1000 rw-p 00007000 08:01 27525219                   /lib/x86_64-linux-gnu/librt-2.19.so
+7f8315df1000-7f8315e07000 r-xp 00000000 08:01 27529429                   /lib/x86_64-linux-gnu/libgcc_s.so.1
+7f8315e07000-7f8316006000 ---p 00016000 08:01 27529429                   /lib/x86_64-linux-gnu/libgcc_s.so.1
+7f8316006000-7f8316007000 rw-p 00015000 08:01 27529429                   /lib/x86_64-linux-gnu/libgcc_s.so.1
+7f8316007000-7f831610c000 r-xp 00000000 08:01 27525139                   /lib/x86_64-linux-gnu/libm-2.19.so
+7f831610c000-7f831630b000 ---p 00105000 08:01 27525139                   /lib/x86_64-linux-gnu/libm-2.19.so
+7f831630b000-7f831630c000 r--p 00104000 08:01 27525139                   /lib/x86_64-linux-gnu/libm-2.19.so
+7f831630c000-7f831630d000 rw-p 00105000 08:01 27525139                   /lib/x86_64-linux-gnu/libm-2.19.so
+7f831630d000-7f83163f3000 r-xp 00000000 08:01 19136535                   /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19
+7f83163f3000-7f83165f2000 ---p 000e6000 08:01 19136535                   /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19
+7f83165f2000-7f83165fa000 r--p 000e5000 08:01 19136535                   /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19
+7f83165fa000-7f83165fc000 rw-p 000ed000 08:01 19136535                   /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.19
+7f83165fc000-7f8316611000 rw-p 00000000 00:00 0 
+7f8316611000-7f8317136000 r-xp 00000000 08:01 24249958                   /usr/lib/jvm/java-7-openjdk-amd64/jre/lib/amd64/server/libjvm.so
+7f8317136000-7f8317336000 ---p 00b25000 08:01 24249958                   /usr/lib/jvm/java-7-openjdk-amd64/jre/lib/amd64/server/libjvm.so
+7f8317336000-7f83173d0000 r--p 00b25000 08:01 24249958                   /usr/lib/jvm/java-7-openjdk-amd64/jre/lib/amd64/server/libjvm.so
+7f83173d0000-7f83173f3000 rw-p 00bbf000 08:01 24249958                   /usr/lib/jvm/java-7-openjdk-amd64/jre/lib/amd64/server/libjvm.so
+7f83173f3000-7f8317422000 rw-p 00000000 00:00 0 
+7f8317422000-7f831743a000 r-xp 00000000 08:01 27529565                   /lib/x86_64-linux-gnu/libz.so.1.2.8
+7f831743a000-7f8317639000 ---p 00018000 08:01 27529565                   /lib/x86_64-linux-gnu/libz.so.1.2.8
+7f8317639000-7f831763a000 r--p 00017000 08:01 27529565                   /lib/x86_64-linux-gnu/libz.so.1.2.8
+7f831763a000-7f831763b000 rw-p 00018000 08:01 27529565                   /lib/x86_64-linux-gnu/libz.so.1.2.8
+7f831763b000-7f8317654000 r-xp 00000000 08:01 27525212                   /lib/x86_64-linux-gnu/libpthread-2.19.so
+7f8317654000-7f8317853000 ---p 00019000 08:01 27525212                   /lib/x86_64-linux-gnu/libpthread-2.19.so
+7f8317853000-7f8317854000 r--p 00018000 08:01 27525212                   /lib/x86_64-linux-gnu/libpthread-2.19.so
+7f8317854000-7f8317855000 rw-p 00019000 08:01 27525212                   /lib/x86_64-linux-gnu/libpthread-2.19.so
+7f8317855000-7f8317859000 rw-p 00000000 00:00 0 
+7f8317859000-7f831785c000 r-xp 00000000 08:01 27525149                   /lib/x86_64-linux-gnu/libdl-2.19.so
+7f831785c000-7f8317a5b000 ---p 00003000 08:01 27525149                   /lib/x86_64-linux-gnu/libdl-2.19.so
+7f8317a5b000-7f8317a5c000 r--p 00002000 08:01 27525149                   /lib/x86_64-linux-gnu/libdl-2.19.so
+7f8317a5c000-7f8317a5d000 rw-p 00003000 08:01 27525149                   /lib/x86_64-linux-gnu/libdl-2.19.so
+7f8317a5d000-7f8317c17000 r-xp 00000000 08:01 27525220                   /lib/x86_64-linux-gnu/libc-2.19.so
+7f8317c17000-7f8317e17000 ---p 001ba000 08:01 27525220                   /lib/x86_64-linux-gnu/libc-2.19.so
+7f8317e17000-7f8317e1b000 r--p 001ba000 08:01 27525220                   /lib/x86_64-linux-gnu/libc-2.19.so
+7f8317e1b000-7f8317e1d000 rw-p 001be000 08:01 27525220                   /lib/x86_64-linux-gnu/libc-2.19.so
+7f8317e1d000-7f8317e22000 rw-p 00000000 00:00 0 
+7f8317e22000-7f8317e2f000 r-xp 00000000 08:01 24249975                   /usr/lib/jvm/java-7-openjdk-amd64/jre/lib/amd64/jli/libjli.so
+7f8317e2f000-7f831802e000 ---p 0000d000 08:01 24249975                   /usr/lib/jvm/java-7-openjdk-amd64/jre/lib/amd64/jli/libjli.so
+7f831802e000-7f831802f000 r--p 0000c000 08:01 24249975                   /usr/lib/jvm/java-7-openjdk-amd64/jre/lib/amd64/jli/libjli.so
+7f831802f000-7f8318030000 rw-p 0000d000 08:01 24249975                   /usr/lib/jvm/java-7-openjdk-amd64/jre/lib/amd64/jli/libjli.so
+7f8318030000-7f8318053000 r-xp 00000000 08:01 27525213                   /lib/x86_64-linux-gnu/ld-2.19.so
+7f8318053000-7f8318054000 r--s 00002000 08:01 31197662                   /home/amit/Downloads/mdt-uml2-Update-5.2.0/plugins/org.eclipse.uml2_5.2.0.v20160516-0939.jar
+7f8318054000-7f8318055000 r--s 00003000 08:01 25559720                   /home/amit/Downloads/jfreechart-1.0.19/lib/jfreechart-1.0.19-experimental.jar
+7f8318055000-7f8318057000 r--s 00012000 08:01 25559721                   /home/amit/Downloads/jfreechart-1.0.19/lib/jfreechart-1.0.19-swt.jar
+7f8318057000-7f8318059000 r--s 0000b000 08:01 25559723                   /home/amit/Downloads/jfreechart-1.0.19/lib/jfreesvg-2.0.jar
+7f8318059000-7f831805f000 r--s 00036000 08:01 25559724                   /home/amit/Downloads/jfreechart-1.0.19/lib/junit-4.11.jar
+7f831805f000-7f8318066000 r--s 00066000 08:01 25559725                   /home/amit/Downloads/jfreechart-1.0.19/lib/orsoncharts-1.4-eval-nofx.jar
+7f8318066000-7f8318068000 r--s 00010000 08:01 25559726                   /home/amit/Downloads/jfreechart-1.0.19/lib/orsonpdf-1.6-eval.jar
+7f8318068000-7f831806b000 r--s 00011000 08:01 25559727                   /home/amit/Downloads/jfreechart-1.0.19/lib/servlet.jar
+7f831806b000-7f831806c000 r--s 00004000 08:01 25559728                   /home/amit/Downloads/jfreechart-1.0.19/lib/swtgraphics2d.jar
+7f831806c000-7f8318070000 r--s 00085000 08:01 24250010                   /usr/lib/jvm/java-7-openjdk-amd64/jre/lib/ext/localedata.jar
+7f8318070000-7f8318072000 r--s 00006000 08:01 19534909                   /usr/share/java/java-atk-wrapper.jar
+7f8318072000-7f831807c000 rw-p 00000000 00:00 0 
+7f831807c000-7f8318132000 rw-p 00000000 00:00 0 
+7f8318132000-7f8318135000 ---p 00000000 00:00 0 
+7f8318135000-7f8318238000 rw-p 00000000 00:00 0 
+7f8318238000-7f8318239000 r--s 00002000 08:01 24250006                   /usr/lib/jvm/java-7-openjdk-amd64/jre/lib/ext/dnsns.jar
+7f8318239000-7f831823d000 r--s 0003c000 08:01 24250011                   /usr/lib/jvm/java-7-openjdk-amd64/jre/lib/ext/sunpkcs11.jar
+7f831823d000-7f8318240000 r--s 0000f000 08:01 24250009                   /usr/lib/jvm/java-7-openjdk-amd64/jre/lib/ext/icedtea-sound.jar
+7f8318240000-7f8318244000 r--s 00034000 08:01 24250008                   /usr/lib/jvm/java-7-openjdk-amd64/jre/lib/ext/sunjce_provider.jar
+7f8318244000-7f8318246000 r--s 00012000 08:01 24250007                   /usr/lib/jvm/java-7-openjdk-amd64/jre/lib/ext/zipfs.jar
+7f8318246000-7f831824e000 rw-s 00000000 08:01 43515918                   /tmp/hsperfdata_amit/17881
+7f831824e000-7f831824f000 rw-p 00000000 00:00 0 
+7f831824f000-7f8318250000 r--p 00000000 00:00 0 
+7f8318250000-7f8318252000 rw-p 00000000 00:00 0 
+7f8318252000-7f8318253000 r--p 00022000 08:01 27525213                   /lib/x86_64-linux-gnu/ld-2.19.so
+7f8318253000-7f8318254000 rw-p 00023000 08:01 27525213                   /lib/x86_64-linux-gnu/ld-2.19.so
+7f8318254000-7f8318255000 rw-p 00000000 00:00 0 
+7ffc9189f000-7ffc918c7000 rw-p 00000000 00:00 0                          [stack]
+7ffc919ac000-7ffc919ae000 r--p 00000000 00:00 0                          [vvar]
+7ffc919ae000-7ffc919b0000 r-xp 00000000 00:00 0                          [vdso]
+ffffffffff600000-ffffffffff601000 r-xp 00000000 00:00 0                  [vsyscall]
+
+VM Arguments:
+jvm_args: -agentlib:jdwp=transport=dt_socket,suspend=y,address=localhost:44423 -Dfile.encoding=UTF-8 
+java_command: core.Main
+Launcher Type: SUN_STANDARD
+
+Environment Variables:
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games
+SHELL=/bin/bash
+DISPLAY=:0
+
+Signal Handlers:
+SIGSEGV: [libjvm.so+0x9561e0], sa_mask[0]=0x7ffbfeff, sa_flags=0x10000004
+SIGBUS: [libjvm.so+0x9561e0], sa_mask[0]=0x7ffbfeff, sa_flags=0x10000004
+SIGFPE: [libjvm.so+0x7cc4d0], sa_mask[0]=0x7ffbfeff, sa_flags=0x10000004
+SIGPIPE: [libjvm.so+0x7cc4d0], sa_mask[0]=0x7ffbfeff, sa_flags=0x10000004
+SIGXFSZ: [libjvm.so+0x7cc4d0], sa_mask[0]=0x7ffbfeff, sa_flags=0x10000004
+SIGILL: [libjvm.so+0x7cc4d0], sa_mask[0]=0x7ffbfeff, sa_flags=0x10000004
+SIGUSR1: SIG_DFL, sa_mask[0]=0x00000000, sa_flags=0x00000000
+SIGUSR2: [libjvm.so+0x7cc370], sa_mask[0]=0x00000004, sa_flags=0x10000004
+SIGHUP: [libjvm.so+0x7cc550], sa_mask[0]=0x7ffbfeff, sa_flags=0x10000004
+SIGINT: [libjvm.so+0x7cc550], sa_mask[0]=0x7ffbfeff, sa_flags=0x10000004
+SIGTERM: [libjvm.so+0x7cc550], sa_mask[0]=0x7ffbfeff, sa_flags=0x10000004
+SIGQUIT: [libjvm.so+0x7cc550], sa_mask[0]=0x7ffbfeff, sa_flags=0x10000004
+SIGTRAP: SIG_DFL, sa_mask[0]=0x00000000, sa_flags=0x00000000
+
+
+---------------  S Y S T E M  ---------------
+
+OS:Ubuntu 14.04 (trusty)
+uname:Linux 4.2.0-42-generic #49~14.04.1-Ubuntu SMP Wed Jun 29 20:22:11 UTC 2016 x86_64
+libc:glibc 2.19 NPTL 2.19 
+rlimit: STACK 8192k, CORE 0k, NPROC 31367, NOFILE 4096, AS infinity
+load average:0.06 0.09 0.09
+
+/proc/meminfo:
+MemTotal:        8052268 kB
+MemFree:          280896 kB
+MemAvailable:    4210092 kB
+Buffers:          528472 kB
+Cached:          3174772 kB
+SwapCached:          800 kB
+Active:          3593056 kB
+Inactive:        2842912 kB
+Active(anon):    2036704 kB
+Inactive(anon):  1259372 kB
+Active(file):    1556352 kB
+Inactive(file):  1583540 kB
+Unevictable:          32 kB
+Mlocked:              32 kB
+SwapTotal:       8265724 kB
+SwapFree:        8259912 kB
+Dirty:               176 kB
+Writeback:             0 kB
+AnonPages:       2732060 kB
+Mapped:           528012 kB
+Shmem:            563300 kB
+Slab:            1212328 kB
+SReclaimable:    1042708 kB
+SUnreclaim:       169620 kB
+KernelStack:       11952 kB
+PageTables:        48440 kB
+NFS_Unstable:          0 kB
+Bounce:                0 kB
+WritebackTmp:          0 kB
+CommitLimit:    12291856 kB
+Committed_AS:    8680476 kB
+VmallocTotal:   34359738367 kB
+VmallocUsed:      368068 kB
+VmallocChunk:   34358945788 kB
+HardwareCorrupted:     0 kB
+AnonHugePages:   1040384 kB
+CmaTotal:              0 kB
+CmaFree:               0 kB
+HugePages_Total:       0
+HugePages_Free:        0
+HugePages_Rsvd:        0
+HugePages_Surp:        0
+Hugepagesize:       2048 kB
+DirectMap4k:      222672 kB
+DirectMap2M:     8044544 kB
+
+
+CPU:total 8 (4 cores per cpu, 2 threads per core) family 6 model 42 stepping 7, cmov, cx8, fxsr, mmx, sse, sse2, sse3, ssse3, sse4.1, sse4.2, popcnt, avx, aes, ht, tsc, tscinvbit
+
+/proc/cpuinfo:
+processor	: 0
+vendor_id	: GenuineIntel
+cpu family	: 6
+model		: 42
+model name	: Intel(R) Core(TM) i7-2600 CPU @ 3.40GHz
+stepping	: 7
+microcode	: 0x23
+cpu MHz		: 2710.968
+cache size	: 8192 KB
+physical id	: 0
+siblings	: 8
+core id		: 0
+cpu cores	: 4
+apicid		: 0
+initial apicid	: 0
+fpu		: yes
+fpu_exception	: yes
+cpuid level	: 13
+wp		: yes
+flags		: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx rdtscp lm constant_tsc arch_perfmon pebs bts rep_good nopl xtopology nonstop_tsc aperfmperf eagerfpu pni pclmulqdq dtes64 monitor ds_cpl vmx smx est tm2 ssse3 cx16 xtpr pdcm pcid sse4_1 sse4_2 x2apic popcnt tsc_deadline_timer aes xsave avx lahf_lm ida arat epb pln pts dtherm tpr_shadow vnmi flexpriority ept vpid xsaveopt
+bugs		:
+bogomips	: 6784.41
+clflush size	: 64
+cache_alignment	: 64
+address sizes	: 36 bits physical, 48 bits virtual
+power management:
+
+processor	: 1
+vendor_id	: GenuineIntel
+cpu family	: 6
+model		: 42
+model name	: Intel(R) Core(TM) i7-2600 CPU @ 3.40GHz
+stepping	: 7
+microcode	: 0x23
+cpu MHz		: 2837.937
+cache size	: 8192 KB
+physical id	: 0
+siblings	: 8
+core id		: 1
+cpu cores	: 4
+apicid		: 2
+initial apicid	: 2
+fpu		: yes
+fpu_exception	: yes
+cpuid level	: 13
+wp		: yes
+flags		: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx rdtscp lm constant_tsc arch_perfmon pebs bts rep_good nopl xtopology nonstop_tsc aperfmperf eagerfpu pni pclmulqdq dtes64 monitor ds_cpl vmx smx est tm2 ssse3 cx16 xtpr pdcm pcid sse4_1 sse4_2 x2apic popcnt tsc_deadline_timer aes xsave avx lahf_lm ida arat epb pln pts dtherm tpr_shadow vnmi flexpriority ept vpid xsaveopt
+bugs		:
+bogomips	: 6784.41
+clflush size	: 64
+cache_alignment	: 64
+address sizes	: 36 bits physical, 48 bits virtual
+power management:
+
+processor	: 2
+vendor_id	: GenuineIntel
+cpu family	: 6
+model		: 42
+model name	: Intel(R) Core(TM) i7-2600 CPU @ 3.40GHz
+stepping	: 7
+microcode	: 0x23
+cpu MHz		: 2819.476
+cache size	: 8192 KB
+physical id	: 0
+siblings	: 8
+core id		: 2
+cpu cores	: 4
+apicid		: 4
+initial apicid	: 4
+fpu		: yes
+fpu_exception	: yes
+cpuid level	: 13
+wp		: yes
+flags		: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx rdtscp lm constant_tsc arch_perfmon pebs bts rep_good nopl xtopology nonstop_tsc aperfmperf eagerfpu pni pclmulqdq dtes64 monitor ds_cpl vmx smx est tm2 ssse3 cx16 xtpr pdcm pcid sse4_1 sse4_2 x2apic popcnt tsc_deadline_timer aes xsave avx lahf_lm ida arat epb pln pts dtherm tpr_shadow vnmi flexpriority ept vpid xsaveopt
+bugs		:
+bogomips	: 6784.41
+clflush size	: 64
+cache_alignment	: 64
+address sizes	: 36 bits physical, 48 bits virtual
+power management:
+
+processor	: 3
+vendor_id	: GenuineIntel
+cpu family	: 6
+model		: 42
+model name	: Intel(R) Core(TM) i7-2600 CPU @ 3.40GHz
+stepping	: 7
+microcode	: 0x23
+cpu MHz		: 2883.890
+cache size	: 8192 KB
+physical id	: 0
+siblings	: 8
+core id		: 3
+cpu cores	: 4
+apicid		: 6
+initial apicid	: 6
+fpu		: yes
+fpu_exception	: yes
+cpuid level	: 13
+wp		: yes
+flags		: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx rdtscp lm constant_tsc arch_perfmon pebs bts rep_good nopl xtopology nonstop_tsc aperfmperf eagerfpu pni pclmulqdq dtes64 monitor ds_cpl vmx smx est tm2 ssse3 cx16 xtpr pdcm pcid sse4_1 sse4_2 x2apic popcnt tsc_deadline_timer aes xsave avx lahf_lm ida arat epb pln pts dtherm tpr_shadow vnmi flexpriority ept vpid xsaveopt
+bugs		:
+bogomips	: 6784.41
+clflush size	: 64
+cache_alignment	: 64
+address sizes	: 36 bits physical, 48 bits virtual
+power management:
+
+processor	: 4
+vendor_id	: GenuineIntel
+cpu family	: 6
+model		: 42
+model name	: Intel(R) Core(TM) i7-2600 CPU @ 3.40GHz
+stepping	: 7
+microcode	: 0x23
+cpu MHz		: 2709.375
+cache size	: 8192 KB
+physical id	: 0
+siblings	: 8
+core id		: 0
+cpu cores	: 4
+apicid		: 1
+initial apicid	: 1
+fpu		: yes
+fpu_exception	: yes
+cpuid level	: 13
+wp		: yes
+flags		: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx rdtscp lm constant_tsc arch_perfmon pebs bts rep_good nopl xtopology nonstop_tsc aperfmperf eagerfpu pni pclmulqdq dtes64 monitor ds_cpl vmx smx est tm2 ssse3 cx16 xtpr pdcm pcid sse4_1 sse4_2 x2apic popcnt tsc_deadline_timer aes xsave avx lahf_lm ida arat epb pln pts dtherm tpr_shadow vnmi flexpriority ept vpid xsaveopt
+bugs		:
+bogomips	: 6784.41
+clflush size	: 64
+cache_alignment	: 64
+address sizes	: 36 bits physical, 48 bits virtual
+power management:
+
+processor	: 5
+vendor_id	: GenuineIntel
+cpu family	: 6
+model		: 42
+model name	: Intel(R) Core(TM) i7-2600 CPU @ 3.40GHz
+stepping	: 7
+microcode	: 0x23
+cpu MHz		: 2750.015
+cache size	: 8192 KB
+physical id	: 0
+siblings	: 8
+core id		: 1
+cpu cores	: 4
+apicid		: 3
+initial apicid	: 3
+fpu		: yes
+fpu_exception	: yes
+cpuid level	: 13
+wp		: yes
+flags		: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx rdtscp lm constant_tsc arch_perfmon pebs bts rep_good nopl xtopology nonstop_tsc aperfmperf eagerfpu pni pclmulqdq dtes64 monitor ds_cpl vmx smx est tm2 ssse3 cx16 xtpr pdcm pcid sse4_1 sse4_2 x2apic popcnt tsc_deadline_timer aes xsave avx lahf_lm ida arat epb pln pts dtherm tpr_shadow vnmi flexpriority ept vpid xsaveopt
+bugs		:
+bogomips	: 6784.41
+clflush size	: 64
+cache_alignment	: 64
+address sizes	: 36 bits physical, 48 bits virtual
+power management:
+
+processor	: 6
+vendor_id	: GenuineIntel
+cpu family	: 6
+model		: 42
+model name	: Intel(R) Core(TM) i7-2600 CPU @ 3.40GHz
+stepping	: 7
+microcode	: 0x23
+cpu MHz		: 1962.171
+cache size	: 8192 KB
+physical id	: 0
+siblings	: 8
+core id		: 2
+cpu cores	: 4
+apicid		: 5
+initial apicid	: 5
+fpu		: yes
+fpu_exception	: yes
+cpuid level	: 13
+wp		: yes
+flags		: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx rdtscp lm constant_tsc arch_perfmon pebs bts rep_good nopl xtopology nonstop_tsc aperfmperf eagerfpu pni pclmulqdq dtes64 monitor ds_cpl vmx smx est tm2 ssse3 cx16 xtpr pdcm pcid sse4_1 sse4_2 x2apic popcnt tsc_deadline_timer aes xsave avx lahf_lm ida arat epb pln pts dtherm tpr_shadow vnmi flexpriority ept vpid xsaveopt
+bugs		:
+bogomips	: 6784.41
+clflush size	: 64
+cache_alignment	: 64
+address sizes	: 36 bits physical, 48 bits virtual
+power management:
+
+processor	: 7
+vendor_id	: GenuineIntel
+cpu family	: 6
+model		: 42
+model name	: Intel(R) Core(TM) i7-2600 CPU @ 3.40GHz
+stepping	: 7
+microcode	: 0x23
+cpu MHz		: 2059.789
+cache size	: 8192 KB
+physical id	: 0
+siblings	: 8
+core id		: 3
+cpu cores	: 4
+apicid		: 7
+initial apicid	: 7
+fpu		: yes
+fpu_exception	: yes
+cpuid level	: 13
+wp		: yes
+flags		: fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx rdtscp lm constant_tsc arch_perfmon pebs bts rep_good nopl xtopology nonstop_tsc aperfmperf eagerfpu pni pclmulqdq dtes64 monitor ds_cpl vmx smx est tm2 ssse3 cx16 xtpr pdcm pcid sse4_1 sse4_2 x2apic popcnt tsc_deadline_timer aes xsave avx lahf_lm ida arat epb pln pts dtherm tpr_shadow vnmi flexpriority ept vpid xsaveopt
+bugs		:
+bogomips	: 6784.41
+clflush size	: 64
+cache_alignment	: 64
+address sizes	: 36 bits physical, 48 bits virtual
+power management:
+
+
+
+Memory: 4k page, physical 8052268k(280896k free), swap 8265724k(8259912k free)
+
+vm_info: OpenJDK 64-Bit Server VM (24.95-b01) for linux-amd64 JRE (1.7.0_101-b00), built on Apr 24 2016 20:39:29 by "buildd" with gcc 4.8.2
+
+time: Wed Jul 27 17:11:38 2016
+elapsed time: 2244 seconds
+

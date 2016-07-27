@@ -223,8 +223,10 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 		ArrayList<Element> incompatible = new ArrayList<Element>();
 		ArrayList<ArrayList<Element>> partition = new ArrayList<ArrayList<Element>>();
 		for (Element e: current.getElements()){
-			elems = AlgoUtil.removeElementsSameModelId(e, elems);
-			incompatible = AlgoUtil.removeElementsSameModelId(e, incompatible);
+			if (!md.switchBuckets){
+				elems = AlgoUtil.removeElementsSameModelId(e, elems);
+				incompatible = AlgoUtil.removeElementsSameModelId(e, incompatible);
+			}
 			partition = highlightElements(e, elems, incompatible, current);
 			elems = partition.get(0);
 			incompatible = partition.get(1);
@@ -236,7 +238,23 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 			if (picked == null){
 				break;
 			}
+			if (md.switchBuckets){
+				int commonModel = AlgoUtil.commonModel(picked, current);
+				if (commonModel != -1){
+					Element replaced = current.getElements().get(commonModel);
+					if (current.getSize() > 1)
+						current = current.lessExpanded(replaced, models);
+					else
+						current = new Tuple();
+					unusedElements.add(replaced);
+					//elems.add(replaced);
+					Tuple self = new Tuple();
+					self.addElement(replaced);
+					replaced.setContaintingTuple(self);
+				}
+			}
 			unusedElements.remove(picked);
+			elems.remove(picked);
 			current = current.newExpanded(picked, models);
 			if (md.switchTuples){
 				Tuple oldTuple = picked.getContaingTuple();
@@ -252,13 +270,15 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 					solution.add(oldTuple);
 				}
 			}
-			elems = AlgoUtil.removeElementsSameModelId(picked, elems);
-			incompatible = AlgoUtil.removeElementsSameModelId(picked, incompatible);
+			if (!md.switchBuckets){
+				elems = AlgoUtil.removeElementsSameModelId(picked, elems);
+				incompatible = AlgoUtil.removeElementsSameModelId(picked, incompatible);
+			}
 			// System.out.println(elems.size());
 			partition = highlightElements(picked, elems, incompatible, current);
 			elems = partition.get(0);
 			incompatible = partition.get(1);
-			//System.out.println(current);
+			System.out.println(current);
 		}
 		return current;
 	}
@@ -321,9 +341,16 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 	private Element pickMaxElement(ArrayList<Element> elems, Tuple best){
 		BigDecimal maxWeight = md.switchTuples? BigDecimal.ZERO : best.calcWeight(models);
 		Element maxElement = null;
-		int count = 0;
+		//int count = 0;
 		for (Element e: elems){
-			Tuple test = best.newExpanded(e, models);
+			int index = AlgoUtil.commonModel(e, best);
+			Tuple test;
+			if (index != -1){
+				test = best.newExpanded(e, models);
+				test = test.lessExpanded(best.getElements().get(index), models);
+			}
+			else
+				test = best.newExpanded(e, models);
 			BigDecimal currWeight;
 			if (md.switchTuples){
 				Tuple ct = e.getContaingTuple();
@@ -333,8 +360,8 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 				
 			}
 			else currWeight = test.calcWeight(models);
-			if (currWeight.compareTo(BigDecimal.ZERO) > 0)
-				count++;
+			//if (currWeight.compareTo(BigDecimal.ZERO) > 0)
+				//count++;
 			if (currWeight.compareTo(maxWeight) > 0){
 				//System.out.println(currWeight + "," + maxWeight);
 				maxElement = e;

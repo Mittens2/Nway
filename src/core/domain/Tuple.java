@@ -10,6 +10,7 @@ import java.util.Hashtable;
 import java.util.Iterator;
 
 import core.common.AlgoUtil;
+import core.common.ElementComparator;
 import core.common.N_WAY;
 
 
@@ -115,7 +116,8 @@ public class Tuple {
 	@Override
 	public boolean equals(Object o) {
 		if (o instanceof Tuple){
-			return getRealElements().equals(((Tuple)o).getRealElements());
+			//return getRealElements().equals(((Tuple)o).getRealElements());
+			return sortedElements().equals(((Tuple)o).sortedElements());
 		}
 		return false;
 	}

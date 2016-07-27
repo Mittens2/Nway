@@ -40,6 +40,20 @@ public class UMLParser {
 		}
 	}
 	
+	public class Dependency{
+		public ArrayList<String> dependencies;
+		
+		public Dependency(){
+			dependencies = new ArrayList<String>();
+		}
+		public void addDepenedency(String dep){
+			dependencies.add(dep);
+		}
+		public int getLength(){
+			return dependencies.size();
+		}
+	}
+	
 	public enum READING{
 		NONE,
 		CLASS,
@@ -198,15 +212,89 @@ public class UMLParser {
 			e.printStackTrace();
 		}
 	}
-	
-	public static void creatFeatureListFiles(String filePath, boolean random, int desired){
+	private static ArrayList<String> getDependencies(File file, String dependent, String exp){
+		ArrayList<String> deps = new ArrayList<String>();
+		try{
+			Scanner scan = new Scanner(file);
+			String line = "";
+			while(line.split(":")[0] != dependent){
+				line = scan.next();
+			}
+			String[] lineSplit = line.split(":");
+			if (lineSplit.length == 2){
+				for (String dep: lineSplit[1].split("|")){
+					deps.add(dep);
+				}
+				return deps;
+			}
+			else{
+				Random random = new Random();
+				for (String dep: lineSplit[1].split("\\s+")){
+					deps.addAll(getDependencies(file, dep.substring(0, dep.length() - 1), dep.substring(dep.length() - 1, dep.length())));
+				}
+				if (exp == "*"){
+					int rand = random.nextInt(deps.size());
+					ArrayList<String> featsChosen = new ArrayList<String>();
+					ArrayList<Integer> featNums = new ArrayList<Integer>();
+					for (int i = 0; i < deps.size(); i++) featNums.add(i);
+					Collections.shuffle(featNums, new Random(System.nanoTime()));
+					for (int i = 0; i < rand; i++) featsChosen.add(deps.get(featNums.get(i)));
+					return featsChosen;
+					
+				}
+				else if (exp == "+"){
+					int rand = random.nextInt(deps.size() - 1) + 1;
+					ArrayList<String> featsChosen = new ArrayList<String>();
+					ArrayList<Integer> featNums = new ArrayList<Integer>();
+					for (int i = 0; i < deps.size(); i++) featNums.add(i);
+					Collections.shuffle(featNums, new Random(System.nanoTime()));
+					for (int i = 0; i < rand; i++) featsChosen.add(deps.get(featNums.get(i)));
+					return featsChosen;
+				}
+				else if (exp == "["){
+					boolean choose = new Random().nextBoolean();
+					if (choose){
+						ArrayList<String> single = new ArrayList<String>();
+						single.add(deps.get(random.nextInt(deps.size())));
+						return single;
+					}
+					else{
+						return new ArrayList<String>();
+					}
+				}
+				else if (exp == ""){
+					ArrayList<String> single = new ArrayList<String>();
+					single.add(deps.get(random.nextInt(deps.size())));
+					return single;
+				}
+			}
+		} catch (Exception e){
+			e.printStackTrace();
+		}
+		return deps;
+	}
+	public static void creatFeatureListFiles(String caseName, boolean random, int desired){
 		try{
 			// Scan features from file.
+			String filePath = "/home/amit/Downloads/SuperimpositionExamples/Java/" + caseName + "/" + caseName + ".model";
+			File file = new File(filePath);
+			Scanner scan = new Scanner(new File(filePath));
+			String line = scan.next();
+			String 
+			System.out.println(getDependencies(file, ))
 			ArrayList<String> features = new ArrayList<String>();
-			Scanner scan = new Scanner(new File(filePath + ".features"));
+			Scanner scan = new Scanner(new File(filePath));
+			scan.useDelimiter(";");
+			while (scan.hasNext()){
+				String line = scan.next();
+				String[] lineSplit = line.split(":");
+				
+			}
+			//System.out.println(scan.next());
 			while(scan.hasNext()){
-				String feature = scan.next();
-				features.add(feature);
+				String line = scan.next();
+				for (String s: line.split("\\s+"))
+					System.out.println(s);
 			}
 			scan.close();
 			// Randomly choose 1 to features.size() features.

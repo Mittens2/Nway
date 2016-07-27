@@ -13,6 +13,7 @@ public class MergeDescriptor {
 	public int choose;
 	public boolean randomize;
 	public boolean switchTuples;
+	public boolean switchBuckets;
 	public int seed;
 
 	public MergeDescriptor(N_WAY.ALG_POLICY algPolicy, boolean asc, N_WAY.ORDER_BY orderBy) {
@@ -23,7 +24,7 @@ public class MergeDescriptor {
 	}
 	
 	public MergeDescriptor(boolean modelAsc, boolean elementAsc,
-			int highlight, int choose, boolean switchTuples, int seed) {
+			int highlight, int choose, boolean switchTuples, boolean switchBuckets, int seed) {
 		this.algPolicy = N_WAY.ALG_POLICY.RANDOM;
 		this.seed = seed;
 		this.asc = modelAsc;
@@ -31,6 +32,7 @@ public class MergeDescriptor {
 		this.highlight = highlight;
 		this.choose = choose;
 		this.switchTuples = switchTuples;
+		this.switchBuckets = switchBuckets;
 	}
 	
 	public static MergeDescriptor EMPTY = new MergeDescriptor(N_WAY.ALG_POLICY.PAIR_WISE, true, N_WAY.ORDER_BY.MODEL_ID);

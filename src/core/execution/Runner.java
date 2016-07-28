@@ -19,6 +19,7 @@ import core.common.AlgoUtil;
 import core.common.ModelComparator;
 import core.common.N_WAY;
 import core.common.Statistics;
+import core.domain.Element;
 import core.domain.Model;
 import core.domain.Tuple;
 
@@ -76,8 +77,8 @@ public class Runner extends ResultsWriter{
 		//}
 		AlgoUtil.COMPUTE_RESULTS_CLASSICALLY = false;
 		//results.addAll(runBigHungarian());
-		results.addAll(runRandomizedMatch());
-		
+		//results.addAll(runRandomizedMatch());
+		results.addAll(runNwMwithHS());
 		
 		//runLocalSearches(3);
 		/*if(! toChunkify){
@@ -246,6 +247,39 @@ public class Runner extends ResultsWriter{
 		return result;
 	}
 	
+	public ArrayList<RunResult> runNwMwithHS(){
+		@SuppressWarnings("unchecked")
+		ArrayList<RunResult> results = new ArrayList<RunResult>();
+		ArrayList<MergeDescriptor> mds = allPermOnAlg(N_WAY.ALG_POLICY.RANDOM);
+		MultiModelMerger mmm = new ChainingOptimizingMerger((ArrayList<Model>) models.clone());
+		mmm.run();
+		for(MergeDescriptor md:mds){
+			ArrayList<Tuple> prevSolution = new ArrayList<Tuple>(mmm.getTuplesInMatch());
+			for (Tuple t: prevSolution){
+				for (Element e: t.getElements()){
+					e.setContaintingTuple(t);
+				}
+			}
+			RunResult rr = runBestAlgo(md, prevSolution);
+			results.add(rr);
+		}
+		writeResults(results, "Randomized");
+		return results;
+	}
+	
+	private RunResult runBestAlgo(MergeDescriptor md, ArrayList<Tuple> prevSolution){
+		
+		RandomizedMatchMerger rmm = new RandomizedMatchMerger((ArrayList<Model>) models.clone(), md);
+		//System.out.println(models);
+		rmm.improveSolution(prevSolution);
+		RunResult rr = rmm.getRunResult(models.size());
+		//System.out.println(models.size());
+		rr.setTitle(AlgoUtil.nameOfMergeDescription(md, -1));
+		System.out.println(rr);
+		//AlgoUtil.printTuples(rmm.getTuplesInMatch());
+		return rr;
+	}
+	
 	public ArrayList<RunResult> runRandomizedMatch(){
 		@SuppressWarnings("unchecked")
 		ArrayList<RunResult> results = new ArrayList<RunResult>();
@@ -285,7 +319,7 @@ public class Runner extends ResultsWriter{
 		ArrayList<MergeDescriptor> retVal = new ArrayList<MergeDescriptor>();
 		if (pol == N_WAY.ALG_POLICY.RANDOM){
 			boolean randomize = false;
-			for (int highlight = 0; highlight < 1; highlight++){
+			for (int highlight = 0; highlight < 4; highlight++){
 				for (int choose = 0; choose < 1; choose++){
 					for (int st = 1; st < 2; st++){
 						boolean switchTuples = (st == 1);

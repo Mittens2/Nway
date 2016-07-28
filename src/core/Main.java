@@ -373,7 +373,7 @@ public class Main {
 		
 		//UMLParser.creatFeatureListFiles("/home/amit/Downloads/SuperimpositionExamples/Java/" 
 				//+ "GameOfLife" + "/" + "GameOfLife" + "Comp", true, 12);
-		UMLParser.creatFeatureListFiles("TankWar", true, 16);
+		UMLParser.createFeatureLists("TankWar", true, 16);
 		//UMLParser.creatFeatureListFiles("/home/amit/Downloads/SuperimpositionExamples/Java/" 
 					//+ "AJStats" + "/" + "AJStats" + "Comp", true, 15);
 		//UMLParser.creatFeatureListFiles("/home/amit/Downloads/SuperimpositionExamples/UML/" 

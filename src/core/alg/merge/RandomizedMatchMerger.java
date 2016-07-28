@@ -167,6 +167,32 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 		}*/
 	}
 	
+	public void improveSolution(ArrayList<Tuple> prevSolution){
+		long startTime = System.currentTimeMillis();
+		unusedElements = joinAllModels();
+		allElements.addAll(unusedElements);
+		solution = prevSolution;
+		while (unusedElements.size() > 0){
+			Element picked = unusedElements.get(0);
+			unusedElements.remove(0);
+			Tuple currTuple = picked.getContaingTuple();
+			solution.remove(currTuple);
+			ArrayList<Element> allElemsCopy = new ArrayList<Element>(allElements);
+			for (Element e: currTuple.getElements()){
+				allElemsCopy.remove(e);
+			}
+			currTuple = buildTuple(new ArrayList<Element>(allElemsCopy), currTuple);
+			solution.add(currTuple);
+		}
+		BigDecimal weight = AlgoUtil.calcGroupWeight(solution);
+		long endTime = System.currentTimeMillis();
+		long execTime = endTime - startTime;
+		BigDecimal avgTupleWeight = weight.divide(new BigDecimal(solution.size()), N_WAY.MATH_CTX);
+		res = new RunResult(execTime, weight, avgTupleWeight, solution);
+		res.setTitle("Randomized");
+		clear();
+	}
+	
 	/**
 	 * Does randomized merge algorithm described in tex file.
 	 * New function more modular.
@@ -278,7 +304,7 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 			partition = highlightElements(picked, elems, incompatible, current);
 			elems = partition.get(0);
 			incompatible = partition.get(1);
-			System.out.println(current);
+			//System.out.println(current);
 		}
 		return current;
 	}

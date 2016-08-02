@@ -18,6 +18,7 @@ import core.common.AlgoUtil;
 import core.common.ElementComparator;
 import core.common.ModelComparator;
 import core.common.N_WAY;
+import core.common.TupleComparator;
 import core.domain.Element;
 import core.domain.Model;
 import core.domain.Tuple;
@@ -106,6 +107,18 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 		return elems;
 	}
 	
+	private ArrayList<Element> joinAllModels2(){
+		ArrayList<Element> elems = new ArrayList<Element>();
+		Collections.sort(solution, new TupleComparator(md.asc, md.seed == 1));
+		for (Tuple t: solution){
+			//System.out.println(t.getSize());
+			elems.addAll(t.getElements());
+		}
+		allElements.addAll(elems);
+		Collections.shuffle(allElements, new Random(System.nanoTime()));
+		return elems;
+	}
+	
 	private HashMap<String, Integer> getSortedProperties(ArrayList<Element> elems){
 		HashMap<String, Integer> propFreq = new HashMap<String, Integer>();
 		for (Element e: elems){
@@ -170,8 +183,17 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 	public void improveSolution(ArrayList<Tuple> prevSolution){
 		long startTime = System.currentTimeMillis();
 		unusedElements = joinAllModels();
+		Collections.shuffle(unusedElements, new Random(System.nanoTime()));
 		solution.addAll(prevSolution);
-		for (int i = 0; i < 2; i++){
+		if (md.seed > 0){
+			for (Element e: unusedElements){
+				if (e.getContaingTuple().getSize() == 1){
+					solution.add(e.getContaingTuple());
+				}
+			}
+			unusedElements = joinAllModels2();
+		}
+		for (int i = 0; i < 1; i++){
 			unusedElements.addAll(allElements);
 			while (unusedElements.size() > 0){
 				Element picked = unusedElements.get(0);
@@ -183,22 +205,6 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 				solution.add(buildTuple(new ArrayList<Element>(allElemsCopy), currTuple));
 			}
 		}
-		/*while (unusedElements.size() > 0){
-			Element picked = unusedElements.get(0);
-			unusedElements.remove(0);
-			Tuple currTuple = picked.getContaingTuple();
-			solution.remove(currTuple);
-			ArrayList<Element> allElemsCopy = new ArrayList<Element>(allElements);
-			for (Element e: currTuple.getElements()){
-				allElemsCopy.remove(e);
-				unusedElements.remove(e);
-			}
-			if (md.switchTuples)
-				currTuple = buildTuple(new ArrayList<Element>(allElemsCopy), currTuple);
-			else
-				currTuple = buildTuple(new ArrayList<Element>(unusedElements), currTuple);
-			solution.add(currTuple);
-		}*/
 		ArrayList<Element> usedElements = new ArrayList<Element>();
 		for (Tuple t: solution){
 			for (Element e: t.getElements()){

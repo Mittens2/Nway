@@ -220,7 +220,7 @@ public class Main {
 		 * @param numOfModelsToUse The number of models to be used in the run.
 		 */
 		ArrayList<Model> models = Model.readModelsFile(modelsFile);
-		/*ArrayList<Model> newModels = new ArrayList<Model>();
+		ArrayList<Model> newModels = new ArrayList<Model>();
 		for (Model m: models){
 			if (m.size() > 60){
 				Collections.shuffle(m.getElements(), new Random(System.nanoTime()));
@@ -234,8 +234,8 @@ public class Main {
 				newModels.add(m);
 			}
 		}
-		models = newModels;*/
-		String caseName = modelsFile.substring(modelsFile.indexOf("/") + 1, modelsFile.indexOf("."));
+		models = newModels;
+		String caseName = modelsFile.substring(modelsFile.lastIndexOf("/") + 1, modelsFile.indexOf("."));
 		System.out.println(caseName + ", num models: " + models.size());
 		Runner runner = new Runner(models, resultsFile, null, numOfModelsToUse, toChunkify);
 		runner.execute(caseName);
@@ -408,7 +408,6 @@ public class Main {
 		//singleBatchRun(ajStats, resultsAJStats, -1, true);
 		//singleBatchRun(tankWar, resultsTankWar, -1, true);
 		//singleBatchRun(PKJab, resultsPKJab, -1, true);
-		//singleBatchRun(gameOfLife, resultsGameOfLife, -1, true);
 		//singleBatchRun(chatSystem, resultsChatSystem, -1, true);
 		//singleBatchRun(notepad, resultsNotepad, -1, true);
 		//singleBatchRun(ahead, resultsAhead, 3, true);

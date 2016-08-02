@@ -263,6 +263,7 @@ public class Runner extends ResultsWriter{
 			writeTuplesToFile(mmm.getTuplesInMatch(), file.getPath());
 		}
 		prevSolution = loadTuplesFromFile(file);
+		System.out.println("NwM alone: " + AlgoUtil.calcGroupWeight(prevSolution));
 		for(MergeDescriptor md:mds){
 			for (Tuple t: prevSolution){
 				for (Element e: t.getElements()){
@@ -289,8 +290,6 @@ public class Runner extends ResultsWriter{
 					currTuple = new Tuple();
 					tupNum++;
 				}
-				System.out.println(models.get(Integer.parseInt(line[1]) - 1).
-						getElementByLabel(line[2]));
 				currTuple = currTuple.newExpanded(models.get(Integer.parseInt(line[1]) - 1).
 						getElementByLabel(line[2]), models);
 			}
@@ -361,11 +360,17 @@ public class Runner extends ResultsWriter{
 						boolean switchTuples = (st == 1);
 						for (int sb = 0; sb < 2; sb++){
 							boolean switchBuckets = (sb == 1);
+							// Seedings used for improving on NwM.
+							retVal.add(new MergeDescriptor(false, false, highlight, choose, switchTuples, switchBuckets, 0));
+							retVal.add(new MergeDescriptor(true, true, highlight, choose, switchTuples,switchBuckets, 1));
+							retVal.add(new MergeDescriptor(false, false, highlight, choose, switchTuples,switchBuckets, 1));
+							retVal.add(new MergeDescriptor(true, true, highlight, choose, switchTuples,switchBuckets, 2));
+							retVal.add(new MergeDescriptor(false, false, highlight, choose, switchTuples,switchBuckets, 2));
 							// By convention if parameter is not used set to false
 							//retVal.add(new MergeDescriptor(false, false, highlight, choose, switchTuples, switchBuckets, 0));
 							//retVal.add(new MergeDescriptor(false, true, highlight, choose, switchTuples,switchBuckets, 1));
 							//retVal.add(new MergeDescriptor(false, false, highlight, choose, switchTuples,switchBuckets, 1));
-							retVal.add(new MergeDescriptor(false, false, highlight, choose, switchTuples,switchBuckets, 2));
+							//retVal.add(new MergeDescriptor(false, false, highlight, choose, switchTuples,switchBuckets, 2));
 							//retVal.add(new MergeDescriptor(false, true, highlight, choose, switchTuples,switchBuckets, 3));
 							//retVal.add(new MergeDescriptor(false, false, highlight, choose, switchTuples,switchBuckets, 3));
 							//retVal.add(new MergeDescriptor(true, true, highlight, choose, switchTuples,switchBuckets, 4));

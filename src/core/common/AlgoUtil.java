@@ -486,7 +486,7 @@ public class AlgoUtil {
 				else
 					res = res+"-d";
 			}
-			if (md.seed == 1 || md.seed == 3 || md.seed == 4 || md.seed == 5){
+			if (md.seed == 1 || md.seed == 3 || md.seed == 2 || md.seed == 4 || md.seed == 5){
 				if (md.elementAsc)
 					res = res+"-a";
 				else

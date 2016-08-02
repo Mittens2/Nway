@@ -6,6 +6,8 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Random;
 
 import org.apache.commons.math3.stat.inference.OneWayAnova;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
@@ -17,6 +19,7 @@ import org.jfree.ui.RefineryUtilities;
 import core.common.AlgoUtil;
 import core.common.ResultsPlotter;
 import core.common.Statistics;
+import core.domain.Element;
 import core.domain.Model;
 import core.execution.BatchRunner;
 import core.execution.BatchRunner.BatchRunDescriptor;
@@ -152,7 +155,7 @@ public class Main {
 				double[] scoreSums = null;
 				for (int j = 0; j < runsToAvg; j++){
 					Runner runner = new Runner(mods, rf, null, -1, false);
-					runner.execute();
+					runner.execute(subcase);
 					ArrayList<RunResult> rrs = runner.getRunResults();
 					if (scoreSums == null) scoreSums = new double[rrs.size()];
 					
@@ -201,9 +204,10 @@ public class Main {
 		}
 		else{
 			ArrayList<Model> models = Model.readModelsFile(modelsFile);
-			System.out.println(modelsFile.substring(modelsFile.lastIndexOf("/") + 1, modelsFile.indexOf(".")));
+			String caseName = modelsFile.substring(modelsFile.lastIndexOf("/") + 1, modelsFile.indexOf("."));
+			System.out.println(caseName);
 			Runner runner = new Runner(new ArrayList<Model>(models.subList(outlier * 10, (outlier + 1) * 10)), resultsFile, null, 10, true);
-			runner.execute();
+			runner.execute(caseName);
 		}
 	}
 		
@@ -216,9 +220,25 @@ public class Main {
 		 * @param numOfModelsToUse The number of models to be used in the run.
 		 */
 		ArrayList<Model> models = Model.readModelsFile(modelsFile);
-		System.out.println(modelsFile.substring(modelsFile.indexOf("/") + 1, modelsFile.indexOf(".")) + ", num models: " + models.size());
+		/*ArrayList<Model> newModels = new ArrayList<Model>();
+		for (Model m: models){
+			if (m.size() > 60){
+				Collections.shuffle(m.getElements(), new Random(System.nanoTime()));
+				int keep = new Random().nextInt(20) + 40;
+				ArrayList<Element> newElems = new ArrayList<Element>();
+				newElems.addAll(m.getElements().subList(0, keep));
+				Model newModel = new Model(m.getId(), newElems);
+				newModels.add(newModel);
+			}
+			else{
+				newModels.add(m);
+			}
+		}
+		models = newModels;*/
+		String caseName = modelsFile.substring(modelsFile.indexOf("/") + 1, modelsFile.indexOf("."));
+		System.out.println(caseName + ", num models: " + models.size());
 		Runner runner = new Runner(models, resultsFile, null, numOfModelsToUse, toChunkify);
-		runner.execute();
+		runner.execute(caseName);
 		ArrayList<RunResult> runResults = runner.getRunResults();
 		/*double[] scores = new double[runResults.size()];
 		for (int i = 0; i < runResults.size(); i++){
@@ -241,12 +261,13 @@ public class Main {
 		 * @see singleBatchRun
 		 */
 		ArrayList<Model> models = Model.readModelsFile(modelsFile);
-		System.out.println(modelsFile.substring(modelsFile.indexOf("/") + 1, modelsFile.indexOf(".")) + ", num models: " + models.size());
+		String caseName = modelsFile.substring(modelsFile.indexOf("/") + 1, modelsFile.indexOf("."));
+		System.out.println(caseName + ", num models: " + models.size());
 		int runs = models.size() / numOfModelsToUse;
 		ArrayList<ArrayList<BigDecimal>> runScores = new ArrayList<ArrayList<BigDecimal>>();
 		for (int i = 0; i < runs; i++){
 			Runner runner = new Runner(new ArrayList<Model>(models.subList(i * numOfModelsToUse, (i + 1) * numOfModelsToUse)), resultsFile, null, numOfModelsToUse, true);
-			runner.execute();
+			runner.execute(caseName);
 			ArrayList<BigDecimal> currScores = new ArrayList<BigDecimal>();
 			for (RunResult rr : runner.getRunResults()){
 				currScores.add(rr.weight);
@@ -295,30 +316,24 @@ public class Main {
 		
 		String hospitals = "models/hospitals.csv";
 		String warehouses = "models/warehouses.csv";
-		String random = "models/models/random.csv";
-		String randomLoose = "models/models/randomLoose.csv";
-		String randomTight = "models/models/randomTight.csv";
-		String level2a = "models/level2a.csv";
-		String level2b = "models/level2b.csv";
-		String level3a = "models/level3a.csv";
-		String toycase = "models/toycase.csv";
-		String toycase2 = "models/toycase2.csv";
-		String toycase3 = "models/toycase3.csv";
-		String gasBoilerSystem = "models/GasBoilerSystem.csv";
-		String audioControlSystem = "models/AudioControlSystem.csv";
-		String conferenceManagementSystem = "models/ConferenceManagementSystem.csv";
-		String ajStats = "models/AJStats.csv";
-		String tankWar = "models/TankWar.csv";
-		String gameOfLife = "models/GameOfLife.csv";
-		
-		/*String testPath = "models/test.csv";
-		String hospitals = "models/hospitals.csv";
-		String warehouses = "models/warehouses.csv";
-		String random10 = "models/random10.csv";
-		String randomTMP = "models/random3y.csv";
-		String randomTMP1= "models/3x6_models.csv";
-		String runningExample = "models/runningExample2.csv";*/
-		
+		String random = "models/Julia_study/random.csv";
+		String randomLoose = "models/Julia_study/randomLoose.csv";
+		String randomTight = "models/Julia_study/randomTight.csv";
+		String level2a = "models/aliens/level2a.csv";
+		String level2b = "models/aliens/level2b.csv";
+		String level3a = "models/aliens/level3a.csv";
+		String toycase = "models/toycases/toycase.csv";
+		String toycase2 = "models/toycases/toycase2.csv";
+		String toycase3 = "models/toycases/toycase3.csv";
+		String gasBoilerSystem = "models/FH/GasBoilerSystem.csv";
+		String audioControlSystem = "models/FH/AudioControlSystem.csv";
+		String conferenceManagementSystem = "models/FH/ConferenceManagementSystem.csv";
+		String ajStats = "models/FH/AJStats.csv";
+		String tankWar = "models/FH/TankWar.csv";
+		String PKJab = "models/FH/PKJab.csv";
+		String chatSystem = "models/FH_nogen/ChatSystem.csv";
+		String notepad = "models/FH_nogen/Notepad.csv";
+		String ahead = "models/FH_nogen/ahead.csv";
 		
 		String resultsHospitals = "results/hospital_results.xls";
 		String resultsWarehouses = "results/warehouses_results.xls";
@@ -334,10 +349,12 @@ public class Main {
 		String resultsGasBoilerSystem = "results/gasBoilerSystem_results.xls";
 		String resultsAudioControlSystem = "results/audioControlSystem_results.xls";
 		String resultsConferenceManagementSystem = "results/conferenceManagementSystem_results.xls";
+		String resultsPKJab = "results/PKJab_results.xls";
 		String resultsAJStats = "results/AJStats_results.xls";
 		String resultsTankWar = "results/TankWar_results.xls";
-		String resultsGameOfLife = "results/gameOfLife_results.xls";
-		
+		String resultsChatSystem = "results/chatSystem_results.xls";
+		String resultsNotepad = "results/notepad_results.xls";
+		String resultsAhead = "results/ahead_results.xls";
 		
 		ArrayList<String> models = new ArrayList<String>();
 		models.add(hospitals);
@@ -345,9 +362,6 @@ public class Main {
 		models.add(random);
 		models.add(randomLoose);
 		models.add(randomTight);
-		//models.add(level2a);
-		//models.add(level2b);
-		//models.add(level3a);
 		
 		ArrayList<String> results = new ArrayList<String>();
 		results.add(resultsHospitals);
@@ -355,10 +369,6 @@ public class Main {
 		results.add(resultsRandom);
 		results.add(resultsRandomLoose);
 		results.add(resultsRandomTight);
-		//results.add(resultsLevel2a);
-		//results.add(resultsLevel2b);
-		//results.add(resultsLevel3a);
-		//results.add(resultsToycase);
 		
 		AlgoUtil.useTreshold(true);
 		
@@ -367,36 +377,13 @@ public class Main {
 		//runOutliers(randomLoose, resultsRandomLoose, 4);
 		
 		//runSimpleExperiment(models, results, 10, 50, 10);
-		
 		//ReshapeData rd = new ReshapeData("results/experimentResults.xls");
 		//rd.reshapeData();
 		
-		//UMLParser.creatFeatureListFiles("/home/amit/Downloads/SuperimpositionExamples/Java/" 
-				//+ "GameOfLife" + "/" + "GameOfLife" + "Comp", true, 12);
-		UMLParser.createFeatureLists("TankWar", true, 16);
-		//UMLParser.creatFeatureListFiles("/home/amit/Downloads/SuperimpositionExamples/Java/" 
-					//+ "AJStats" + "/" + "AJStats" + "Comp", true, 15);
-		//UMLParser.creatFeatureListFiles("/home/amit/Downloads/SuperimpositionExamples/UML/" 
-			//	+ "ConferenceManagementSystem" + "/" + "ConferenceManagementSystem" + "Comp", false, -1);
-		//UMLParser.creatFeatureListFiles("/home/amit/Downloads/SuperimpositionExamples/UML/" 
-		//								+ "AudioControlSystem" + "/" + "AudioControlSystem" + "Comp", false, -1);
-		//UMLParser.creatFeatureListFiles("/home/amit/Downloads/SuperimpositionExamples/UML/" 
-		//+ "GasBoilerSystem" + "/" + "GasBoilerSystem" + "Comp", 12);
-		//UMLParser.UMLtoCSV();
-		
-		//singleBatchRun(randomTMP, null)
-		//singleBatchRun(runningExample, resultsRunningExample);
-		//AlgoUtil.COMPUTE_RESULTS_CLASSICALLY = true;
-		//workOnBatch(random10, resultRandom10);
+		//UMLParser.createFeatureLists("Prevayler", true, 8);
+		//UMLParser.UMLtoCSV("PKJab", 8);
 		
 		//singleBatchRun(randomTMP, null,3, true);
-		
-		//singleBatchRun(hospitals, resultsHospitals,-1, true);
-		//singleBatchRun(warehouses, resultsWarehouses,-1, true);
-		
-		//AlgoUtil.COMPUTE_RESULTS_CLASSICALLY = true;
-		
-		//AlgoUtil.COMPUTE_RESULTS_CLASSICALLY = false;
 		
 		/*RandomizedMatchMergerTest test = new RandomizedMatchMergerTest();
 		try{
@@ -405,10 +392,9 @@ public class Main {
 		} catch (Exception e){
 			e.printStackTrace();
 		}*/
-		//singleBatchRun(warehouses, resultsWarehouses, 16, true);	
-		//singleBatchRun(hospitals, resultsHospitals, 8, true);
-		//singleBatchRun(random, resultsRandom, 3, true);	
-		//singleBatchRun(randomLoose, resultsRandomLoose, 3, true);	
+		
+		//singleBatchRun(warehouses, resultsWarehouses, -1, true);	
+		singleBatchRun(hospitals, resultsHospitals, -1, true);
 		//multipleBatchRun(random, resultsRandom, 10);	
 		//multipleBatchRun(randomLoose, resultsRandomLoose, 10);	
 		//multipleBatchRun(randomTight, resultsRandomTight, 10);
@@ -421,7 +407,11 @@ public class Main {
 		//singleBatchRun(gasBoilerSystem, resultsGasBoilerSystem, -1, true);
 		//singleBatchRun(ajStats, resultsAJStats, -1, true);
 		//singleBatchRun(tankWar, resultsTankWar, -1, true);
+		//singleBatchRun(PKJab, resultsPKJab, -1, true);
 		//singleBatchRun(gameOfLife, resultsGameOfLife, -1, true);
+		//singleBatchRun(chatSystem, resultsChatSystem, -1, true);
+		//singleBatchRun(notepad, resultsNotepad, -1, true);
+		//singleBatchRun(ahead, resultsAhead, 3, true);
 		
 		//workOnBatch(random10, resultRandom10);
 		//workOnBatch("models/randomH.csv", "results/randomH.xls");

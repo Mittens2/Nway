@@ -170,9 +170,20 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 	public void improveSolution(ArrayList<Tuple> prevSolution){
 		long startTime = System.currentTimeMillis();
 		unusedElements = joinAllModels();
-		allElements.addAll(unusedElements);
-		solution = prevSolution;
-		while (unusedElements.size() > 0){
+		solution.addAll(prevSolution);
+		for (int i = 0; i < 2; i++){
+			unusedElements.addAll(allElements);
+			while (unusedElements.size() > 0){
+				Element picked = unusedElements.get(0);
+				Tuple currTuple = picked.getContaingTuple();
+				unusedElements.removeAll(currTuple.getElements());
+				ArrayList<Element> allElemsCopy = new ArrayList<Element>(allElements);
+				allElemsCopy.removeAll(currTuple.getElements());
+				solution.remove(currTuple);
+				solution.add(buildTuple(new ArrayList<Element>(allElemsCopy), currTuple));
+			}
+		}
+		/*while (unusedElements.size() > 0){
 			Element picked = unusedElements.get(0);
 			unusedElements.remove(0);
 			Tuple currTuple = picked.getContaingTuple();
@@ -180,9 +191,21 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 			ArrayList<Element> allElemsCopy = new ArrayList<Element>(allElements);
 			for (Element e: currTuple.getElements()){
 				allElemsCopy.remove(e);
+				unusedElements.remove(e);
 			}
-			currTuple = buildTuple(new ArrayList<Element>(allElemsCopy), currTuple);
+			if (md.switchTuples)
+				currTuple = buildTuple(new ArrayList<Element>(allElemsCopy), currTuple);
+			else
+				currTuple = buildTuple(new ArrayList<Element>(unusedElements), currTuple);
 			solution.add(currTuple);
+		}*/
+		ArrayList<Element> usedElements = new ArrayList<Element>();
+		for (Tuple t: solution){
+			for (Element e: t.getElements()){
+				if (usedElements.contains(e))
+					System.out.println(e);
+				usedElements.add(e);
+			}
 		}
 		BigDecimal weight = AlgoUtil.calcGroupWeight(solution);
 		long endTime = System.currentTimeMillis();

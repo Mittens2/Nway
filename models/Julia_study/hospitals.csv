@@ -26,7 +26,7 @@
 1,WristBand,n_wristBand;patient;adminAssistant;record
 2,AdminAssistant,n_adminAssistant;ex_medicalTeam;patient
 2,Bed,n_bed
-2,Booking Calendar,n_bookingCalendar
+2,BookingCalendar,n_bookingCalendar
 2,DisplayScanner,n_displayScanner;unit;room;wristBand;healthCard;idCard
 2,Equipment,n_equipment
 2,GeneralStorage,n_generalStorage;mobile

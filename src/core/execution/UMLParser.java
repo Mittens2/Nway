@@ -98,53 +98,32 @@ public class UMLParser {
 			    String line = scan.next();
 				//System.out.println(line);
 			   	if (reading == READING.NONE){
-			   		if (line.contains("ClassDeclaration") || line.contains("InterfaceDeclaration")){
-			   		//if (line.matches("^UML:Class i.*") || 
-			   		   //(line.matches("^UML:Interface.*") && getName(line) != null)){
+			   		if ((line.contains("ClassDeclaration") || line.contains("InterfaceDeclaration")) && line.contains("originalCompilationUnit")){
 			   			reading = READING.CLASS;
 			   			currClass = new UMLClass(getName(line));
+			   			System.out.println(currClass);
 			   			classes.put(getID(line), currClass.name);
 			   		}
-			   		/*else if (line.matches("^UML:Abstraction.*")){
-			   			reading = READING.ABSTRACTION;
-			   			currAbs = getIDAbs(line);
-			   		}*/
 			   	}
 			   	else if (reading == READING.CLASS){
 			   		if (line.contains("MethodDeclaration"))
 			   			currClass.properties.add("m_" + getName(line));
 			   		else if (line.contains("FieldDeclaration")){
-			   			while(scan.hasNext() && (!line.contains("fragment") || line.contains("bodyDeclaration")))
+			   			System.out.println(line);
+			   			while(scan.hasNext() && (!line.contains("fragment") || line.contains("/bodyDeclarations"))){
+			   				System.out.println(line);
 			   				line = scan.next();
+			   			}
 			   			if (getName(line) != null)
 			   				currClass.properties.add("f_" + getName(line));
-			   		}	
-			   		/*if (line.matches("^UML:Attribute.*") || line.matches("^UML:Operation.*")){
-			   			if (!getName(line).equals("variable") && getName(line).equals("reg")){
-			   				currClass.properties.add(getName(line));
-			   			}
-			   		}*/
-			   		/*else if (line.matches("^UML:Abstraction.*")){
-			   			currClass.depID = getID(line).substring(3);
-			   		}*/
+			   		}
 			   		else if (line.contains("/ownedElements")){
-			   		//else if (line.matches("^/UML:Class.*")){
 			   			modelClasses.add(currClass);
 			   			reading = READING.NONE;
 			   		}
 			   	}
-			   	/*else{
-			   		if (line.matches("^UML:Interface.*")){
-			   			String longID = getID(line).substring(9);
-			   			dependencies.put(currAbs, longID);
-			   		}
-			   		else if (line.matches("^/UML:Abstraction.*"))
-			   			reading = READING.NONE;
-			   	}*/
 			}
 			for (UMLClass umlc: modelClasses){
-				//if (umlc.depID != null)
-					//umlc.properties.add("ex_" + dependencies.get(umlc.depID));
 				System.out.print(umlc.name + ":");
 				for (String p: umlc.properties)
 					System.out.print(p + ",");
@@ -177,16 +156,9 @@ public class UMLParser {
 		return newLine.substring(0, newLine.indexOf('"'));
 	}
 	
-	public static void UMLtoCSV(){
-		String caseName = "TankWar";
-		//creatFeatureListFiles("/home/amit/Downloads/SuperimpositionExamples/UML/" 
-		//+ caseName + "/" + caseName + "Comp", 12);
+	public static void UMLtoCSV(String caseName, int desired){
 		ArrayList<ArrayList<UMLClass>> umlcs = new ArrayList<ArrayList<UMLClass>>();
-		//for (int i = 0; i < 15; i++){
-			//umlcs.add(parseUML("/home/amit/Downloads/SuperimpositionExamples/UML/" +
-					//caseName + "/" + caseName + "Comp" + i + "/ClassDiagram.xmi"));
-		//}
-		for (int i = 0; i < 15; i++){
+		for (int i = 0; i < desired; i++){
 			umlcs.add(parseUML("/home/amit/workspace/" + caseName + i + "/" + caseName + i + "_java.xmi"));
 		}
 		writeToFile(umlcs, caseName);
@@ -226,6 +198,7 @@ public class UMLParser {
 		}
 		// Read dependencies.
 		if (currLine.size() == 0){
+			//System.out.println(dependent);
 			features.add(dependent);
 		}
 		else if (currLine.size() == 2){
@@ -264,7 +237,8 @@ public class UMLParser {
 				}
 				else{
 					allFeatures.addAll(getFeatures1(lines, dep));
-					features.addAll(allFeatures);
+					if (allFeatures.size() > 0)
+						features.add(allFeatures.get(new Random().nextInt(allFeatures.size())));
 				}
 			}
 		}
@@ -272,8 +246,8 @@ public class UMLParser {
 	}
 	
 	public static void createFeatureLists(String caseName, boolean random, int desired){
-		String filePath = "/home/amit/Downloads/SuperimpositionExamples/Java/" + caseName + "/" + caseName + ".model";
-		File file = new File(filePath);
+		String filePath = "/home/amit/Downloads/SuperimpositionExamples/Java/" + caseName + "/" + caseName;
+		File file = new File(filePath + ".model");
 		ArrayList<ArrayList<String>> featureCombs = new ArrayList<ArrayList<String>>();
 		if (file.exists()){
 			try{
@@ -284,12 +258,12 @@ public class UMLParser {
 					ArrayList<String> line = new ArrayList<String>();
 					String currLine = scan.next().trim();
 					line.addAll(Arrays.asList(currLine.split("\\s*:+\\s*")));
-					System.out.println(line);
+					//System.out.println(line);
 					lines.add(line);
 				}
-				ArrayList<String> features = getFeatures1(lines, caseName);
-				for (String feature: features){
-					System.out.println(feature);
+				for (int i = 0; i < desired; i++){
+					ArrayList<String> features = getFeatures1(lines, "SPL");
+					featureCombs.add(features);
 				}
 				scan.close();
 			} catch (Exception e){
@@ -297,7 +271,7 @@ public class UMLParser {
 			}
 		}
 		else{
-			filePath = "/home/amit/Downloads/SuperimpositionExamples/Java/" + caseName + "/" + caseName + "Comp.features";
+			filePath = filePath + "Comp.features";
 			file = new File(filePath);
 			featureCombs = getFeatures2(file, random, desired);
 		}

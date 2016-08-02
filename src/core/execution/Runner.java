@@ -1,9 +1,12 @@
 package core.execution;
 
+import java.io.File;
+import java.io.PrintWriter;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Scanner;
 
 import core.alg.TupleReader;
 import core.alg.merge.ChainingOptimizingMerger;
@@ -22,6 +25,7 @@ import core.common.Statistics;
 import core.domain.Element;
 import core.domain.Model;
 import core.domain.Tuple;
+import core.execution.UMLParser.UMLClass;
 
 public class Runner extends ResultsWriter{
 
@@ -60,7 +64,7 @@ public class Runner extends ResultsWriter{
 		writeResults(man, "Manual");
 	}
 
-	public void execute(){
+	public void execute(String caseName){
 				
 //		runOnLocalSearch(N_WAY.ALG_POLICY.REPLACE_BEST, "LS triwise");
 	//	runOnLocalSearch(N_WAY.ALG_POLICY.REPLACE_FIRST_BY_SQUARES, "LS triwise");
@@ -78,7 +82,7 @@ public class Runner extends ResultsWriter{
 		AlgoUtil.COMPUTE_RESULTS_CLASSICALLY = false;
 		//results.addAll(runBigHungarian());
 		//results.addAll(runRandomizedMatch());
-		results.addAll(runNwMwithHS());
+		results.addAll(runNwMwithHS(caseName));
 		
 		//runLocalSearches(3);
 		/*if(! toChunkify){
@@ -247,14 +251,19 @@ public class Runner extends ResultsWriter{
 		return result;
 	}
 	
-	public ArrayList<RunResult> runNwMwithHS(){
+	public ArrayList<RunResult> runNwMwithHS(String caseName){
 		@SuppressWarnings("unchecked")
 		ArrayList<RunResult> results = new ArrayList<RunResult>();
 		ArrayList<MergeDescriptor> mds = allPermOnAlg(N_WAY.ALG_POLICY.RANDOM);
-		MultiModelMerger mmm = new ChainingOptimizingMerger((ArrayList<Model>) models.clone());
-		mmm.run();
+		ArrayList<Tuple> prevSolution = new ArrayList<Tuple>();
+		File file = new File("models/NwMsolutions/" + caseName + ".csv");
+		if (!file.exists()){
+			MultiModelMerger mmm = new ChainingOptimizingMerger((ArrayList<Model>) models.clone());
+			mmm.run();
+			writeTuplesToFile(mmm.getTuplesInMatch(), file.getPath());
+		}
+		prevSolution = loadTuplesFromFile(file);
 		for(MergeDescriptor md:mds){
-			ArrayList<Tuple> prevSolution = new ArrayList<Tuple>(mmm.getTuplesInMatch());
 			for (Tuple t: prevSolution){
 				for (Element e: t.getElements()){
 					e.setContaintingTuple(t);
@@ -265,6 +274,44 @@ public class Runner extends ResultsWriter{
 		}
 		writeResults(results, "Randomized");
 		return results;
+	}
+	
+	private ArrayList<Tuple> loadTuplesFromFile(File f){
+		ArrayList<Tuple> nwmSolution = new ArrayList<Tuple>();
+		try{
+			Scanner scan = new Scanner(f);
+			int tupNum = 0;
+			Tuple currTuple = new Tuple();
+			while(scan.hasNext()){
+				String[] line = scan.next().split(",");
+				if (Integer.parseInt(line[0]) != tupNum){
+					nwmSolution.add(currTuple);
+					currTuple = new Tuple();
+					tupNum++;
+				}
+				System.out.println(models.get(Integer.parseInt(line[1]) - 1).
+						getElementByLabel(line[2]));
+				currTuple = currTuple.newExpanded(models.get(Integer.parseInt(line[1]) - 1).
+						getElementByLabel(line[2]), models);
+			}
+		} catch (Exception e){
+			e.printStackTrace();
+		}
+		return nwmSolution;
+	}
+	
+	private void writeTuplesToFile(ArrayList<Tuple> nwmSolution, String filePath){
+		try{
+			PrintWriter writer = new PrintWriter(filePath, "utf-8");
+			for (int i = 0; i < nwmSolution.size(); i++){
+				for (Element e: nwmSolution.get(i).getElements()){
+					writer.println(i + "," + e.getModelId() + "," + e.getLabel());
+				}
+			}
+			writer.close();
+		} catch (Exception e){
+			e.printStackTrace();
+		}
 	}
 	
 	private RunResult runBestAlgo(MergeDescriptor md, ArrayList<Tuple> prevSolution){
@@ -284,21 +331,10 @@ public class Runner extends ResultsWriter{
 		@SuppressWarnings("unchecked")
 		ArrayList<RunResult> results = new ArrayList<RunResult>();
 		ArrayList<MergeDescriptor> mds = allPermOnAlg(N_WAY.ALG_POLICY.RANDOM);
-		/*double[] data = new double[10];
-		double max = 0.02;
-		double min = 0.0005;
-		for (int i = 1; i <= 10; i ++){
-			double rate = min + i * ((max - min) / 10);
-			for (int j = 0; j < 10; j++){*/
-				for(MergeDescriptor md:mds){
-					RunResult rr = runRandomMatch(md);
-					results.add(rr);
-					//data[j] = rr.weight.doubleValue();
-				}
-			/*}
-			Statistics stats = new Statistics(data);
-			System.out.println("Uniform Rate: " + rate + "\n Average score: " + stats.getMean() + "+-" + stats.getStdDev());
-		}*/
+		for(MergeDescriptor md:mds){
+			RunResult rr = runRandomMatch(md);
+			results.add(rr);
+		}
 		writeResults(results, "Randomized");
 		return results;
 	}
@@ -311,14 +347,14 @@ public class Runner extends ResultsWriter{
 		//System.out.println(models.size());
 		rr.setTitle(AlgoUtil.nameOfMergeDescription(md, -1));
 		System.out.println(rr);
-		AlgoUtil.printTuples(rmm.getTuplesInMatch());
+		//AlgoUtil.printTuples(rmm.getTuplesInMatch());
 		return rr;
 	}
 	
 	private ArrayList<MergeDescriptor> allPermOnAlg(N_WAY.ALG_POLICY pol){
 		ArrayList<MergeDescriptor> retVal = new ArrayList<MergeDescriptor>();
 		if (pol == N_WAY.ALG_POLICY.RANDOM){
-			boolean randomize = false;
+			//boolean randomize = false;
 			for (int highlight = 0; highlight < 4; highlight++){
 				for (int choose = 0; choose < 1; choose++){
 					for (int st = 1; st < 2; st++){

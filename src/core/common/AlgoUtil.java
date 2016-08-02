@@ -507,9 +507,11 @@ public class AlgoUtil {
 			else
 				res = res+"_ch2";
 			if (md.switchTuples)
-				res = res+"_st)";
+				res = res+"_st";
+			if (md.switchBuckets)
+				res = res+"_sb)";
 			else
-				res = res+")";
+				res =res+")";
 		}
 		else{
 			if(splitSize > 2)

@@ -159,7 +159,8 @@ public class UMLParser {
 	public static void UMLtoCSV(String caseName, int desired){
 		ArrayList<ArrayList<UMLClass>> umlcs = new ArrayList<ArrayList<UMLClass>>();
 		for (int i = 0; i < desired; i++){
-			umlcs.add(parseUML("/home/amit/workspace/" + caseName + i + "/" + caseName + i + "_java.xmi"));
+			umlcs.add(parseUML("/home/amit/Downloads/benson_models/TraceabilityExtractor/ProductLines/_MMprograms/"
+		+ caseName + "0" + i + "_OO" + "/" + caseName + "0" + i + "_OO_java.xmi"));
 		}
 		writeToFile(umlcs, caseName);
 	}

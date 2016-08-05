@@ -20,29 +20,30 @@ public class ReshapeData {
 		FileOutputStream fileOut;
 		FileInputStream fileIn;
 		HSSFWorkbook workbook;
-		String[] seedings = {"0", "1-a", "1-d", "2", "3-a", "3-d", "4-a-a", "4-a-d", "4-d-a", "4-d-d", "5-a", "5-d"};
+		String[] seedings = {"rand", "score-a", "score-d", "size-a", "size-d"};
 		try {
 			fileIn = new FileInputStream(new File(inFilePath));
 			workbook = new HSSFWorkbook(fileIn);
-			HSSFSheet origSheet = workbook.getSheet("sheet1");
-			HSSFSheet reshapeSheet = workbook.getSheet("sheet2");
+			HSSFSheet origSheet = workbook.getSheet("Block Form");
+			HSSFSheet reshapeSheet = workbook.getSheet("Long Form");
 			if(reshapeSheet == null)
-				reshapeSheet = workbook.createSheet("sheet2");
+				reshapeSheet = workbook.createSheet("Long Form");
 			int size = origSheet.getRow(0).getLastCellNum();
 			Row newFirstRow = reshapeSheet.createRow(0);
 			newFirstRow.createCell(0).setCellValue("case");
-			newFirstRow.createCell(1).setCellValue("sd");
-			newFirstRow.createCell(2).setCellValue("hl");
-			newFirstRow.createCell(3).setCellValue("st");
+			newFirstRow.createCell(1).setCellValue("seed");
+			newFirstRow.createCell(2).setCellValue("highlight");
+			newFirstRow.createCell(3).setCellValue("swithBuckets");
 			newFirstRow.createCell(4).setCellValue("score");
-			for(int i = 1; i <= 32; i++){
+			for(int i = 1; i <= 13; i++){
 				Row oldRow = origSheet.getRow(i);
 				for (int j = 0; j < size - 1; j++){
-					Row newRow = reshapeSheet.createRow((i - 1) * 96 + j + 1);
+					Row newRow = reshapeSheet.createRow((i - 1) * 40 + j + 1);
 					newRow.createCell(0).setCellValue(oldRow.getCell(0).getStringCellValue());
-					newRow.createCell(1).setCellValue(seedings[j % 12]);
-					newRow.createCell(2).setCellValue(j / 24);
-					newRow.createCell(3).setCellValue((j % 24) / 12);
+					newRow.createCell(1).setCellValue(seedings[j % 5]);
+					newRow.createCell(2).setCellValue(j / 10);
+					newRow.createCell(3).setCellValue((j % 10) / 5);
+					System.out.println(oldRow.getCell(j + 1).getNumericCellValue());
 					newRow.createCell(4).setCellValue(oldRow.getCell(j + 1).getNumericCellValue());
 				}
 			}

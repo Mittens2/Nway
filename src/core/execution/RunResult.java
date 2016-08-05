@@ -17,6 +17,7 @@ public class RunResult {
 	public BigDecimal avgTupleWeight;
 	public String title;
 	public double[] bins = new double[20];
+	public int iterations;
 	
 
 	public RunResult(double execTime, BigDecimal weight, BigDecimal avgTupleWeight, ArrayList<Tuple> sol) {
@@ -102,6 +103,10 @@ public class RunResult {
 			bins[t.getRealElements().size()]++;
 		}
 		
+	}
+	
+	public void addIterations(int iterations){
+		this.iterations = iterations;
 	}
 	
 }

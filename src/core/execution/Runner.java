@@ -80,7 +80,7 @@ public class Runner extends ResultsWriter{
 		//runOnGreedy(5);
 		//}
 		AlgoUtil.COMPUTE_RESULTS_CLASSICALLY = false;
-		//results.addAll(runBigHungarian());
+		results.addAll(runBigHungarian(caseName));
 		//results.addAll(runRandomizedMatch());
 		results.addAll(runNwMwithHS(caseName));
 		
@@ -237,17 +237,25 @@ public class Runner extends ResultsWriter{
 		return rr;
 	}
 	
-	public ArrayList<RunResult> runBigHungarian(){
+	public ArrayList<RunResult> runBigHungarian(String caseName){
 		@SuppressWarnings("unchecked")
-		MultiModelMerger mmm = new ChainingOptimizingMerger((ArrayList<Model>) models.clone());
-		mmm.run();
-		RunResult rr = mmm.getRunResult(models.size());
-		rr.setTitle("New Hungarian");
+		RunResult rr = null;
+		File file = new File("models/NwMsolutions/" + caseName + ".csv");
+		if (file.exists()){
+			ArrayList<Tuple> solution = loadTuplesFromFile(file);
+			rr = new RunResult(0, AlgoUtil.calcGroupWeight(solution), BigDecimal.ZERO, solution);
+		}
+		else{
+			MultiModelMerger mmm = new ChainingOptimizingMerger((ArrayList<Model>) models.clone());
+			mmm.run();
+			rr = mmm.getRunResult(models.size());
+			rr.setTitle("New Hungarian");
+		}
 		ArrayList<RunResult> result = new ArrayList<RunResult>();
 		result.add(rr);
-		System.out.println(rr);
-		AlgoUtil.printTuples(mmm.getTuplesInMatch());
-		writeResults(result, "New Hungarian");
+		//System.out.println(rr);
+		//AlgoUtil.printTuples(mmm.getTuplesInMatch());
+		//writeResults(result, "New Hungarian");
 		return result;
 	}
 	
@@ -260,6 +268,7 @@ public class Runner extends ResultsWriter{
 		if (!file.exists()){
 			MultiModelMerger mmm = new ChainingOptimizingMerger((ArrayList<Model>) models.clone());
 			mmm.run();
+			System.out.println(AlgoUtil.calcGroupWeight(mmm.getTuplesInMatch()));
 			writeTuplesToFile(mmm.getTuplesInMatch(), file.getPath());
 		}
 		prevSolution = loadTuplesFromFile(file);
@@ -284,7 +293,7 @@ public class Runner extends ResultsWriter{
 			int tupNum = 0;
 			Tuple currTuple = new Tuple();
 			while(scan.hasNext()){
-				String[] line = scan.next().split(",");
+				String[] line = scan.next().split(";");
 				if (Integer.parseInt(line[0]) != tupNum){
 					nwmSolution.add(currTuple);
 					currTuple = new Tuple();
@@ -293,6 +302,7 @@ public class Runner extends ResultsWriter{
 				currTuple = currTuple.newExpanded(models.get(Integer.parseInt(line[1]) - 1).
 						getElementByLabel(line[2]), models);
 			}
+			nwmSolution.add(currTuple);
 		} catch (Exception e){
 			e.printStackTrace();
 		}
@@ -304,7 +314,7 @@ public class Runner extends ResultsWriter{
 			PrintWriter writer = new PrintWriter(filePath, "utf-8");
 			for (int i = 0; i < nwmSolution.size(); i++){
 				for (Element e: nwmSolution.get(i).getElements()){
-					writer.println(i + "," + e.getModelId() + "," + e.getLabel());
+					writer.println(i + ";" + e.getModelId() + ";" + e.getLabel());
 				}
 			}
 			writer.close();
@@ -354,18 +364,18 @@ public class Runner extends ResultsWriter{
 		ArrayList<MergeDescriptor> retVal = new ArrayList<MergeDescriptor>();
 		if (pol == N_WAY.ALG_POLICY.RANDOM){
 			//boolean randomize = false;
-			for (int highlight = 0; highlight < 4; highlight++){
+			for (int highlight = 3; highlight < 4; highlight++){
 				for (int choose = 0; choose < 1; choose++){
 					for (int st = 1; st < 2; st++){
 						boolean switchTuples = (st == 1);
-						for (int sb = 0; sb < 2; sb++){
+						for (int sb = 0; sb < 1; sb++){
 							boolean switchBuckets = (sb == 1);
 							// Seedings used for improving on NwM.
-							retVal.add(new MergeDescriptor(false, false, highlight, choose, switchTuples, switchBuckets, 0));
+							//retVal.add(new MergeDescriptor(false, false, highlight, choose, switchTuples, switchBuckets, 0));
 							retVal.add(new MergeDescriptor(true, true, highlight, choose, switchTuples,switchBuckets, 1));
-							retVal.add(new MergeDescriptor(false, false, highlight, choose, switchTuples,switchBuckets, 1));
-							retVal.add(new MergeDescriptor(true, true, highlight, choose, switchTuples,switchBuckets, 2));
-							retVal.add(new MergeDescriptor(false, false, highlight, choose, switchTuples,switchBuckets, 2));
+							//retVal.add(new MergeDescriptor(false, false, highlight, choose, switchTuples,switchBuckets, 1));
+							//retVal.add(new MergeDescriptor(true, true, highlight, choose, switchTuples,switchBuckets, 2));
+							//retVal.add(new MergeDescriptor(false, false, highlight, choose, switchTuples,switchBuckets, 2));
 							// By convention if parameter is not used set to false
 							//retVal.add(new MergeDescriptor(false, false, highlight, choose, switchTuples, switchBuckets, 0));
 							//retVal.add(new MergeDescriptor(false, true, highlight, choose, switchTuples,switchBuckets, 1));

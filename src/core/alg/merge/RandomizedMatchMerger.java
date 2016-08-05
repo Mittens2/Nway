@@ -112,7 +112,8 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 		Collections.sort(solution, new TupleComparator(md.asc, md.seed == 1));
 		for (Tuple t: solution){
 			//System.out.println(t.getSize());
-			elems.addAll(t.getElements());
+			//elems.addAll(t.getElements());
+			elems.add(t.getElements().get(0));
 		}
 		allElements.addAll(elems);
 		Collections.shuffle(allElements, new Random(System.nanoTime()));
@@ -193,7 +194,11 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 			}
 			unusedElements = joinAllModels2();
 		}
-		for (int i = 0; i < 1; i++){
+		int iterations = 0;
+		int count = 0;
+		BigDecimal currentScore = AlgoUtil.calcGroupWeight(solution).subtract(new BigDecimal(0.01));
+		while(System.currentTimeMillis() - startTime < (1000 * 60 * 5) && count != 1){
+			currentScore = AlgoUtil.calcGroupWeight(solution);
 			unusedElements.addAll(allElements);
 			while (unusedElements.size() > 0){
 				Element picked = unusedElements.get(0);
@@ -204,7 +209,15 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 				solution.remove(currTuple);
 				solution.add(buildTuple(new ArrayList<Element>(allElemsCopy), currTuple));
 			}
+			if (currentScore.compareTo(AlgoUtil.calcGroupWeight(solution)) >= 0){
+				count++;
+			}
+			else{
+				count = 0;
+			}
+			iterations++;
 		}
+		System.out.println("iterations: " + iterations);
 		ArrayList<Element> usedElements = new ArrayList<Element>();
 		for (Tuple t: solution){
 			for (Element e: t.getElements()){
@@ -218,6 +231,7 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 		long execTime = endTime - startTime;
 		BigDecimal avgTupleWeight = weight.divide(new BigDecimal(solution.size()), N_WAY.MATH_CTX);
 		res = new RunResult(execTime, weight, avgTupleWeight, solution);
+		res.addIterations(iterations);
 		res.setTitle("Randomized");
 		clear();
 	}

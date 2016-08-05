@@ -115,13 +115,14 @@ public class Main {
 		try{
 			fileIn = new FileInputStream(new File("results/experimentResults.xls"));
 			workbook = new HSSFWorkbook(fileIn);
-			sheet = workbook.getSheetAt(0);
-			if (sheet == null)
-				sheet = workbook.createSheet();
-			Row header = sheet.createRow(0);
-			header.createCell(0).setCellValue("Case");
-			for (int i = 1; i <= 96; i++){
-				header.createCell(i).setCellValue("c" + i);
+			sheet = workbook.getSheet("Block Form");
+			if (sheet == null){
+				sheet = workbook.createSheet("Block Form");
+				Row header = sheet.createRow(0);
+				header.createCell(0).setCellValue("Case");
+				for (int i = 1; i <= 40; i++){
+					header.createCell(i).setCellValue("c" + i);
+				}
 			}
 		}
 		catch (Exception e){
@@ -136,15 +137,17 @@ public class Main {
 			String rf = resultsFiles.get(i);
 			ArrayList<Model> models = Model.readModelsFile(mf);
 			ArrayList<ArrayList<Model>> runModels = new ArrayList<ArrayList<Model>>();
-			String subcase = mf.charAt(mf.indexOf('/') + 1) + "";
+			//String subcase = mf.charAt(mf.indexOf('/') + 1) + "";
+			String subcase = mf.substring(mf.lastIndexOf("/") + 1, mf.indexOf("."));
 			//System.out.println(subcase);
 			if (models.size() > divideUp){
-				int ind = mf.lastIndexOf('/');
-				subcase = mf.charAt(ind + 1) + "";
-				char secondChar = mf.charAt(ind + 1 + "random".length());
-				subcase = Character.isLetter(secondChar) ? subcase + secondChar : subcase;
+				//int ind = mf.lastIndexOf('/');
+				//subcase = mf.charAt(ind + 1) + "";
+				//char secondChar = mf.charAt(ind + 1 + "random".length());
+				//subcase = Character.isLetter(secondChar) ? subcase + secondChar : subcase;
 				int runs = models.size() / numOfModelsToUse;
-				for (int j = 0; j < runs; j++){
+				//for (int j = 0; j < runs; j++){
+				for (int j = 0; j < 1; j++){
 					runModels.add(new ArrayList<Model>(models.subList(j * numOfModelsToUse, (j + 1) * numOfModelsToUse)));
 				}
 			}
@@ -164,8 +167,9 @@ public class Main {
 						scoreSums[k] += rrs.get(k).weight.doubleValue();
 					}
 				}
-				Row newRow = sheet.createRow(subcaseID + 1);
-				newRow.createCell(0).setCellValue(subcase + subcaseNum);
+				//Row newRow = sheet.createRow(subcaseID + 1);
+				Row newRow = sheet.createRow(sheet.getLastRowNum() + 1);
+				newRow.createCell(0).setCellValue(subcase);
 				for (int j = 0; j < scoreSums.length; j++){
 					rps.get(j).addDataPoint(scoreSums[j] / runsToAvg, nwmScores[subcaseID], subcase + subcaseNum);
 					newRow.createCell(j + 1).setCellValue(scoreSums[j] / runsToAvg);
@@ -195,6 +199,65 @@ public class Main {
 			}
 			//datasets.add(data);*/
 			rp.createChartSingle();
+		}
+	}
+	
+	private static void runSingleHSExperiment(ArrayList<String> modelsFiles, ArrayList<String> resultsFiles, int runsToAvg, 
+			int divideUp, int numOfModelsToUse){
+		FileInputStream fileIn;
+		FileOutputStream fileOut;
+		HSSFWorkbook workbook;
+		HSSFSheet sheet;
+		try{
+			fileIn = new FileInputStream(new File("results/singleHSResults.xls"));
+			workbook = new HSSFWorkbook(fileIn);
+			sheet = workbook.getSheet("sheet1");
+			if (sheet == null){
+				sheet = workbook.createSheet("sheet1");
+				Row header = sheet.createRow(0);
+				header.createCell(0).setCellValue("case");
+				header.createCell(0).setCellValue("nwm_score");
+				header.createCell(0).setCellValue("hs_score");
+				header.createCell(0).setCellValue("iterations");
+				header.createCell(0).setCellValue("time");
+			}
+		}
+		catch (Exception e){
+			e.printStackTrace();
+			return;
+		}
+		for (int i = 0; i < modelsFiles.size(); i++){
+			String mf = modelsFiles.get(i);
+			String rf = resultsFiles.get(i);
+			ArrayList<Model> models = Model.readModelsFile(mf);
+			String subcase = mf.substring(mf.lastIndexOf("/") + 1, mf.indexOf("."));
+			if (models.size() > divideUp){
+				models = new ArrayList<Model>(models.subList(0, numOfModelsToUse));
+			}
+			double[] valueSums = new double[4];
+			for (int j = 0; j < runsToAvg; j++){
+				Runner runner = new Runner(models, rf, null, -1, false);
+				runner.execute(subcase);
+				ArrayList<RunResult> rrs = runner.getRunResults();
+				valueSums[0] += rrs.get(0).weight.doubleValue();
+				valueSums[1] += rrs.get(1).weight.doubleValue();
+				valueSums[2] += rrs.get(1).iterations;
+				valueSums[3] += rrs.get(1).execTime;
+			}
+			Row newRow = sheet.createRow(sheet.getLastRowNum() + 1);
+			newRow.createCell(0).setCellValue(subcase);
+			for (int j = 0; j < valueSums.length; j++){
+				newRow.createCell(j + 1).setCellValue(valueSums[j] / runsToAvg);
+			}
+		}
+		try{
+			fileIn.close();
+			fileOut = new FileOutputStream(new File("results/singleHSResults.xls"));
+			workbook.write(fileOut); 
+			fileOut.close();
+		}
+		catch (Exception e){
+			e.printStackTrace();
 		}
 	}
 	
@@ -314,8 +377,8 @@ public class Main {
 		
 
 		
-		String hospitals = "models/hospitals.csv";
-		String warehouses = "models/warehouses.csv";
+		String hospitals = "models/Julia_study/hospitals.csv";
+		String warehouses = "models/Julia_study/warehouses.csv";
 		String random = "models/Julia_study/random.csv";
 		String randomLoose = "models/Julia_study/randomLoose.csv";
 		String randomTight = "models/Julia_study/randomTight.csv";
@@ -362,6 +425,15 @@ public class Main {
 		models.add(random);
 		models.add(randomLoose);
 		models.add(randomTight);
+		models.add(gasBoilerSystem);
+		models.add(audioControlSystem);
+		models.add(conferenceManagementSystem);
+		models.add(ajStats);
+		models.add(tankWar);
+		models.add(PKJab);
+		models.add(chatSystem);
+		models.add(notepad);
+
 		
 		ArrayList<String> results = new ArrayList<String>();
 		results.add(resultsHospitals);
@@ -369,6 +441,14 @@ public class Main {
 		results.add(resultsRandom);
 		results.add(resultsRandomLoose);
 		results.add(resultsRandomTight);
+		results.add(resultsGasBoilerSystem);
+		results.add(resultsAudioControlSystem);
+		results.add(resultsConferenceManagementSystem);
+		results.add(resultsAJStats);
+		results.add(resultsTankWar);
+		results.add(resultsPKJab);
+		results.add(resultsChatSystem);
+		results.add(resultsNotepad);
 		
 		AlgoUtil.useTreshold(true);
 		
@@ -376,12 +456,13 @@ public class Main {
 		//runOutliers(random, resultsRandom, 9); 
 		//runOutliers(randomLoose, resultsRandomLoose, 4);
 		
+		//runSingleHSExperiment(models, results, 10, 50, 10);
 		//runSimpleExperiment(models, results, 10, 50, 10);
 		//ReshapeData rd = new ReshapeData("results/experimentResults.xls");
 		//rd.reshapeData();
 		
 		//UMLParser.createFeatureLists("Prevayler", true, 8);
-		//UMLParser.UMLtoCSV("PKJab", 8);
+		UMLParser.UMLtoCSV("MobileMedia", 7);
 		
 		//singleBatchRun(randomTMP, null,3, true);
 		
@@ -393,8 +474,11 @@ public class Main {
 			e.printStackTrace();
 		}*/
 		
+		//singleBatchRun(hospitals, resultsHospitals, -1, true);
 		//singleBatchRun(warehouses, resultsWarehouses, -1, true);	
-		singleBatchRun(hospitals, resultsHospitals, -1, true);
+		//singleBatchRun(random, resultsRandom, 10, true);	
+		//singleBatchRun(randomLoose, resultsRandomLoose, 10, true);	
+		//singleBatchRun(randomTight, resultsRandomTight, 10, true);
 		//multipleBatchRun(random, resultsRandom, 10);	
 		//multipleBatchRun(randomLoose, resultsRandomLoose, 10);	
 		//multipleBatchRun(randomTight, resultsRandomTight, 10);
@@ -405,11 +489,14 @@ public class Main {
 		//singleBatchRun(toycase2, resultsToycase2, -1, true);
 		//singleBatchRun(toycase3, resultsToycase3, -1, true);
 		//singleBatchRun(gasBoilerSystem, resultsGasBoilerSystem, -1, true);
+		//singleBatchRun(audioControlSystem, resultsAudioControlSystem, -1, true);
+		//singleBatchRun(conferenceManagementSystem, resultsConferenceManagementSystem, -1, true);
 		//singleBatchRun(ajStats, resultsAJStats, -1, true);
 		//singleBatchRun(tankWar, resultsTankWar, -1, true);
 		//singleBatchRun(PKJab, resultsPKJab, -1, true);
 		//singleBatchRun(chatSystem, resultsChatSystem, -1, true);
 		//singleBatchRun(notepad, resultsNotepad, -1, true);
+		
 		//singleBatchRun(ahead, resultsAhead, 3, true);
 		
 		//workOnBatch(random10, resultRandom10);

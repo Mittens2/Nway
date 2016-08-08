@@ -411,6 +411,43 @@ public class AlgoUtil {
 		return pairs;
 	}
 	
+	/*public ArrayList<Tuple> calcOptimalScore(String modelsFile){
+		ArrayList<Model> models = Model.readModelsFile(modelsFile);
+		ArrayList<Tuple> allCombos = buildAllTupleCombos(new Tuple(), models, 0);
+		ArrayList<ArrayList<Tuple>> allSolutions = getAllSolutions(new ArrayList<Tuple>(), allCombos, models, 0);
+	}
+	
+	private ArrayList<Tuple> buildAllTupleCombos(Tuple current, ArrayList<Model> models, int model){
+		ArrayList<Tuple> tupCombos = new ArrayList<Tuple>();
+		if (model == models.size() - 1){
+			tupCombos.add(current);
+			for (Element e: models.get(model).getElements()){
+				Tuple newTuple = current.newExpanded(e, models);
+				tupCombos.add(newTuple);
+			}
+		}
+		else{
+			tupCombos.addAll(buildAllTupleCombos(current, models, model + 1));
+			for (Element e: models.get(model).getElements()){
+				Tuple newTuple = current.newExpanded(e, models);
+				tupCombos.addAll(buildAllTupleCombos(newTuple, models, model + 1));
+			}
+		}
+		return tupCombos;
+	}
+	
+	private ArrayList<ArrayList<Tuple>> getAllSolutions(ArrayList<Tuple> current, ArrayList<Tuple> allTuples, ArrayList<Model> models, int model){
+		int skip = allTuples.size() / (models.get(model).size() + 1);
+		for (int i = 0; i < currSkip; i++){
+			ArrayList<Tuple> newSolution = current;
+			newSolution.add(allTuples.get(i));
+			ArrayList<Tuple> legitTuples = new ArrayList<Tuple>();
+			for (int )
+			legitTuples.addAll(allTuples.subList(0, skip * i));
+			legitTuples.addAll(allTuples.subList(skip * (i + 1), allTuples.size()));
+			
+		}
+	}*/
 	
 	public static ArrayList<Model> getModelsByCohesiveness(ArrayList<Model> models,final boolean asc){
 		ArrayList<HungarianMerger> merges = generateAllModelPairs(models);

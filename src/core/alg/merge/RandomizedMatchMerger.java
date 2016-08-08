@@ -115,7 +115,7 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 			//elems.addAll(t.getElements());
 			elems.add(t.getElements().get(0));
 		}
-		allElements.addAll(elems);
+		//allElements.addAll(elems);
 		Collections.shuffle(allElements, new Random(System.nanoTime()));
 		return elems;
 	}
@@ -197,10 +197,10 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 		int iterations = 0;
 		int count = 0;
 		BigDecimal currentScore = AlgoUtil.calcGroupWeight(solution).subtract(new BigDecimal(0.01));
-		while(System.currentTimeMillis() - startTime < (1000 * 60 * 5) && count != 1){
+		while(count != 1){
 			currentScore = AlgoUtil.calcGroupWeight(solution);
 			unusedElements.addAll(allElements);
-			while (unusedElements.size() > 0){
+			while (System.currentTimeMillis() - startTime < (1000 * 60 * 5) && unusedElements.size() > 0){
 				Element picked = unusedElements.get(0);
 				Tuple currTuple = picked.getContaingTuple();
 				unusedElements.removeAll(currTuple.getElements());
@@ -307,22 +307,27 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 			if (picked == null){
 				break;
 			}
+			Element replaced = null;
 			if (md.switchBuckets){
 				int commonModel = AlgoUtil.commonModel(picked, current);
 				if (commonModel != -1){
-					Element replaced = current.getElements().get(commonModel);
+					replaced = current.getElements().get(commonModel);
 					if (current.getSize() > 1)
 						current = current.lessExpanded(replaced, models);
 					else
 						current = new Tuple();
 					unusedElements.add(replaced);
-					//elems.add(replaced);
+					elems.add(replaced);
 					Tuple self = new Tuple();
 					self.addElement(replaced);
 					replaced.setContaintingTuple(self);
 				}
 			}
 			unusedElements.remove(picked);
+			if (picked == replaced){
+				System.out.println(elems);
+				System.out.println();
+			}
 			elems.remove(picked);
 			current = current.newExpanded(picked, models);
 			if (md.switchTuples){

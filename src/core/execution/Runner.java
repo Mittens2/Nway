@@ -364,11 +364,11 @@ public class Runner extends ResultsWriter{
 		ArrayList<MergeDescriptor> retVal = new ArrayList<MergeDescriptor>();
 		if (pol == N_WAY.ALG_POLICY.RANDOM){
 			//boolean randomize = false;
-			for (int highlight = 3; highlight < 4; highlight++){
+			for (int highlight = 2; highlight < 4; highlight++){
 				for (int choose = 0; choose < 1; choose++){
 					for (int st = 1; st < 2; st++){
 						boolean switchTuples = (st == 1);
-						for (int sb = 0; sb < 1; sb++){
+						for (int sb = 0; sb < 2; sb++){
 							boolean switchBuckets = (sb == 1);
 							// Seedings used for improving on NwM.
 							//retVal.add(new MergeDescriptor(false, false, highlight, choose, switchTuples, switchBuckets, 0));

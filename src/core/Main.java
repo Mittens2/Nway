@@ -21,6 +21,7 @@ import core.common.ResultsPlotter;
 import core.common.Statistics;
 import core.domain.Element;
 import core.domain.Model;
+import core.domain.Tuple;
 import core.execution.BatchRunner;
 import core.execution.BatchRunner.BatchRunDescriptor;
 import core.execution.ReshapeData;
@@ -95,6 +96,96 @@ public class Main {
         rp.setVisible(true);
         
 	}
+	
+	private static void runMultipleHSExperiment(ArrayList<String> modelsFiles, ArrayList<String> resultsFiles, int runsToAvg, 
+			int divideUp, int numOfModelsToUse){
+		/**
+		 * Runs a simple experiment (i.e. produces graphs that do not show the spread of scores).
+		 * Saves all of the graphs of the different setting of the algorithm being compared to NwM.
+		 */
+		String[] settings = {"NwM", "hl:0_sb:0", "hl:0_sb:1", "hl:1_sb:0", "hl:1_sb:1"};
+		ArrayList<ArrayList<Double>> times = new ArrayList<ArrayList<Double>>();
+		ArrayList<ArrayList<Double>> iterations = new ArrayList<ArrayList<Double>>();
+		FileInputStream fileIn;
+		FileOutputStream fileOut;
+		HSSFWorkbook workbook;
+		HSSFSheet sheet;
+		// Set up xls file for writing results.
+		try{
+			fileIn = new FileInputStream(new File("results/experimentResults.xls"));
+			workbook = new HSSFWorkbook(fileIn);
+			sheet = workbook.getSheet("Block Form");
+			if (sheet == null){
+				sheet = workbook.createSheet("Block Form");
+				Row header = sheet.createRow(0);
+				header.createCell(0).setCellValue("Case");
+				for (int i = 1; i <= 40; i++){
+					header.createCell(i).setCellValue("c" + i);
+				}
+			}
+		}
+		catch (Exception e){
+			e.printStackTrace();
+			return;
+		}
+		//ResultsPlotter rp = new ResultsPlotter("", "");
+		ArrayList<ResultsPlotter> rps = new ArrayList<ResultsPlotter>();
+		for (int i = 0; i < modelsFiles.size(); i++){
+			String mf = modelsFiles.get(i);
+			String rf = resultsFiles.get(i);
+			ArrayList<Model> models = Model.readModelsFile(mf);
+			String subcase = mf.substring(mf.lastIndexOf("/") + 1, mf.indexOf("."));
+			if (models.size() > divideUp){
+				models = new ArrayList<Model>(models.subList(0, numOfModelsToUse));
+			}
+			double[] scoreSums = null;
+			double[] timeSums = null;
+			int[] iterSums = null;
+			for (int j = 0; j < runsToAvg; j++){
+				Runner runner = new Runner(models, rf, null, -1, false);
+				runner.execute(subcase);
+				ArrayList<RunResult> rrs = runner.getRunResults();
+				if (scoreSums == null){
+					scoreSums = new double[rrs.size()];
+					timeSums = new double[rrs.size()];
+					iterSums = new int[rrs.size()];
+				}
+				for (int k = 0; k < rrs.size(); k++){
+					timeSums[k] += rrs.get(k).execTime / 1000.0;
+					iterSums[k] += rrs.get(k).iterations;
+					scoreSums[k] += rrs.get(k).weight.doubleValue();
+				}
+			}
+			Row newRow = sheet.createRow(sheet.getLastRowNum() + 1);
+			newRow.createCell(0).setCellValue(subcase);
+			ArrayList<Double> iterAvg = new ArrayList<Double>();
+			ArrayList<Double> timeAvg = new ArrayList<Double>();
+			ResultsPlotter rp = new ResultsPlotter(subcase, "");
+			for (int j = 0; j < scoreSums.length; j++){
+				iterAvg.add(((double) iterSums[j]) / runsToAvg);
+				timeAvg.add(timeSums[j] / runsToAvg);
+				rp.addBarDataPoint(scoreSums[j] / runsToAvg, settings[j], subcase);
+				newRow.createCell(j + 1).setCellValue(scoreSums[j] / runsToAvg);
+			}
+			iterations.add(iterAvg);
+			times.add(timeAvg);
+			rps.add(rp);
+		}
+		try{
+			fileIn.close();
+			fileOut = new FileOutputStream(new File("results/experimentResults.xls"));
+			workbook.write(fileOut); 
+			fileOut.close();
+		}
+		catch (Exception e){
+			e.printStackTrace();
+		}
+		for (int i = 0; i < rps.size(); i++){
+			rps.get(i).creatBarGraph(times.get(i), iterations.get(i));
+		}
+		
+	}
+	
 	private static void runSimpleExperiment(ArrayList<String> modelsFiles, ArrayList<String> resultsFiles, int runsToAvg, 
 			int divideUp, int numOfModelsToUse){
 		/**
@@ -373,6 +464,7 @@ public class Main {
 		return allScores;
 	}
 	
+	
 	public static void main(String[] args) {
 		
 
@@ -397,6 +489,9 @@ public class Main {
 		String chatSystem = "models/FH_nogen/ChatSystem.csv";
 		String notepad = "models/FH_nogen/Notepad.csv";
 		String ahead = "models/FH_nogen/ahead.csv";
+		String mobileMedia = "models/Egyed/MobileMedia.csv";
+		String vod1 = "models/Egyed/VOD1.csv";
+		String vod2 = "models/Egyed/VOD2.csv";
 		
 		String resultsHospitals = "results/hospital_results.xls";
 		String resultsWarehouses = "results/warehouses_results.xls";
@@ -418,6 +513,9 @@ public class Main {
 		String resultsChatSystem = "results/chatSystem_results.xls";
 		String resultsNotepad = "results/notepad_results.xls";
 		String resultsAhead = "results/ahead_results.xls";
+		String resultsMobileMedia = "results/mobileMedia_results.xls";
+		String resultsVod1 = "results/vod1_results.xls";
+		String resultsVod2 = "results/vod2_results.xls";
 		
 		ArrayList<String> models = new ArrayList<String>();
 		models.add(hospitals);
@@ -433,6 +531,9 @@ public class Main {
 		models.add(PKJab);
 		models.add(chatSystem);
 		models.add(notepad);
+		models.add(mobileMedia);
+		models.add(vod1);
+		models.add(vod2);
 
 		
 		ArrayList<String> results = new ArrayList<String>();
@@ -449,6 +550,9 @@ public class Main {
 		results.add(resultsPKJab);
 		results.add(resultsChatSystem);
 		results.add(resultsNotepad);
+		results.add(resultsMobileMedia);
+		results.add(resultsVod1);
+		results.add(resultsVod2);
 		
 		AlgoUtil.useTreshold(true);
 		
@@ -458,11 +562,12 @@ public class Main {
 		
 		//runSingleHSExperiment(models, results, 10, 50, 10);
 		//runSimpleExperiment(models, results, 10, 50, 10);
+		runMultipleHSExperiment(models, results, 10, 50, 10);
 		//ReshapeData rd = new ReshapeData("results/experimentResults.xls");
 		//rd.reshapeData();
 		
 		//UMLParser.createFeatureLists("Prevayler", true, 8);
-		UMLParser.UMLtoCSV("MobileMedia", 7);
+	//UMLParser.UMLtoCSV("VOD", 32);
 		
 		//singleBatchRun(randomTMP, null,3, true);
 		
@@ -496,6 +601,9 @@ public class Main {
 		//singleBatchRun(PKJab, resultsPKJab, -1, true);
 		//singleBatchRun(chatSystem, resultsChatSystem, -1, true);
 		//singleBatchRun(notepad, resultsNotepad, -1, true);
+		//singleBatchRun(mobileMedia, resultsMobileMedia, -1, true);
+		//singleBatchRun(vod1, resultsVod1, -1, true);
+		//singleBatchRun(vod2, resultsVod2, -1, true);
 		
 		//singleBatchRun(ahead, resultsAhead, 3, true);
 		

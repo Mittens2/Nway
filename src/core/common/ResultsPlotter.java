@@ -153,8 +153,8 @@ public class ResultsPlotter extends ApplicationFrame {
 		catDataset.removeColumn(0);
 		CustomItemLabelGenerator labelGenerator = new CustomItemLabelGenerator(runTimes, iterations);
 		JFreeChart result = ChartFactory.createBarChart(
-	        "Nwm vs HS",           
-	        "Case",            
+	        this.alg1,           
+	        "Parameter Setting",            
 	        "Percent Increase",            
 	        catDataset,          
 	        PlotOrientation.VERTICAL,           
@@ -170,19 +170,19 @@ public class ResultsPlotter extends ApplicationFrame {
 		result.removeLegend();
 		final ChartPanel chartPanel = new ChartPanel(result);
 		setContentPane(chartPanel);
-		try{
+		/*try{
 	    	chartPanel.setMinimumDrawHeight(500);
 	        chartPanel.setMinimumDrawWidth(1000);
 	    	BufferedImage bi = ScreenImage.createImage(chartPanel);
-	    	//String picPath = "/home/amit/Documents/Results Webpage/graphs/";
-	    	String picPath = "graphs/";
+	    	String picPath = "/home/amit/Documents/Results Webpage/graphs3/";
+	    	//String picPath = "graphs/";
 	    	//File file = new File(picPath + this.alg1.substring(alg1.indexOf("(")) +".jpeg");
 	    	File file = new File(picPath + this.alg1);
 			ChartUtilities.saveChartAsJPEG(file, 1f, result, 1000, 500);
 		}
 		catch (IOException e){
 			System.out.println(e.getMessage());
-		}
+		}*/
 	}
 	
 	public void createChart(){

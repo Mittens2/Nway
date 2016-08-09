@@ -2,6 +2,7 @@ package core.common;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -411,43 +412,62 @@ public class AlgoUtil {
 		return pairs;
 	}
 	
-	/*public ArrayList<Tuple> calcOptimalScore(String modelsFile){
+	public static ArrayList<Tuple> calcOptimalScore(String modelsFile){
 		ArrayList<Model> models = Model.readModelsFile(modelsFile);
-		ArrayList<Tuple> allCombos = buildAllTupleCombos(new Tuple(), models, 0);
-		ArrayList<ArrayList<Tuple>> allSolutions = getAllSolutions(new ArrayList<Tuple>(), allCombos, models, 0);
+		ArrayList<ArrayList<Tuple>> allSolutions = buildAllSolutions(new Tuple(), null, models, 0);
+		ArrayList<Tuple> bestSolution = new ArrayList<Tuple>();
+		BigDecimal currMax = BigDecimal.ZERO;
+		for (ArrayList<Tuple> solution: allSolutions){
+			if (calcGroupWeight(solution).compareTo(currMax) > 0){
+				bestSolution = solution;
+				currMax = calcGroupWeight(solution);
+			}
+		}
+		System.out.println(bestSolution);
+		return bestSolution;
 	}
 	
-	private ArrayList<Tuple> buildAllTupleCombos(Tuple current, ArrayList<Model> models, int model){
-		ArrayList<Tuple> tupCombos = new ArrayList<Tuple>();
-		if (model == models.size() - 1){
-			tupCombos.add(current);
+	
+	private static ArrayList<ArrayList<Tuple>> buildAllSolutions(Tuple current, Element expanded,
+			ArrayList<Model> models, int model){
+		ArrayList<ArrayList<Tuple>> variants = new ArrayList<ArrayList<Tuple>>();
+		if (model == models.size()){
+			if (expanded != null) current = current.newExpanded(expanded, models);
+			ArrayList<Tuple> self = new ArrayList<Tuple>();
+			if (current.getSize() > 0 || current.calcWeight(models).equals(BigDecimal.ZERO)){
+				self.add(current);
+				variants.add(self);
+			}
+		}
+		else if (expanded != null){
+			current = current.newExpanded(expanded, models);
+			variants.addAll(buildAllSolutions(current, null, models, model + 1));
 			for (Element e: models.get(model).getElements()){
-				Tuple newTuple = current.newExpanded(e, models);
-				tupCombos.add(newTuple);
+				variants.addAll(buildAllSolutions(current, e, models, model + 1));
 			}
 		}
 		else{
-			tupCombos.addAll(buildAllTupleCombos(current, models, model + 1));
+			ArrayList<ArrayList<Tuple>> solutions = new ArrayList<ArrayList<Tuple>>();
+			//variants.addAll(buildAllSolutions(current, null, models, model + 1));
 			for (Element e: models.get(model).getElements()){
-				Tuple newTuple = current.newExpanded(e, models);
-				tupCombos.addAll(buildAllTupleCombos(newTuple, models, model + 1));
+				ArrayList<ArrayList<Tuple>> oldSolutions = new ArrayList<ArrayList<Tuple>>(solutions);
+				oldSolutions.add(new ArrayList<Tuple>());
+				variants = buildAllSolutions(current, e, models, model + 1);
+				ArrayList<ArrayList<Tuple>> newSolutions = new ArrayList<ArrayList<Tuple>>();
+				for (ArrayList<Tuple> variant: variants){
+					for (ArrayList<Tuple> oldSolution: oldSolutions){
+						ArrayList<Tuple> newSolution = new ArrayList<Tuple>();
+						newSolution.addAll(oldSolution);
+						newSolution.addAll(variant);
+						newSolutions.add(newSolution);
+					}
+				}
+				solutions.addAll(newSolutions);
 			}
+			return solutions;
 		}
-		return tupCombos;
+		return variants;
 	}
-	
-	private ArrayList<ArrayList<Tuple>> getAllSolutions(ArrayList<Tuple> current, ArrayList<Tuple> allTuples, ArrayList<Model> models, int model){
-		int skip = allTuples.size() / (models.get(model).size() + 1);
-		for (int i = 0; i < currSkip; i++){
-			ArrayList<Tuple> newSolution = current;
-			newSolution.add(allTuples.get(i));
-			ArrayList<Tuple> legitTuples = new ArrayList<Tuple>();
-			for (int )
-			legitTuples.addAll(allTuples.subList(0, skip * i));
-			legitTuples.addAll(allTuples.subList(skip * (i + 1), allTuples.size()));
-			
-		}
-	}*/
 	
 	public static ArrayList<Model> getModelsByCohesiveness(ArrayList<Model> models,final boolean asc){
 		ArrayList<HungarianMerger> merges = generateAllModelPairs(models);

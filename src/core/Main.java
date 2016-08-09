@@ -103,7 +103,7 @@ public class Main {
 		 * Runs a simple experiment (i.e. produces graphs that do not show the spread of scores).
 		 * Saves all of the graphs of the different setting of the algorithm being compared to NwM.
 		 */
-		String[] settings = {"NwM", "hl:0_sb:0", "hl:0_sb:1", "hl:1_sb:0", "hl:1_sb:1"};
+		String[] settings = {"NwM", "hl:1_sb:0", "hl:1_sb:1", "hl:0_sb:0", "hl:0_sb:1"};
 		ArrayList<ArrayList<Double>> times = new ArrayList<ArrayList<Double>>();
 		ArrayList<ArrayList<Double>> iterations = new ArrayList<ArrayList<Double>>();
 		FileInputStream fileIn;
@@ -480,6 +480,9 @@ public class Main {
 		String toycase = "models/toycases/toycase.csv";
 		String toycase2 = "models/toycases/toycase2.csv";
 		String toycase3 = "models/toycases/toycase3.csv";
+		String toycase4 = "models/toycases/toycase4.csv";
+		String toycase5 = "models/toycases/toycase5" +
+				".csv";
 		String gasBoilerSystem = "models/FH/GasBoilerSystem.csv";
 		String audioControlSystem = "models/FH/AudioControlSystem.csv";
 		String conferenceManagementSystem = "models/FH/ConferenceManagementSystem.csv";
@@ -518,11 +521,11 @@ public class Main {
 		String resultsVod2 = "results/vod2_results.xls";
 		
 		ArrayList<String> models = new ArrayList<String>();
-		models.add(hospitals);
-		models.add(warehouses);
-		models.add(random);
-		models.add(randomLoose);
-		models.add(randomTight);
+		//models.add(hospitals);
+		//models.add(warehouses);
+		//models.add(random);
+		//models.add(randomLoose);
+		//models.add(randomTight);
 		models.add(gasBoilerSystem);
 		models.add(audioControlSystem);
 		models.add(conferenceManagementSystem);
@@ -556,18 +559,20 @@ public class Main {
 		
 		AlgoUtil.useTreshold(true);
 		
+		AlgoUtil.calcOptimalScore(audioControlSystem);
+		
 		//runOutliers(warehouses, resultsWarehouses, -1);
 		//runOutliers(random, resultsRandom, 9); 
 		//runOutliers(randomLoose, resultsRandomLoose, 4);
 		
 		//runSingleHSExperiment(models, results, 10, 50, 10);
 		//runSimpleExperiment(models, results, 10, 50, 10);
-		runMultipleHSExperiment(models, results, 10, 50, 10);
+		//runMultipleHSExperiment(models, results, 1, 50, 10);
 		//ReshapeData rd = new ReshapeData("results/experimentResults.xls");
 		//rd.reshapeData();
 		
 		//UMLParser.createFeatureLists("Prevayler", true, 8);
-	//UMLParser.UMLtoCSV("VOD", 32);
+		//UMLParser.UMLtoCSV("VOD", 32);
 		
 		//singleBatchRun(randomTMP, null,3, true);
 		

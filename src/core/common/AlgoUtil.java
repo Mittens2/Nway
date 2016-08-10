@@ -414,7 +414,9 @@ public class AlgoUtil {
 	
 	public static ArrayList<Tuple> calcOptimalScore(String modelsFile){
 		ArrayList<Model> models = Model.readModelsFile(modelsFile);
-		ArrayList<ArrayList<Tuple>> allSolutions = buildAllSolutions(new Tuple(), null, models, 0);
+		ArrayList<Tuple> allTuples = generateAllTupleCombos(new Tuple(), null, models, 0);
+		ArrayList<ArrayList<Tuple>> allSolutions = generateAllSolutions(new ArrayList<Tuple>(), allTuples, models, 0);
+		//System.out.println(allSolutions);
 		ArrayList<Tuple> bestSolution = new ArrayList<Tuple>();
 		BigDecimal currMax = BigDecimal.ZERO;
 		for (ArrayList<Tuple> solution: allSolutions){
@@ -427,14 +429,81 @@ public class AlgoUtil {
 		return bestSolution;
 	}
 	
+	private static ArrayList<Tuple> generateAllTupleCombos(Tuple current, Element expanded, 
+			ArrayList<Model> models, int model){
+		/**
+		 * Generates all valid tuple combinations for some model suite.
+		 */
+		ArrayList<Tuple> allTuples = new ArrayList<Tuple>();
+		if (model == models.size()){
+			if (expanded != null){
+				current = current.newExpanded(expanded, models);
+			}
+			//if (current.getSize() > 0){
+			allTuples.add(current);
+			//}
+		}
+		else{
+			if (expanded != null){
+				current = current.newExpanded(expanded, models);
+			}
+			allTuples.addAll(generateAllTupleCombos(current, null, models, model + 1));
+			for (Element e: models.get(model).getElements()){
+				allTuples.addAll(generateAllTupleCombos(current, e, models, model + 1));
+			}
+		}
+		return allTuples;
+	}
 	
-	private static ArrayList<ArrayList<Tuple>> buildAllSolutions(Tuple current, Element expanded,
+	private static ArrayList<ArrayList<Tuple>> generateAllSolutions(ArrayList<Tuple> current, ArrayList<Tuple> allTuples, 
+			ArrayList<Model> models, int model){
+		ArrayList<ArrayList<Tuple>> solutions = new ArrayList<ArrayList<Tuple>>();
+		if (model == models.size() - 1){
+			for (Tuple t: allTuples){
+				ArrayList<Tuple> newSolution = new ArrayList<Tuple>();
+				newSolution.addAll(current);
+				newSolution.add(t);
+				solutions.add(newSolution);
+			}
+		}
+		else{
+			int prevModelSizes = 1;
+			for (int i = 0; i < model; i++) prevModelSizes *= models.get(i).size();
+			int currModelSize = models.get(model).size() + 1;
+			int segment = allTuples.size() / prevModelSizes;
+			int smallSegment = segment / currModelSize;
+			for (int j = 0; j < currModelSize; j++){
+				ArrayList<Tuple> compatible = new ArrayList<Tuple>();
+				ArrayList<Tuple> incompatible = new ArrayList<Tuple>();
+				for (int i = 0; i < prevModelSizes; i++){
+					compatible.addAll(allTuples.subList(segment * i, segment * i + smallSegment * j));
+					incompatible.addAll(allTuples.subList(segment * i + smallSegment * j, 
+							segment * i + smallSegment * (j + 1)));
+					compatible.addAll(allTuples.subList(segment * i + smallSegment * (j + 1), 
+							segment * (i + 1)));
+
+				}
+				//System.out.println(compatible);
+				//System.out.println(incompatible);
+				for (Tuple t: incompatible){
+					if (t.getSize() != 0){
+						current.add(t);
+						solutions.addAll(generateAllSolutions(current, compatible, models, model + 1));
+						current.remove(current.size() - 1);
+					}
+				}
+			}
+		}
+		return solutions;
+	}
+	
+	/*private static ArrayList<ArrayList<Tuple>> buildAllSolutions(Tuple current, Element expanded,
 			ArrayList<Model> models, int model){
 		ArrayList<ArrayList<Tuple>> variants = new ArrayList<ArrayList<Tuple>>();
 		if (model == models.size()){
 			if (expanded != null) current = current.newExpanded(expanded, models);
-			ArrayList<Tuple> self = new ArrayList<Tuple>();
-			if (current.getSize() > 0 || current.calcWeight(models).equals(BigDecimal.ZERO)){
+			if (current.getSize() > 0 && !current.calcWeight(models).equals(BigDecimal.ZERO)){
+				ArrayList<Tuple> self = new ArrayList<Tuple>();
 				self.add(current);
 				variants.add(self);
 			}
@@ -448,26 +517,39 @@ public class AlgoUtil {
 		}
 		else{
 			ArrayList<ArrayList<Tuple>> solutions = new ArrayList<ArrayList<Tuple>>();
-			//variants.addAll(buildAllSolutions(current, null, models, model + 1));
-			for (Element e: models.get(model).getElements()){
+			variants.addAll(buildAllSolutions(current, null, models, model + 1));
+			ArrayList<Element> modelElems = models.get(model).getElements();
+			modelElems.add(null);
+			for (Element e: modelElems){
 				ArrayList<ArrayList<Tuple>> oldSolutions = new ArrayList<ArrayList<Tuple>>(solutions);
 				oldSolutions.add(new ArrayList<Tuple>());
-				variants = buildAllSolutions(current, e, models, model + 1);
 				ArrayList<ArrayList<Tuple>> newSolutions = new ArrayList<ArrayList<Tuple>>();
 				for (ArrayList<Tuple> variant: variants){
 					for (ArrayList<Tuple> oldSolution: oldSolutions){
-						ArrayList<Tuple> newSolution = new ArrayList<Tuple>();
-						newSolution.addAll(oldSolution);
-						newSolution.addAll(variant);
-						newSolutions.add(newSolution);
+						boolean canCombine = true;
+						for (Tuple t1: oldSolution){
+							for (Tuple t2: variant){
+								if (t1.hasCommonElement(t2, model)){
+									canCombine = false;
+									break;
+								}
+							}
+						}
+						if (canCombine){
+							ArrayList<Tuple> newSolution = new ArrayList<Tuple>();
+							newSolution.addAll(oldSolution);
+							newSolution.addAll(variant);
+							newSolutions.add(newSolution);
+						}
 					}
 				}
+				variants = buildAllSolutions(current, e, models, model + 1);
 				solutions.addAll(newSolutions);
 			}
 			return solutions;
 		}
 		return variants;
-	}
+	}*/
 	
 	public static ArrayList<Model> getModelsByCohesiveness(ArrayList<Model> models,final boolean asc){
 		ArrayList<HungarianMerger> merges = generateAllModelPairs(models);

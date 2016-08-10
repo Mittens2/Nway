@@ -18,7 +18,7 @@ public class Tuple {
 	private ArrayList<Element> elements;
 	private ArrayList<Element> realElements = null;
 	private int numberOfModels = -1;
-	
+	private Element[] arrayRep;
 	private long scaledWeight;
 	
 	private ArrayList<Element> sortedElems = null;
@@ -168,6 +168,14 @@ public class Tuple {
 		@SuppressWarnings("unchecked")
 		Tuple tuple = new Tuple(((ArrayList<Element>) elements.clone()));
 		tuple.addElement(e);
+		if (this.arrayRep != null){
+			tuple.arrayRep = this.arrayRep;
+		}
+		else{
+			tuple.creatArrayRep(mdls.size());
+		}
+		tuple.setArrayRep(e);
+		tuple.setWeight(tuple.calcWeight(mdls));
 		tuple.setWeight(tuple.calcWeight(mdls));
 		return tuple;
 	}
@@ -177,8 +185,29 @@ public class Tuple {
 		ArrayList<Element> elems = (ArrayList<Element>) elements.clone();
 		elems.remove(e);
 		Tuple tuple = new Tuple(elems);
-		tuple.setWeight(tuple.calcWeight(mdls));
 		return tuple;
+	}
+	
+	public void creatArrayRep(int models){
+		this.arrayRep = new Element[models];
+	}
+	
+	public void setArrayRep(Element e){
+		this.arrayRep[Integer.parseInt(e.getModelId()) -1] = e;
+	}
+	
+	public Element[] getArrayRep(){
+		return this.arrayRep;
+	}
+	
+	public boolean hasCommonElement(Tuple t, int model){
+		Element[] t_arrayRep = t.getArrayRep();
+		for (int i = model; i < this.arrayRep.length; i++){
+			if (this.arrayRep[i] != null && (this.arrayRep[i].equals(t_arrayRep[i]))){
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	@Override

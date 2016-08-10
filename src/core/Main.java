@@ -559,7 +559,7 @@ public class Main {
 		
 		AlgoUtil.useTreshold(true);
 		
-		AlgoUtil.calcOptimalScore(audioControlSystem);
+		AlgoUtil.calcOptimalScore(toycase);
 		
 		//runOutliers(warehouses, resultsWarehouses, -1);
 		//runOutliers(random, resultsRandom, 9); 

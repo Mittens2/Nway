@@ -110,7 +110,6 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 	private ArrayList<Element> joinAllModels2(){
 		ArrayList<Element> elems = new ArrayList<Element>();
 		Collections.sort(solution, new TupleComparator(md.asc, md.seed == 1));
-		int count = 0;
 		for (Tuple t: solution){
 			elems.add(t.getElements().get(0));
 		}
@@ -196,9 +195,8 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 		int iterations = 0;
 		int count = 0;
 		BigDecimal currentScore = AlgoUtil.calcGroupWeight(solution).subtract(new BigDecimal(0.01));
-		while(count != 20){
+		while(count != 1){
 			currentScore = AlgoUtil.calcGroupWeight(solution);
-			unusedElements.addAll(allElements);
 			while (System.currentTimeMillis() - startTime < (1000 * 60 * 5) && unusedElements.size() > 0){
 				Element picked = unusedElements.get(0);
 				Tuple currTuple = picked.getContaingTuple();
@@ -214,6 +212,7 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 			else{
 				count = 0;
 			}
+			unusedElements.addAll(allElements);
 			iterations++;
 		}
 		System.out.println("iterations: " + iterations);
@@ -323,10 +322,6 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 				}
 			}
 			unusedElements.remove(picked);
-			if (picked == replaced){
-				System.out.println(elems);
-				System.out.println();
-			}
 			elems.remove(picked);
 			current = current.newExpanded(picked, models);
 			if (md.switchTuples){

@@ -6,6 +6,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Random;
 
@@ -89,7 +90,7 @@ public class Main {
 				}
 			}
 		}
-		rp.createChart();
+		//rp.createChart();
 		rp.setMinimumSize(new Dimension(1000, 500));
 		rp.pack();
         RefineryUtilities.centerFrameOnScreen(rp);
@@ -138,7 +139,7 @@ public class Main {
 			if (models.size() > divideUp){
 				models = new ArrayList<Model>(models.subList(0, numOfModelsToUse));
 			}
-			double[] scoreSums = null;
+			double[][] scoreSums = null;
 			double[] timeSums = null;
 			int[] iterSums = null;
 			for (int j = 0; j < runsToAvg; j++){
@@ -146,14 +147,14 @@ public class Main {
 				runner.execute(subcase);
 				ArrayList<RunResult> rrs = runner.getRunResults();
 				if (scoreSums == null){
-					scoreSums = new double[rrs.size()];
+					scoreSums = new double[rrs.size()][runsToAvg];
 					timeSums = new double[rrs.size()];
 					iterSums = new int[rrs.size()];
 				}
 				for (int k = 0; k < rrs.size(); k++){
 					timeSums[k] += rrs.get(k).execTime / 1000.0;
 					iterSums[k] += rrs.get(k).iterations;
-					scoreSums[k] += rrs.get(k).weight.doubleValue();
+					scoreSums[k][j] = rrs.get(k).weight.doubleValue();
 				}
 			}
 			Row newRow = sheet.createRow(sheet.getLastRowNum() + 1);
@@ -161,11 +162,15 @@ public class Main {
 			ArrayList<Double> iterAvg = new ArrayList<Double>();
 			ArrayList<Double> timeAvg = new ArrayList<Double>();
 			ResultsPlotter rp = new ResultsPlotter(subcase, "");
-			for (int j = 0; j < scoreSums.length; j++){
+			for (int j = 1; j < scoreSums.length; j++){
 				iterAvg.add(((double) iterSums[j]) / runsToAvg);
 				timeAvg.add(timeSums[j] / runsToAvg);
-				rp.addBarDataPoint(scoreSums[j] / runsToAvg, settings[j], subcase);
-				newRow.createCell(j + 1).setCellValue(scoreSums[j] / runsToAvg);
+				//rp.addBarDataPoint(scoreSums[j] / runsToAvg, settings[j], subcase);
+				//for (int k = 0; k < scoreSums[j].length; k++) System.out.println(scoreSums[j][k]);
+				rp.addMultipleValueDatapoint(scoreSums[j], scoreSums[0][0], settings[j]);
+				int sum = 0;
+				for (double score: scoreSums[j]) sum += score;
+				newRow.createCell(j + 1).setCellValue(sum / runsToAvg);
 			}
 			iterations.add(iterAvg);
 			times.add(timeAvg);
@@ -181,7 +186,8 @@ public class Main {
 			e.printStackTrace();
 		}
 		for (int i = 0; i < rps.size(); i++){
-			rps.get(i).creatBarGraph(times.get(i), iterations.get(i));
+			//rps.get(i).creatBarGraph(times.get(i), iterations.get(i));
+			rps.get(i).createChart(times.get(i), iterations.get(i));
 		}
 		
 	}
@@ -521,11 +527,11 @@ public class Main {
 		String resultsVod2 = "results/vod2_results.xls";
 		
 		ArrayList<String> models = new ArrayList<String>();
-		//models.add(hospitals);
-		//models.add(warehouses);
-		//models.add(random);
-		//models.add(randomLoose);
-		//models.add(randomTight);
+		models.add(hospitals);
+		/*models.add(warehouses);
+		models.add(random);
+		models.add(randomLoose);
+		models.add(randomTight);
 		models.add(gasBoilerSystem);
 		models.add(audioControlSystem);
 		models.add(conferenceManagementSystem);
@@ -536,7 +542,7 @@ public class Main {
 		models.add(notepad);
 		models.add(mobileMedia);
 		models.add(vod1);
-		models.add(vod2);
+		models.add(vod2);*/
 
 		
 		ArrayList<String> results = new ArrayList<String>();
@@ -559,15 +565,15 @@ public class Main {
 		
 		AlgoUtil.useTreshold(true);
 		
-		AlgoUtil.calcOptimalScore(toycase);
+		//AlgoUtil.calcOptimalScore(audioControlSystem);
 		
 		//runOutliers(warehouses, resultsWarehouses, -1);
 		//runOutliers(random, resultsRandom, 9); 
 		//runOutliers(randomLoose, resultsRandomLoose, 4);
 		
-		//runSingleHSExperiment(models, results, 10, 50, 10);
+		//runSingleHSExperiment(models, results, 1, 50, 10);
 		//runSimpleExperiment(models, results, 10, 50, 10);
-		//runMultipleHSExperiment(models, results, 1, 50, 10);
+		runMultipleHSExperiment(models, results, 5, 50, 10);
 		//ReshapeData rd = new ReshapeData("results/experimentResults.xls");
 		//rd.reshapeData();
 		

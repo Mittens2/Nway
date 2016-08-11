@@ -90,10 +90,12 @@ public class ResultsPlotter extends ApplicationFrame {
 		bwDataset.add(datapoint, "% diff", category);
 	}
 	
-	public void addMultipleValueDatapoint(double alg1[], double alg2[], String category){
+	public void addMultipleValueDatapoint(double alg1[], double alg2, String category){
 		ArrayList<Double> datapoint = new ArrayList<Double>();
 		for (int i = 0; i < alg1.length; i++){
-			datapoint.add((alg1[i] / alg2[i] - 1) * 100);
+			datapoint.add(((alg1[i] / alg2) - 1) * 100);
+			
+			System.out.println((alg1[i] / alg2 - 1) * 100);
 		}
 		bwDataset.add(datapoint, "% diff", category);
 	}
@@ -162,7 +164,7 @@ public class ResultsPlotter extends ApplicationFrame {
 		CategoryPlot plot = result.getCategoryPlot();
 		ValueAxis range = plot.getRangeAxis();
 		//range.setRange(catDataset.getValue(0, 0).doubleValue(), catDataset.getValue(0, 0).doubleValue() + 1);
-		range.setRange(0, 100);
+		range.setRange(0, 35);
 		BarRenderer renderer = (BarRenderer) result.getCategoryPlot().getRenderer();
 		renderer.setBaseItemLabelGenerator(
 				labelGenerator);
@@ -185,29 +187,46 @@ public class ResultsPlotter extends ApplicationFrame {
 		}*/
 	}
 	
-	public void createChart(){
+	public void createChart(ArrayList<Double> runTimes, ArrayList<Double> iterations){
 		final CategoryAxis xAxis = new CategoryAxis("Case");
         final NumberAxis yAxis = new NumberAxis("Percent Increase (%)");
         //yAxis.setAutoRangeIncludesZero(false);
-        yAxis.setRange(-30, 30);
+        yAxis.setRange(6, 10);
         //final ExtendedBoxAndWhiskerRenderer renderer = new ExtendedBoxAndWhiskerRenderer();
         final BoxAndWhiskerRenderer renderer = new BoxAndWhiskerRenderer();
-        renderer.setMedianVisible(false);
+        //renderer.setMedianVisible(false);
         renderer.setMaximumBarWidth(0.02);
-        renderer.setSeriesOutlinePaint(0, Color.WHITE);
+        //renderer.setSeriesOutlinePaint(0, Color.WHITE);
         renderer.setWhiskerWidth(0.2);
         final CategoryPlot plot = new CategoryPlot(bwDataset, xAxis, yAxis, renderer);
-        final Marker start = new ValueMarker(0.0);
-        start.setPaint(Color.blue);
-        plot.addRangeMarker(start);
+        //final Marker start = new ValueMarker(0.0);
+       // start.setPaint(Color.blue);
+       // plot.addRangeMarker(start);
         final JFreeChart chart = new JFreeChart(
             alg1 + " Percentage Increase Over " + alg2,
             new Font("SansSerif", Font.BOLD, 14),
             plot,
             true
         );
+        CustomItemLabelGenerator labelGenerator = new CustomItemLabelGenerator(runTimes, iterations);
+		renderer.setBaseItemLabelGenerator(
+				labelGenerator);
+		renderer.setBaseItemLabelsVisible(true);
         chart.removeLegend();
         final ChartPanel chartPanel = new ChartPanel(chart);
+        try{
+	    	chartPanel.setMinimumDrawHeight(500);
+	        chartPanel.setMinimumDrawWidth(1000);
+	    	BufferedImage bi = ScreenImage.createImage(chartPanel);
+	    	//String picPath = "/home/amit/Documents/Results Webpage/graphs3/";
+	    	String picPath = "graphs/";
+	    	//File file = new File(picPath + this.alg1.substring(alg1.indexOf("(")) +".jpeg");
+	    	File file = new File(picPath + this.alg1);
+			ChartUtilities.saveChartAsJPEG(file, 1f, chart, 1000, 500);
+		}
+		catch (IOException e){
+			System.out.println(e.getMessage());
+		}
        
 	}
 	
@@ -229,7 +248,7 @@ public class ResultsPlotter extends ApplicationFrame {
 		}
 		@Override
 		public String generateLabel(CategoryDataset dataset, int row, int column){
-			return "t:" + df.format(rts.get(column)) + ", i:" + df.format(iterations.get(column));
+			return "s:" + df.format(dataset.getValue(row, column)) + ", t:" + df.format(rts.get(column)) + ", i:" + df.format(iterations.get(column));
 		}
 	}
 

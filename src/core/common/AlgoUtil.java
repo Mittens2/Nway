@@ -415,16 +415,16 @@ public class AlgoUtil {
 	public static ArrayList<Tuple> calcOptimalScore(String modelsFile){
 		ArrayList<Model> models = Model.readModelsFile(modelsFile);
 		ArrayList<Tuple> allTuples = generateAllTupleCombos(new Tuple(), null, models, 0);
-		ArrayList<ArrayList<Tuple>> allSolutions = generateAllSolutions(new ArrayList<Tuple>(), allTuples, models, 0);
-		//System.out.println(allSolutions);
+		//ArrayList<ArrayList<Tuple>> allSolutions = generateAllSolutions(new ArrayList<Tuple>(), allTuples, models, 0);
+		System.out.println(allTuples);
 		ArrayList<Tuple> bestSolution = new ArrayList<Tuple>();
 		BigDecimal currMax = BigDecimal.ZERO;
-		for (ArrayList<Tuple> solution: allSolutions){
+		/*for (ArrayList<Tuple> solution: allSolutions){
 			if (calcGroupWeight(solution).compareTo(currMax) > 0){
 				bestSolution = solution;
 				currMax = calcGroupWeight(solution);
 			}
-		}
+		}*/
 		System.out.println(bestSolution);
 		return bestSolution;
 	}
@@ -439,9 +439,9 @@ public class AlgoUtil {
 			if (expanded != null){
 				current = current.newExpanded(expanded, models);
 			}
-			//if (current.getSize() > 0){
-			allTuples.add(current);
-			//}
+			if (current.getSize() > 0){
+				allTuples.add(current);
+			}
 		}
 		else{
 			if (expanded != null){
@@ -450,6 +450,16 @@ public class AlgoUtil {
 			allTuples.addAll(generateAllTupleCombos(current, null, models, model + 1));
 			for (Element e: models.get(model).getElements()){
 				allTuples.addAll(generateAllTupleCombos(current, e, models, model + 1));
+				//ArrayList<Tuple> neighbors = generateAllTupleCombos(current, e, models, model + 1);
+				/*for (int i = neighbors.size() - 1; i >= 0; i--){
+					Tuple t = neighbors.get(i);
+					neighbors.remove(i);
+					for (Tuple n: neighbors){
+						t.addNeighbour(n);
+					}
+					neighbors.add(t);
+					allTuples.add(t);
+				}*/
 			}
 		}
 		return allTuples;

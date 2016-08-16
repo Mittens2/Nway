@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Scanner;
 
+import core.Main;
 import core.alg.TupleReader;
 import core.alg.merge.ChainingOptimizingMerger;
 import core.alg.merge.GreedyMerger;
@@ -241,8 +242,9 @@ public class Runner extends ResultsWriter{
 		@SuppressWarnings("unchecked")
 		RunResult rr = null;
 		File file = new File("models/NwMsolutions/" + caseName + ".csv");
+		ArrayList<Tuple> solution = null;
 		if (file.exists()){
-			ArrayList<Tuple> solution = loadTuplesFromFile(file);
+			solution = loadTuplesFromFile(file);
 			rr = new RunResult(0, AlgoUtil.calcGroupWeight(solution), BigDecimal.ZERO, solution);
 		}
 		else{
@@ -253,8 +255,9 @@ public class Runner extends ResultsWriter{
 		}
 		ArrayList<RunResult> result = new ArrayList<RunResult>();
 		result.add(rr);
-		//System.out.println(rr);
+		System.out.println(rr);
 		//AlgoUtil.printTuples(mmm.getTuplesInMatch());
+		AlgoUtil.printTuples(solution);
 		//writeResults(result, "New Hungarian");
 		return result;
 	}
@@ -264,7 +267,7 @@ public class Runner extends ResultsWriter{
 		ArrayList<RunResult> results = new ArrayList<RunResult>();
 		ArrayList<MergeDescriptor> mds = allPermOnAlg(N_WAY.ALG_POLICY.RANDOM);
 		ArrayList<Tuple> prevSolution = new ArrayList<Tuple>();
-		File file = new File("models/NwMsolutions/" + caseName + ".csv");
+		File file = new File(Main.home + "models/NwMsolutions/" + caseName + ".csv");
 		if (!file.exists()){
 			MultiModelMerger mmm = new ChainingOptimizingMerger((ArrayList<Model>) models.clone());
 			mmm.run();
@@ -364,22 +367,22 @@ public class Runner extends ResultsWriter{
 		ArrayList<MergeDescriptor> retVal = new ArrayList<MergeDescriptor>();
 		if (pol == N_WAY.ALG_POLICY.RANDOM){
 			//boolean randomize = false;
-			for (int highlight = 0; highlight < 4; highlight++){
-				for (int choose = 0; choose < 2; choose++){
+			for (int highlight = 1; highlight < 2; highlight++){
+				for (int choose = 1; choose < 2; choose++){
 					for (int st = 1; st < 2; st++){
 						boolean switchTuples = (st == 1);
-						for (int sb = 0; sb < 2; sb++){
+						for (int sb = 1; sb < 2; sb++){
 							boolean switchBuckets = (sb == 1);
-							for (int rs = 0; rs < 2; rs++){
+							for (int rs = 0; rs < 1; rs++){
 								boolean reshuffle = (rs == 1);
 								// Seedings used for improving on NwM.
-								retVal.add(new MergeDescriptor(false, false, highlight, choose, switchTuples, switchBuckets, reshuffle, 0));
+								//retVal.add(new MergeDescriptor(false, false, highlight, choose, switchTuples, switchBuckets, reshuffle, 0));
 								retVal.add(new MergeDescriptor(true, true, highlight, choose, switchTuples,switchBuckets, reshuffle, 1));
-								retVal.add(new MergeDescriptor(false, false, highlight, choose, switchTuples,switchBuckets, reshuffle, 1));
+								//retVal.add(new MergeDescriptor(false, false, highlight, choose, switchTuples,switchBuckets, reshuffle, 1));
 								retVal.add(new MergeDescriptor(true, true, highlight, choose, switchTuples,switchBuckets, reshuffle, 2));
-								retVal.add(new MergeDescriptor(false, false, highlight, choose, switchTuples,switchBuckets, reshuffle, 2));
-								retVal.add(new MergeDescriptor(true, true, highlight, choose, switchTuples,switchBuckets, reshuffle, 3));
-								retVal.add(new MergeDescriptor(false, false, highlight, choose, switchTuples,switchBuckets, reshuffle, 3));
+								//retVal.add(new MergeDescriptor(false, false, highlight, choose, switchTuples,switchBuckets, reshuffle, 2));
+								//retVal.add(new MergeDescriptor(true, true, highlight, choose, switchTuples,switchBuckets, reshuffle, 3));
+								//retVal.add(new MergeDescriptor(false, false, highlight, choose, switchTuples,switchBuckets, reshuffle, 3));
 								// By convention if parameter is not used set to false
 								//retVal.add(new MergeDescriptor(false, false, highlight, choose, switchTuples, switchBuckets, 0));
 								//retVal.add(new MergeDescriptor(false, true, highlight, choose, switchTuples,switchBuckets, 1));

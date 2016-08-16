@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.Random;
 import java.util.Set;
 import java.util.TreeSet;
@@ -21,7 +22,7 @@ public class Element {
 	private ArrayList<String> sortedProps = null;
 	
 	private ArrayList<Element> basedUponElements;
-	private Tuple containingTuple;
+	private LinkedList<Integer> containingTupleIds;
 	
 	private String modelId;
 	
@@ -49,8 +50,11 @@ public class Element {
 		basedUponElements = new ArrayList<Element>();
 		if(! modelId.equals(AlgoUtil.NO_MODEL_ID)){
 			basedUponElements.add(this);
-			containingTuple = new Tuple();
-			containingTuple.addElement(this);
+			//containingTuple = new LinkedList<Tuple>();
+			containingTupleIds = new LinkedList<Integer>();
+			Tuple contain = new Tuple();
+			contain.addElement(this);
+			containingTupleIds.add(contain.getId());
 		}
 	}
 	
@@ -62,7 +66,9 @@ public class Element {
 			basedUponElements.add(e);
 			label = label +e.getLabel()+"+";
 		}
-		containingTuple = t;
+		//containingTuple = new LinkedList<Tuple>();
+		containingTupleIds = new LinkedList<Integer>();
+		containingTupleIds.add(t.getId());
 		if(AlgoUtil.COMPUTE_RESULTS_CLASSICALLY){
 			label =label+ properties.toString().replace(" ", "");
 		}
@@ -143,12 +149,30 @@ public class Element {
 		return id;
 	}
 	
-	public Tuple getContaingTuple(){
-		return containingTuple;
+	public int getContaingTupleId(){
+		//return containingTuple.getLast();
+		return containingTupleIds.getLast();
 	}
 	
-	public void setContaintingTuple(Tuple t){
-		containingTuple = t;
+	public void setContaintingTupleId(Tuple t){
+		if (containingTupleIds.size() == 2){
+			containingTupleIds.removeFirst();
+			containingTupleIds.add(t.getId());
+		}
+		else{
+			containingTupleIds.add(t.getId());
+		}
+	}
+	
+	public int resetContainingTupleId(){
+		if (containingTupleIds.size() == 2){
+			containingTupleIds.removeLast();
+			return containingTupleIds.getLast();
+		}
+		else{
+			return -1;
+		}
+		
 	}
 	
 	public String getLabel(){

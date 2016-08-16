@@ -39,7 +39,7 @@ import core.test.RandomizedMatchMergerTest;
 
 
 public class Main {
-
+	public static String home;
 	private static void workOnBatch(String modelsFile, String resultsFile){
 		BatchRunner batcher = new BatchRunner(modelsFile, 10, resultsFile);
 		batcher.run();
@@ -116,7 +116,7 @@ public class Main {
 		HSSFSheet sheet;
 		// Set up xls file for writing results.
 		try{
-			fileIn = new FileInputStream(new File("/home/amit/Dropbox/NSERC/experimentResults.xls"));
+			fileIn = new FileInputStream(new File(home + "results/experimentResults.xls"));
 			workbook = new HSSFWorkbook(fileIn);
 			sheet = workbook.getSheet("Block Form");
 			if (sheet == null){
@@ -165,7 +165,7 @@ public class Main {
 			ArrayList<Double> iterAvg = new ArrayList<Double>();
 			ArrayList<Double> timeAvg = new ArrayList<Double>();
 			ResultsPlotter rp = new ResultsPlotter(subcase, "");
-			for (int j = 1; j < scoreSums.length; j++){
+			for (int j = 0; j < scoreSums.length; j++){
 				iterAvg.add(((double) iterSums[j]) / runsToAvg);
 				timeAvg.add(timeSums[j] / runsToAvg);
 				//rp.addBarDataPoint(scoreSums[j] / runsToAvg, settings[j], subcase);
@@ -173,14 +173,14 @@ public class Main {
 				//rp.addMultipleValueDatapoint(scoreSums[j], scoreSums[0][0], settings[j]);
 				double sum = 0;
 				for (double score: scoreSums[j]) sum += score;
-				newRow.createCell(j).setCellValue(sum / runsToAvg);
+				newRow.createCell(j + 1).setCellValue(sum / runsToAvg);
 			}
 			iterations.add(iterAvg);
 			times.add(timeAvg);
 			//rps.add(rp);
 		}
 		try {
-			fileOut = new FileOutputStream(new File("/home/amit/Dropbox/NSERC/experimentResults.xls"));
+			fileOut = new FileOutputStream(new File(home + "results/experimentResults.xls"));
 			workbook.write(fileOut); 
 			fileIn.close();
 			fileOut.close();
@@ -475,68 +475,72 @@ public class Main {
 	
 	
 	public static void main(String[] args) {
-		
-
+		if (args.length == 1){
+			Main.home = args[0];
+		}
+		else{
+			Main.home = "";
+		}
 		
 		String hospitals = "models/Julia_study/hospitals.csv";
-		String warehouses = "models/Julia_study/warehouses.csv";
-		String random = "models/Julia_study/random.csv";
-		String randomLoose = "models/Julia_study/randomLoose.csv";
-		String randomTight = "models/Julia_study/randomTight.csv";
-		String level2a = "models/aliens/level2a.csv";
-		String level2b = "models/aliens/level2b.csv";
-		String level3a = "models/aliens/level3a.csv";
-		String toycase = "models/toycases/toycase.csv";
-		String toycase2 = "models/toycases/toycase2.csv";
-		String toycase3 = "models/toycases/toycase3.csv";
-		String toycase4 = "models/toycases/toycase4.csv";
-		String toycase5 = "models/toycases/toycase5" +
-				".csv";
-		String gasBoilerSystem = "models/FH/GasBoilerSystem.csv";
-		String audioControlSystem = "models/FH/AudioControlSystem.csv";
-		String conferenceManagementSystem = "models/FH/ConferenceManagementSystem.csv";
-		String ajStats = "models/FH/AJStats.csv";
-		String tankWar = "models/FH/TankWar.csv";
-		String PKJab = "models/FH/PKJab.csv";
-		String chatSystem = "models/FH_nogen/ChatSystem.csv";
-		String notepad = "models/FH_nogen/Notepad.csv";
-		String ahead = "models/FH_nogen/ahead.csv";
-		String mobileMedia = "models/Egyed/MobileMedia.csv";
-		String vod1 = "models/Egyed/VOD1.csv";
-		String vod2 = "models/Egyed/VOD2.csv";
+		String warehouses = home + "models/Julia_study/warehouses.csv";
+		String random = home + "models/Julia_study/random.csv";
+		String randomLoose =home +  "models/Julia_study/randomLoose.csv";
+		String randomTight = home + "models/Julia_study/randomTight.csv";
+		//String level2a = home + "models/aliens/level2a.csv";
+		//String level2b = home + "models/aliens/level2b.csv";
+		//String level3a = home + "models/aliens/level3a.csv";
+		//String toycase = home + "models/toycases/toycase.csv";
+		//String toycase2 = home + "models/toycases/toycase2.csv";
+		//String toycase3 = home + "models/toycases/toycase3.csv";
+		//String toycase4 = home + "models/toycases/toycase4.csv";
+		//String toycase5 = home + "models/toycases/toycase5" +
+				//".csv";
+		String gasBoilerSystem = home + "models/FH/GasBoilerSystem.csv";
+		String audioControlSystem = home + "models/FH/AudioControlSystem.csv";
+		String conferenceManagementSystem = home +  "models/FH/ConferenceManagementSystem.csv";
+		String ajStats = home + "models/FH/AJStats.csv";
+		String tankWar = home + "models/FH/TankWar.csv";
+		String PKJab = home + "models/FH/PKJab.csv";
+		String chatSystem = home + "models/FH_nogen/ChatSystem.csv";
+		String notepad = home + "models/FH_nogen/Notepad.csv";
+		String ahead = home + "models/FH_nogen/ahead.csv";
+		String mobileMedia = home + "models/Egyed/MobileMedia.csv";
+		String vod1 = home + "models/Egyed/VOD1.csv";
+		String vod2 = home + "models/Egyed/VOD2.csv";
 		
-		String resultsHospitals = "results/hospital_results.xls";
-		String resultsWarehouses = "results/warehouses_results.xls";
-		String resultsRandom = "results/random_results.xls";
-		String resultsRandomLoose = "results/randomLoose_results.xls";
-		String resultsRandomTight = "results/randomTight_results.xls";
-		String resultsLevel2a = "results/results_level2a.xls";
-		String resultsLevel2b = "results/results_level2b.xls";
-		String resultsLevel3a = "results/results_level3a.xls";
-		String resultsToycase = "results/toycase_results.xls";
-		String resultsToycase2 = "results/toycase2_results.xls";
-		String resultsToycase3 = "results/toycase3_results.xls";
-		String resultsGasBoilerSystem = "results/gasBoilerSystem_results.xls";
-		String resultsAudioControlSystem = "results/audioControlSystem_results.xls";
-		String resultsConferenceManagementSystem = "results/conferenceManagementSystem_results.xls";
-		String resultsPKJab = "results/PKJab_results.xls";
-		String resultsAJStats = "results/AJStats_results.xls";
-		String resultsTankWar = "results/TankWar_results.xls";
-		String resultsChatSystem = "results/chatSystem_results.xls";
-		String resultsNotepad = "results/notepad_results.xls";
-		String resultsAhead = "results/ahead_results.xls";
-		String resultsMobileMedia = "results/mobileMedia_results.xls";
-		String resultsVod1 = "results/vod1_results.xls";
-		String resultsVod2 = "results/vod2_results.xls";
+		String resultsHospitals =home +  "results/hospital_results.xls";
+		String resultsWarehouses = home + "results/warehouses_results.xls";
+		String resultsRandom = home + "results/random_results.xls";
+		String resultsRandomLoose = home + "results/randomLoose_results.xls";
+		String resultsRandomTight = home + "results/randomTight_results.xls";
+		//String resultsLevel2a = home + "results/results_level2a.xls";
+		//String resultsLevel2b = "results/results_level2b.xls";
+		//String resultsLevel3a = "results/results_level3a.xls";
+		//String resultsToycase = "results/toycase_results.xls";
+		//String resultsToycase2 = "results/toycase2_results.xls";
+		//String resultsToycase3 = "results/toycase3_results.xls";
+		String resultsGasBoilerSystem = home + "results/gasBoilerSystem_results.xls";
+		String resultsAudioControlSystem = home + "results/audioControlSystem_results.xls";
+		String resultsConferenceManagementSystem = home + "results/conferenceManagementSystem_results.xls";
+		String resultsPKJab = home + "results/PKJab_results.xls";
+		String resultsAJStats = home + "results/AJStats_results.xls";
+		String resultsTankWar = home + "results/TankWar_results.xls";
+		String resultsChatSystem = home + "results/chatSystem_results.xls";
+		String resultsNotepad = home + "results/notepad_results.xls";
+		String resultsAhead = home + "results/ahead_results.xls";
+		String resultsMobileMedia = home + "results/mobileMedia_results.xls";
+		String resultsVod1 = home + "results/vod1_results.xls";
+		String resultsVod2 = home + "results/vod2_results.xls";
 		
 		ArrayList<String> models = new ArrayList<String>();
 		models.add(hospitals);
 		ArrayList<String> results = new ArrayList<String>();
 		results.add(resultsHospitals);
-		runMultipleHSExperiment(models, results, 5, 50, 10);
+		//runMultipleHSExperiment(models, results, 5, 50, 10);
 		
-		results = new ArrayList<String>();
-		models = new ArrayList<String>();
+		//results = new ArrayList<String>();
+		//models = new ArrayList<String>();
 		models.add(warehouses);
 		models.add(random);
 		models.add(randomLoose);
@@ -573,7 +577,7 @@ public class Main {
 		
 		AlgoUtil.useTreshold(true);
 		
-		ExperimentsRunner.runConcurrentExperiment(models, results);
+		//ExperimentsRunner.runConcurrentExperiment(models, results);
 		//AlgoUtil.calcOptimalScore(audioControlSystem);
 		
 		//runOutliers(warehouses, resultsWarehouses, -1);
@@ -582,7 +586,7 @@ public class Main {
 		
 		//runSingleHSExperiment(models, results, 1, 50, 10);
 		//runSimpleExperiment(models, results, 10, 50, 10);
-		//runMultipleHSExperiment(models, results, 5, 50, 10);
+	   // runMultipleHSExperiment(models, results, 5, 50, 10);
 		//ReshapeData rd = new ReshapeData("results/experimentResults.xls");
 		//rd.reshapeData();
 		
@@ -599,7 +603,7 @@ public class Main {
 			e.printStackTrace();
 		}*/
 		
-		//singleBatchRun(hospitals, resultsHospitals, -1, true);
+		singleBatchRun(hospitals, resultsHospitals, -1, true);
 		//singleBatchRun(warehouses, resultsWarehouses, -1, true);	
 		//singleBatchRun(random, resultsRandom, 10, true);	
 		//singleBatchRun(randomLoose, resultsRandomLoose, 10, true);	

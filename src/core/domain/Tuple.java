@@ -22,7 +22,7 @@ public class Tuple {
 	
 	private ArrayList<Element> sortedElems = null;
 	private BigDecimal weight = BigDecimal.ZERO;
-	
+	private int id;
 	public static int cnt = 0;
 	
 	public static BigDecimal relativeThresholdCoefficient = BigDecimal.ONE;//AlgoUtil.ratio("4", "3");
@@ -40,11 +40,19 @@ public class Tuple {
 	
 	public Tuple(){
 		elements = new ArrayList<Element>();
+		id = Tuple.cnt;
+		cnt++;
 	}
 	
 	public Tuple(ArrayList<Element> elems){
 		elements = elems;
 		orderedElements.addAll(elems);
+		id = Tuple.cnt;
+		cnt++;
+	}
+	
+	public int getId(){
+		return id;
 	}
 	
 	public void setScaledWeight(long l){

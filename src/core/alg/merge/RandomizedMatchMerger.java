@@ -26,7 +26,8 @@ import core.domain.Tuple;
 import core.execution.RunResult;
 
 public class RandomizedMatchMerger extends Merger implements Matchable {
-	 protected ArrayList<Tuple> solution;
+	protected ArrayList<Tuple> solution;
+	protected Hashtable<Integer, Tuple> solutionTable;
 	protected ArrayList<Element> unusedElements;
 	protected ArrayList<Element> allElements;
 	private RunResult res;
@@ -275,10 +276,15 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 		for (Model m: models){
 			allElements.addAll(m.getElements());
 		}
-		solution.addAll(prevSolution);
+		solutionTable = new Hashtable<Integer, Tuple>(prevSolution.size() * 7);
+		for (Tuple t: prevSolution){
+			solutionTable.put(t.getId() % solutionTable.size(), t);
+		}
+		//solution.addAll(prevSolution);
 		for (Element e: allElements){
 			if (e.getContaingTuple().getSize() == 1){
-				solution.add(e.getContaingTuple());
+				//solution.add(e.getContaingTuple());
+				solutionTable.put(e.getContaingTuple().getId() % solutionTable.size(), e.getContaingTuple());
 			}
 		}
 		int iterations = 0;
@@ -454,7 +460,7 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 		/*for (Element e: elems){
 			elemTable.put(e.hashCode(), e);
 		}*/
-		ArrayList<Tuple> currSolution = new ArrayList<Tuple>();
+		//ArrayList<Tuple> currSolution = new ArrayList<Tuple>();
 		currSolution.addAll(solution);
 		BigDecimal maxScore = AlgoUtil.calcGroupWeight(solution).add(new BigDecimal(0.00001, N_WAY.MATH_CTX));
 		
@@ -478,7 +484,7 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 		while(true){
 			//System.out.println(currTuple);
 			elems.remove(current);
-			if (!md.switchBuckets){
+			if (!md.switchBuckets || currTuple.getSize() == 1){
 				elems = AlgoUtil.removeElementsSameModelId(current, elems);
 				incompatible = AlgoUtil.removeElementsSameModelId(current, incompatible);
 			}
@@ -498,12 +504,18 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 						currTuple = currTuple.lessExpanded(replaced, models);
 					else
 						currTuple = new Tuple();
-					//unusedElements.add(replaced);
+					unusedElements.add(replaced);
 					//elems.add(replaced);
-					Tuple self = new Tuple();
-					self.addElement(replaced);
-					replaced.setContaintingTuple(self);
-					currSolution.add(self);
+					//Tuple self = new Tuple();
+					//self.addElement(replaced);
+					//replaced.setContaintingTuple(self);
+					//currSolution.add(self);
+					Tuple prior = replaced.resetContainingTuple();
+					//prior = prior.newExpanded(replaced, models);
+					//System.out.println(prior);
+					for (Element e: prior.getElements()){
+						e.setContaintingTuple(prior);
+					}
 				}
 			}
 			currTuple = currTuple.newExpanded(current, models);
@@ -539,14 +551,14 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 			for (Element e: bestTuple.getElements()){
 				unusedElements.remove(e);
 			}
-			ArrayList<Element> usedElements = new ArrayList<Element>();
+			/*ArrayList<Element> usedElements = new ArrayList<Element>();
 			for (Tuple t: solution){
 				for (Element e: t.getElements()){
 					if (usedElements.contains(e))
 						System.out.println(e);
 					usedElements.add(e);
 				}
-			}
+			}*/
 			return true;
 		}
 		else{

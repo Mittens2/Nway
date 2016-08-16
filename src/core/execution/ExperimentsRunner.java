@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -15,6 +16,7 @@ import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Row;
 
+import core.Main;
 import core.common.ResultsPlotter;
 import core.common.Statistics;
 import core.domain.Model;
@@ -35,6 +37,7 @@ public class ExperimentsRunner{
 	        this.runsToAvg = runsToAvg;
 	        this.divideUp = divideUp;
 	        this.numOfModelsToUse = numOfModelsToUse;
+	        this.numCases = numCases;
 		}
     
         @Override
@@ -70,8 +73,8 @@ public class ExperimentsRunner{
 			}
 			ResultsPlotter rp = new ResultsPlotter(subcase, "");
 			for (int j = 0; j < scores.length; j++){
-				expResults[3][j] = ((double) iterSums[j]) / runsToAvg;
-				expResults[2][j] = timeSums[j] / runsToAvg;
+				//expResults[3][j] = ((double) iterSums[j]) / runsToAvg;
+				//expResults[2][j] = timeSums[j] / runsToAvg;
 				//rp.addBarDataPoint(scoreSums[j] / runsToAvg, settings[j], subcase);
 				//for (int k = 0; k < scoreSums[j].length; k++) System.out.println(scoreSums[j][k]);
 				//rp.addMultipleValueDatapoint(scoreSums[j], scoreSums[0][0], settings[j]);
@@ -88,7 +91,7 @@ public class ExperimentsRunner{
 		ExecutorService executor = Executors.newFixedThreadPool(15);
 		List<ExperimentRunner> exps = new ArrayList<ExperimentRunner>();
 		for (int i = 0; i < modelsFiles.size(); i++){
-			exps.add(new ExperimentRunner(modelsFiles.get(i), resultsFiles.get(i), 5, 50, 10, 224));
+			exps.add(new ExperimentRunner(modelsFiles.get(i), resultsFiles.get(i), 5, 50, 10, 1));
 		}
 		List<Future<Double[][]>> results = null;
 		try {
@@ -107,7 +110,7 @@ public class ExperimentsRunner{
 		HSSFWorkbook workbook;
 		HSSFSheet sheet;
 		try{
-			fileIn = new FileInputStream(new File("experimentResults.xls"));
+			fileIn = new FileInputStream(new File(Main.home + "results/experimentResults.xls"));
 			workbook = new HSSFWorkbook(fileIn);
 			sheet = workbook.getSheet("Block Form");
 			if (sheet == null){
@@ -133,7 +136,7 @@ public class ExperimentsRunner{
 			return;
 		} 
 		try {
-			fileOut = new FileOutputStream(new File("experimentResults.xls"));
+			fileOut = new FileOutputStream(new File(Main.home + "results/experimentResults.xls"));
 			workbook.write(fileOut); 
 			fileIn.close();
 			fileOut.close();

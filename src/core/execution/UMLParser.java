@@ -21,12 +21,6 @@ import java.util.regex.Pattern;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Row;
-import org.eclipse.emf.common.util.URI;
-import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.ecore.resource.Resource;
-import org.eclipse.emf.ecore.xmi.XMIResource;
-import org.eclipse.emf.ecore.xmi.XMLResource;
-import org.eclipse.emf.ecore.xmi.impl.XMIResourceImpl;
 
 
 public class UMLParser {
@@ -60,27 +54,6 @@ public class UMLParser {
 		NONE,
 		CLASS,
 		ABSTRACTION
-	}
-	
-	public static void XMItoEMF(String path){
-	     URI uri = URI.createFileURI(path);
-	     
-        Resource resource = new XMIResourceImpl();
-     
-        resource.unload();
-        resource.setURI(uri);
- 
-        try {
-            resource.load(null);
-             
-            //XMIModel : Create a class for XMI Model
-            EObject e = resource.getContents().get(0);
-            System.out.print(e);
-            //Iterate on the XMI Model or Convert it to a tree
- 
-        } catch (IOException e) {
-            System.err.println("Exception occured while loading the resource file for configuration model: " + e.getMessage()); 
-        }
 	}
 	
 	private static ArrayList<UMLClass> parseUML(String filePath){

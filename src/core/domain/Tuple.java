@@ -33,8 +33,10 @@ public class Tuple {
 	private int propertiesUnionSize;
 	private int sumOfAllElementSizes;
 	private HashSet<String> myModels;
+	private BigDecimal bar;
 	
 	private ArrayList<Element> orderedElements = new ArrayList<Element>();
+	private Integer hashNumber;
 	
 	public Tuple(){
 		elements = new ArrayList<Element>();

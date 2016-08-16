@@ -1,5 +1,6 @@
 package core.domain;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -16,7 +17,7 @@ import core.common.N_WAY;
 public class Element {
 	private Set<String> properties;
 	private String label;
-	
+	public static int maxModelElems;
 	private ArrayList<String> sortedProps = null;
 	
 	private ArrayList<Element> basedUponElements;
@@ -34,8 +35,13 @@ public class Element {
 	
 	//private int propScore;
 	private double propScore;
+	private BigDecimal bar = BigDecimal.ZERO;
 	
 	private static Random random = new Random(System.currentTimeMillis()+1165);
+	
+	public static void setMaxElems(int k){
+		maxModelElems = k;
+	}
 	
 	public Element(String id){
 		modelId = id;
@@ -247,6 +253,16 @@ public class Element {
 		return this.propScore;
 	}
 	
+	public void setBar(BigDecimal bar){
+		this.bar = bar;	
+	}
 	
+	public BigDecimal getBar(){
+		return this.bar;
+	}
+	
+	public int hashCode(){
+		return Integer.parseInt(getModelId()) * Element.maxModelElems + getId();
+	}
 }
 

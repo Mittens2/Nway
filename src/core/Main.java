@@ -4,13 +4,16 @@ import java.awt.Dimension;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.Random;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
 
-import org.apache.commons.math3.stat.inference.OneWayAnova;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Row;
@@ -25,6 +28,7 @@ import core.domain.Model;
 import core.domain.Tuple;
 import core.execution.BatchRunner;
 import core.execution.BatchRunner.BatchRunDescriptor;
+import core.execution.ExperimentsRunner;
 import core.execution.ReshapeData;
 import core.execution.RunResult;
 import core.execution.Runner;
@@ -35,7 +39,6 @@ import core.test.RandomizedMatchMergerTest;
 
 
 public class Main {
-	
 
 	private static void workOnBatch(String modelsFile, String resultsFile){
 		BatchRunner batcher = new BatchRunner(modelsFile, 10, resultsFile);
@@ -113,14 +116,14 @@ public class Main {
 		HSSFSheet sheet;
 		// Set up xls file for writing results.
 		try{
-			fileIn = new FileInputStream(new File("results/experimentResults.xls"));
+			fileIn = new FileInputStream(new File("/home/amit/Dropbox/NSERC/experimentResults.xls"));
 			workbook = new HSSFWorkbook(fileIn);
 			sheet = workbook.getSheet("Block Form");
 			if (sheet == null){
 				sheet = workbook.createSheet("Block Form");
 				Row header = sheet.createRow(0);
 				header.createCell(0).setCellValue("Case");
-				for (int i = 1; i <= 40; i++){
+				for (int i = 1; i <= 224; i++){
 					header.createCell(i).setCellValue("c" + i);
 				}
 			}
@@ -130,7 +133,7 @@ public class Main {
 			return;
 		}
 		//ResultsPlotter rp = new ResultsPlotter("", "");
-		ArrayList<ResultsPlotter> rps = new ArrayList<ResultsPlotter>();
+		//ArrayList<ResultsPlotter> rps = new ArrayList<ResultsPlotter>();
 		for (int i = 0; i < modelsFiles.size(); i++){
 			String mf = modelsFiles.get(i);
 			String rf = resultsFiles.get(i);
@@ -167,28 +170,28 @@ public class Main {
 				timeAvg.add(timeSums[j] / runsToAvg);
 				//rp.addBarDataPoint(scoreSums[j] / runsToAvg, settings[j], subcase);
 				//for (int k = 0; k < scoreSums[j].length; k++) System.out.println(scoreSums[j][k]);
-				rp.addMultipleValueDatapoint(scoreSums[j], scoreSums[0][0], settings[j]);
-				int sum = 0;
+				//rp.addMultipleValueDatapoint(scoreSums[j], scoreSums[0][0], settings[j]);
+				double sum = 0;
 				for (double score: scoreSums[j]) sum += score;
-				newRow.createCell(j + 1).setCellValue(sum / runsToAvg);
+				newRow.createCell(j).setCellValue(sum / runsToAvg);
 			}
 			iterations.add(iterAvg);
 			times.add(timeAvg);
-			rps.add(rp);
+			//rps.add(rp);
 		}
-		try{
-			fileIn.close();
-			fileOut = new FileOutputStream(new File("results/experimentResults.xls"));
+		try {
+			fileOut = new FileOutputStream(new File("/home/amit/Dropbox/NSERC/experimentResults.xls"));
 			workbook.write(fileOut); 
+			fileIn.close();
 			fileOut.close();
-		}
-		catch (Exception e){
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		for (int i = 0; i < rps.size(); i++){
+		/*for (int i = 0; i < rps.size(); i++){
 			//rps.get(i).creatBarGraph(times.get(i), iterations.get(i));
 			rps.get(i).createChart(times.get(i), iterations.get(i));
-		}
+		}*/
 		
 	}
 	
@@ -528,7 +531,13 @@ public class Main {
 		
 		ArrayList<String> models = new ArrayList<String>();
 		models.add(hospitals);
-		/*models.add(warehouses);
+		ArrayList<String> results = new ArrayList<String>();
+		results.add(resultsHospitals);
+		runMultipleHSExperiment(models, results, 5, 50, 10);
+		
+		results = new ArrayList<String>();
+		models = new ArrayList<String>();
+		models.add(warehouses);
 		models.add(random);
 		models.add(randomLoose);
 		models.add(randomTight);
@@ -542,11 +551,10 @@ public class Main {
 		models.add(notepad);
 		models.add(mobileMedia);
 		models.add(vod1);
-		models.add(vod2);*/
+		models.add(vod2);
 
 		
-		ArrayList<String> results = new ArrayList<String>();
-		results.add(resultsHospitals);
+		
 		results.add(resultsWarehouses);
 		results.add(resultsRandom);
 		results.add(resultsRandomLoose);
@@ -565,6 +573,7 @@ public class Main {
 		
 		AlgoUtil.useTreshold(true);
 		
+		ExperimentsRunner.runConcurrentExperiment(models, results);
 		//AlgoUtil.calcOptimalScore(audioControlSystem);
 		
 		//runOutliers(warehouses, resultsWarehouses, -1);
@@ -573,7 +582,7 @@ public class Main {
 		
 		//runSingleHSExperiment(models, results, 1, 50, 10);
 		//runSimpleExperiment(models, results, 10, 50, 10);
-		runMultipleHSExperiment(models, results, 5, 50, 10);
+		//runMultipleHSExperiment(models, results, 5, 50, 10);
 		//ReshapeData rd = new ReshapeData("results/experimentResults.xls");
 		//rd.reshapeData();
 		

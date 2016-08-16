@@ -112,7 +112,14 @@ public class Model {
 			 reader.close();
 		} catch (Exception e) {
 			e.printStackTrace();
-		} 
+		}
+		int maxModelElems = 0;
+		for (Model m: models){
+			if (m.size() > maxModelElems){
+				maxModelElems = m.size();
+			}
+		}
+		Element.setMaxElems(maxModelElems);
 		return models;
 	}
 	

@@ -534,17 +534,17 @@ public class Main {
 		String resultsVod2 = home + "results/vod2_results.xls";
 		
 		ArrayList<String> models = new ArrayList<String>();
-		models.add(hospitals);
+		//models.add(hospitals);
 		ArrayList<String> results = new ArrayList<String>();
 		results.add(resultsHospitals);
 		//runMultipleHSExperiment(models, results, 5, 50, 10);
 		
 		//results = new ArrayList<String>();
 		//models = new ArrayList<String>();
-		models.add(warehouses);
-		models.add(random);
-		models.add(randomLoose);
-		models.add(randomTight);
+		//models.add(warehouses);
+		//models.add(random);
+		//models.add(randomLoose);
+		//models.add(randomTight);
 		models.add(gasBoilerSystem);
 		models.add(audioControlSystem);
 		models.add(conferenceManagementSystem);
@@ -577,7 +577,7 @@ public class Main {
 		
 		AlgoUtil.useTreshold(true);
 		
-		//ExperimentsRunner.runConcurrentExperiment(models, results);
+		ExperimentsRunner.runConcurrentExperiment(models, results);
 		//AlgoUtil.calcOptimalScore(audioControlSystem);
 		
 		//runOutliers(warehouses, resultsWarehouses, -1);
@@ -603,7 +603,7 @@ public class Main {
 			e.printStackTrace();
 		}*/
 		
-		singleBatchRun(hospitals, resultsHospitals, -1, true);
+		//singleBatchRun(hospitals, resultsHospitals, -1, true);
 		//singleBatchRun(warehouses, resultsWarehouses, -1, true);	
 		//singleBatchRun(random, resultsRandom, 10, true);	
 		//singleBatchRun(randomLoose, resultsRandomLoose, 10, true);	

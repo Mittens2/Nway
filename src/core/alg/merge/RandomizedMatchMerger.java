@@ -276,11 +276,11 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 		for (Model m: models){
 			allElements.addAll(m.getElements());
 		}
-		solutionTable = new Hashtable<Integer, Tuple>(prevSolution.size() * 7);
-		for (Tuple t: prevSolution){
+		//solutionTable = new Hashtable<Integer, Tuple>(prevSolution.size() * 7);
+		/*for (Tuple t: prevSolution){
 			solutionTable.put(t.getId() % solutionTable.size(), t);
-		}
-		//solution.addAll(prevSolution);
+		}*/
+		solution.addAll(prevSolution);
 		for (Element e: allElements){
 			if (e.getContaingTuple().getSize() == 1){
 				//solution.add(e.getContaingTuple());
@@ -460,7 +460,7 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 		/*for (Element e: elems){
 			elemTable.put(e.hashCode(), e);
 		}*/
-		//ArrayList<Tuple> currSolution = new ArrayList<Tuple>();
+		ArrayList<Tuple> currSolution = new ArrayList<Tuple>();
 		currSolution.addAll(solution);
 		BigDecimal maxScore = AlgoUtil.calcGroupWeight(solution).add(new BigDecimal(0.00001, N_WAY.MATH_CTX));
 		
@@ -506,16 +506,16 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 						currTuple = new Tuple();
 					unusedElements.add(replaced);
 					//elems.add(replaced);
-					//Tuple self = new Tuple();
-					//self.addElement(replaced);
-					//replaced.setContaintingTuple(self);
-					//currSolution.add(self);
-					Tuple prior = replaced.resetContainingTuple();
+					Tuple self = new Tuple();
+					self.addElement(replaced);
+					replaced.setContaintingTuple(self);
+					currSolution.add(self);
+					//Tuple prior = replaced.resetContainingTuple();
 					//prior = prior.newExpanded(replaced, models);
 					//System.out.println(prior);
-					for (Element e: prior.getElements()){
+					/*for (Element e: prior.getElements()){
 						e.setContaintingTuple(prior);
-					}
+					}*/
 				}
 			}
 			currTuple = currTuple.newExpanded(current, models);

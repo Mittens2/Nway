@@ -91,7 +91,7 @@ public class ExperimentsRunner{
 		ExecutorService executor = Executors.newFixedThreadPool(15);
 		List<ExperimentRunner> exps = new ArrayList<ExperimentRunner>();
 		for (int i = 0; i < modelsFiles.size(); i++){
-			exps.add(new ExperimentRunner(modelsFiles.get(i), resultsFiles.get(i), 5, 50, 10, 1));
+			exps.add(new ExperimentRunner(modelsFiles.get(i), resultsFiles.get(i), 5, 50, 10, 224));
 		}
 		List<Future<Double[][]>> results = null;
 		try {

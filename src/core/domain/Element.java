@@ -22,7 +22,8 @@ public class Element {
 	private ArrayList<String> sortedProps = null;
 	
 	private ArrayList<Element> basedUponElements;
-	private LinkedList<Integer> containingTupleIds;
+	//private LinkedList<Integer> containingTupleIds;
+	private Tuple containingTuple;
 	
 	private String modelId;
 	
@@ -51,10 +52,11 @@ public class Element {
 		if(! modelId.equals(AlgoUtil.NO_MODEL_ID)){
 			basedUponElements.add(this);
 			//containingTuple = new LinkedList<Tuple>();
-			containingTupleIds = new LinkedList<Integer>();
+			//containingTupleIds = new LinkedList<Integer>();
 			Tuple contain = new Tuple();
 			contain.addElement(this);
-			containingTupleIds.add(contain.getId());
+			containingTuple = contain;
+			//containingTupleIds.add(contain.getId());
 		}
 	}
 	
@@ -67,8 +69,9 @@ public class Element {
 			label = label +e.getLabel()+"+";
 		}
 		//containingTuple = new LinkedList<Tuple>();
-		containingTupleIds = new LinkedList<Integer>();
-		containingTupleIds.add(t.getId());
+		//containingTupleIds = new LinkedList<Integer>();
+		//containingTupleIds.add(t.getId());
+		containingTuple = t;
 		if(AlgoUtil.COMPUTE_RESULTS_CLASSICALLY){
 			label =label+ properties.toString().replace(" ", "");
 		}
@@ -149,22 +152,23 @@ public class Element {
 		return id;
 	}
 	
-	public int getContaingTupleId(){
+	public Tuple getContaingTuple(){
 		//return containingTuple.getLast();
-		return containingTupleIds.getLast();
+		return containingTuple;
 	}
 	
-	public void setContaintingTupleId(Tuple t){
-		if (containingTupleIds.size() == 2){
+	public void setContaintingTuple(Tuple t){
+		/*if (containingTupleIds.size() == 2){
 			containingTupleIds.removeFirst();
 			containingTupleIds.add(t.getId());
 		}
 		else{
 			containingTupleIds.add(t.getId());
-		}
+		}*/
+		containingTuple = t;
 	}
 	
-	public int resetContainingTupleId(){
+	/*public int resetContainingTupleId(){
 		if (containingTupleIds.size() == 2){
 			containingTupleIds.removeLast();
 			return containingTupleIds.getLast();
@@ -173,7 +177,7 @@ public class Element {
 			return -1;
 		}
 		
-	}
+	}*/
 	
 	public String getLabel(){
 		return label;

@@ -22,7 +22,7 @@ public class Element {
 	private ArrayList<String> sortedProps = null;
 	
 	private ArrayList<Element> basedUponElements;
-	//private LinkedList<Integer> containingTupleIds;
+	private LinkedList<Integer> containingTupleId;
 	private Tuple containingTuple;
 	
 	private String modelId;
@@ -46,6 +46,7 @@ public class Element {
 	}
 	
 	public Element(String id){
+		containingTupleId = new LinkedList<Integer>();
 		modelId = id;
 		properties = new HashSet<String>();
 		basedUponElements = new ArrayList<Element>();
@@ -56,22 +57,22 @@ public class Element {
 			Tuple contain = new Tuple();
 			contain.addElement(this);
 			containingTuple = contain;
+			containingTupleId.add(contain.getId());
 			//containingTupleIds.add(contain.getId());
 		}
 	}
 	
 	public Element(Tuple t){
 		this(AlgoUtil.NO_MODEL_ID);
+		containingTupleId = new LinkedList<Integer>();
 		label = "";
 		for(Element e:t.getRealElements()){
 			properties.addAll(e.getProperties());
 			basedUponElements.add(e);
 			label = label +e.getLabel()+"+";
 		}
-		//containingTuple = new LinkedList<Tuple>();
-		//containingTupleIds = new LinkedList<Integer>();
-		//containingTupleIds.add(t.getId());
 		containingTuple = t;
+		containingTupleId.add(t.getId());
 		if(AlgoUtil.COMPUTE_RESULTS_CLASSICALLY){
 			label =label+ properties.toString().replace(" ", "");
 		}
@@ -82,7 +83,7 @@ public class Element {
 	
 	public Element(int l, Model m, int commonVacabularyMin, int diffVacabularyMin){
 		this(m.getId());
-		
+		containingTupleId = new LinkedList<Integer>();
 	   
 	    for (int i = 0; i < l; i++) {
 	        this.addProperty(pickRandomProperty(commonVacabularyMin, diffVacabularyMin));
@@ -153,31 +154,41 @@ public class Element {
 	}
 	
 	public Tuple getContaingTuple(){
-		//return containingTuple.getLast();
 		return containingTuple;
 	}
 	
 	public void setContaintingTuple(Tuple t){
-		/*if (containingTupleIds.size() == 2){
-			containingTupleIds.removeFirst();
-			containingTupleIds.add(t.getId());
-		}
-		else{
-			containingTupleIds.add(t.getId());
-		}*/
 		containingTuple = t;
+		setContainingTupleId(t.getId());
 	}
 	
-	/*public int resetContainingTupleId(){
-		if (containingTupleIds.size() == 2){
-			containingTupleIds.removeLast();
-			return containingTupleIds.getLast();
+	public int getContainingTupleId(){
+		return containingTupleId.getLast();
+	}
+	
+	public void setContainingTupleId(int tId){
+		if (tId != containingTupleId.getLast()){
+			//System.out.println(tId + "=" + containingTupleId.getLast() + "?");
+			if (containingTupleId.size() == 2){
+				containingTupleId.removeFirst();
+			}
+			containingTupleId.addLast(tId);
+		}
+	}
+	
+	public int resetContainingTupleId(){
+		if (containingTupleId.size() == 2){
+			containingTupleId.removeLast();
+			return containingTupleId.getLast();
 		}
 		else{
 			return -1;
 		}
-		
-	}*/
+	}
+	
+	public int getContainingTupleIdSize(){
+		return containingTupleId.size();
+	}
 	
 	public String getLabel(){
 		return label;

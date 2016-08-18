@@ -21,6 +21,7 @@ import org.jfree.data.category.CategoryDataset;
 import org.jfree.ui.RefineryUtilities;
 
 import core.common.AlgoUtil;
+import core.common.OptimalSolutionSolver;
 import core.common.ResultsPlotter;
 import core.common.Statistics;
 import core.domain.Element;
@@ -99,100 +100,6 @@ public class Main {
         RefineryUtilities.centerFrameOnScreen(rp);
         rp.setVisible(true);
         
-	}
-	
-	private static void runMultipleHSExperiment(ArrayList<String> modelsFiles, ArrayList<String> resultsFiles, int runsToAvg, 
-			int divideUp, int numOfModelsToUse){
-		/**
-		 * Runs a simple experiment (i.e. produces graphs that do not show the spread of scores).
-		 * Saves all of the graphs of the different setting of the algorithm being compared to NwM.
-		 */
-		String[] settings = {"NwM", "hl:1_sb:0", "hl:1_sb:1", "hl:0_sb:0", "hl:0_sb:1"};
-		ArrayList<ArrayList<Double>> times = new ArrayList<ArrayList<Double>>();
-		ArrayList<ArrayList<Double>> iterations = new ArrayList<ArrayList<Double>>();
-		FileInputStream fileIn;
-		FileOutputStream fileOut;
-		HSSFWorkbook workbook;
-		HSSFSheet sheet;
-		// Set up xls file for writing results.
-		try{
-			fileIn = new FileInputStream(new File(home + "results/experimentResults.xls"));
-			workbook = new HSSFWorkbook(fileIn);
-			sheet = workbook.getSheet("Block Form");
-			if (sheet == null){
-				sheet = workbook.createSheet("Block Form");
-				Row header = sheet.createRow(0);
-				header.createCell(0).setCellValue("Case");
-				for (int i = 1; i <= 224; i++){
-					header.createCell(i).setCellValue("c" + i);
-				}
-			}
-		}
-		catch (Exception e){
-			e.printStackTrace();
-			return;
-		}
-		//ResultsPlotter rp = new ResultsPlotter("", "");
-		//ArrayList<ResultsPlotter> rps = new ArrayList<ResultsPlotter>();
-		for (int i = 0; i < modelsFiles.size(); i++){
-			String mf = modelsFiles.get(i);
-			String rf = resultsFiles.get(i);
-			ArrayList<Model> models = Model.readModelsFile(mf);
-			String subcase = mf.substring(mf.lastIndexOf("/") + 1, mf.indexOf("."));
-			if (models.size() > divideUp){
-				models = new ArrayList<Model>(models.subList(0, numOfModelsToUse));
-			}
-			double[][] scoreSums = null;
-			double[] timeSums = null;
-			int[] iterSums = null;
-			for (int j = 0; j < runsToAvg; j++){
-				Runner runner = new Runner(models, rf, null, -1, false);
-				runner.execute(subcase);
-				ArrayList<RunResult> rrs = runner.getRunResults();
-				if (scoreSums == null){
-					scoreSums = new double[rrs.size()][runsToAvg];
-					timeSums = new double[rrs.size()];
-					iterSums = new int[rrs.size()];
-				}
-				for (int k = 0; k < rrs.size(); k++){
-					timeSums[k] += rrs.get(k).execTime / 1000.0;
-					iterSums[k] += rrs.get(k).iterations;
-					scoreSums[k][j] = rrs.get(k).weight.doubleValue();
-				}
-			}
-			Row newRow = sheet.createRow(sheet.getLastRowNum() + 1);
-			newRow.createCell(0).setCellValue(subcase);
-			ArrayList<Double> iterAvg = new ArrayList<Double>();
-			ArrayList<Double> timeAvg = new ArrayList<Double>();
-			ResultsPlotter rp = new ResultsPlotter(subcase, "");
-			for (int j = 0; j < scoreSums.length; j++){
-				iterAvg.add(((double) iterSums[j]) / runsToAvg);
-				timeAvg.add(timeSums[j] / runsToAvg);
-				//rp.addBarDataPoint(scoreSums[j] / runsToAvg, settings[j], subcase);
-				//for (int k = 0; k < scoreSums[j].length; k++) System.out.println(scoreSums[j][k]);
-				//rp.addMultipleValueDatapoint(scoreSums[j], scoreSums[0][0], settings[j]);
-				double sum = 0;
-				for (double score: scoreSums[j]) sum += score;
-				newRow.createCell(j + 1).setCellValue(sum / runsToAvg);
-			}
-			iterations.add(iterAvg);
-			times.add(timeAvg);
-			//rps.add(rp);
-		}
-		try {
-			fileOut = new FileOutputStream(new File(home + "results/experimentResults.xls"));
-			workbook.write(fileOut); 
-			fileIn.close();
-			fileOut.close();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		/*for (int i = 0; i < rps.size(); i++){
-			//rps.get(i).creatBarGraph(times.get(i), iterations.get(i));
-			rps.get(i).createChart(times.get(i), iterations.get(i));
-		}*/
-		
 	}
 	
 	private static void runSimpleExperiment(ArrayList<String> modelsFiles, ArrayList<String> resultsFiles, int runsToAvg, 
@@ -299,65 +206,6 @@ public class Main {
 			}
 			//datasets.add(data);*/
 			rp.createChartSingle();
-		}
-	}
-	
-	private static void runSingleHSExperiment(ArrayList<String> modelsFiles, ArrayList<String> resultsFiles, int runsToAvg, 
-			int divideUp, int numOfModelsToUse){
-		FileInputStream fileIn;
-		FileOutputStream fileOut;
-		HSSFWorkbook workbook;
-		HSSFSheet sheet;
-		try{
-			fileIn = new FileInputStream(new File("results/singleHSResults.xls"));
-			workbook = new HSSFWorkbook(fileIn);
-			sheet = workbook.getSheet("sheet1");
-			if (sheet == null){
-				sheet = workbook.createSheet("sheet1");
-				Row header = sheet.createRow(0);
-				header.createCell(0).setCellValue("case");
-				header.createCell(0).setCellValue("nwm_score");
-				header.createCell(0).setCellValue("hs_score");
-				header.createCell(0).setCellValue("iterations");
-				header.createCell(0).setCellValue("time");
-			}
-		}
-		catch (Exception e){
-			e.printStackTrace();
-			return;
-		}
-		for (int i = 0; i < modelsFiles.size(); i++){
-			String mf = modelsFiles.get(i);
-			String rf = resultsFiles.get(i);
-			ArrayList<Model> models = Model.readModelsFile(mf);
-			String subcase = mf.substring(mf.lastIndexOf("/") + 1, mf.indexOf("."));
-			if (models.size() > divideUp){
-				models = new ArrayList<Model>(models.subList(0, numOfModelsToUse));
-			}
-			double[] valueSums = new double[4];
-			for (int j = 0; j < runsToAvg; j++){
-				Runner runner = new Runner(models, rf, null, -1, false);
-				runner.execute(subcase);
-				ArrayList<RunResult> rrs = runner.getRunResults();
-				valueSums[0] += rrs.get(0).weight.doubleValue();
-				valueSums[1] += rrs.get(1).weight.doubleValue();
-				valueSums[2] += rrs.get(1).iterations;
-				valueSums[3] += rrs.get(1).execTime;
-			}
-			Row newRow = sheet.createRow(sheet.getLastRowNum() + 1);
-			newRow.createCell(0).setCellValue(subcase);
-			for (int j = 0; j < valueSums.length; j++){
-				newRow.createCell(j + 1).setCellValue(valueSums[j] / runsToAvg);
-			}
-		}
-		try{
-			fileIn.close();
-			fileOut = new FileOutputStream(new File("results/singleHSResults.xls"));
-			workbook.write(fileOut); 
-			fileOut.close();
-		}
-		catch (Exception e){
-			e.printStackTrace();
 		}
 	}
 	
@@ -490,12 +338,12 @@ public class Main {
 		//String level2a = home + "models/aliens/level2a.csv";
 		//String level2b = home + "models/aliens/level2b.csv";
 		//String level3a = home + "models/aliens/level3a.csv";
-		//String toycase = home + "models/toycases/toycase.csv";
-		//String toycase2 = home + "models/toycases/toycase2.csv";
-		//String toycase3 = home + "models/toycases/toycase3.csv";
-		//String toycase4 = home + "models/toycases/toycase4.csv";
-		//String toycase5 = home + "models/toycases/toycase5" +
-				//".csv";
+		String toycase = home + "models/toycases/toycase.csv";
+		String toycase2 = home + "models/toycases/toycase2.csv";
+		String toycase3 = home + "models/toycases/toycase3.csv";
+		String toycase4 = home + "models/toycases/toycase4.csv";
+		String toycase5 = home + "models/toycases/toycase5" +
+				".csv";
 		String gasBoilerSystem = home + "models/FH/GasBoilerSystem.csv";
 		String audioControlSystem = home + "models/FH/AudioControlSystem.csv";
 		String conferenceManagementSystem = home +  "models/FH/ConferenceManagementSystem.csv";
@@ -517,9 +365,9 @@ public class Main {
 		//String resultsLevel2a = home + "results/results_level2a.xls";
 		//String resultsLevel2b = "results/results_level2b.xls";
 		//String resultsLevel3a = "results/results_level3a.xls";
-		//String resultsToycase = "results/toycase_results.xls";
-		//String resultsToycase2 = "results/toycase2_results.xls";
-		//String resultsToycase3 = "results/toycase3_results.xls";
+		String resultsToycase = "results/toycase_results.xls";
+		String resultsToycase2 = "results/toycase2_results.xls";
+		String resultsToycase3 = "results/toycase3_results.xls";
 		String resultsGasBoilerSystem = home + "results/gasBoilerSystem_results.xls";
 		String resultsAudioControlSystem = home + "results/audioControlSystem_results.xls";
 		String resultsConferenceManagementSystem = home + "results/conferenceManagementSystem_results.xls";
@@ -534,17 +382,13 @@ public class Main {
 		String resultsVod2 = home + "results/vod2_results.xls";
 		
 		ArrayList<String> models = new ArrayList<String>();
-		//models.add(hospitals);
 		ArrayList<String> results = new ArrayList<String>();
-		results.add(resultsHospitals);
-		//runMultipleHSExperiment(models, results, 5, 50, 10);
 		
-		//results = new ArrayList<String>();
-		//models = new ArrayList<String>();
-		//models.add(warehouses);
-		//models.add(random);
-		//models.add(randomLoose);
-		//models.add(randomTight);
+		models.add(hospitals);
+		models.add(warehouses);
+		models.add(random);
+		models.add(randomLoose);
+		models.add(randomTight);
 		models.add(gasBoilerSystem);
 		models.add(audioControlSystem);
 		models.add(conferenceManagementSystem);
@@ -558,7 +402,7 @@ public class Main {
 		models.add(vod2);
 
 		
-		
+		results.add(resultsHospitals);
 		results.add(resultsWarehouses);
 		results.add(resultsRandom);
 		results.add(resultsRandomLoose);
@@ -577,23 +421,23 @@ public class Main {
 		
 		AlgoUtil.useTreshold(true);
 		
-		ExperimentsRunner.runConcurrentExperiment(models, results);
-		//AlgoUtil.calcOptimalScore(audioControlSystem);
+		//ExperimentsRunner.runConcurrentExperiment(models, results, 1, 50, 10, 2);
+		//ExperimentsRunner.runSingleExperiment(models, results, 3,  50, 10);
+		//AlgoUtil.calcOptimalScore(toycase5);
+		//ReshapeData rd = new ReshapeData("/home/amit/SASUniversityEdition/myfolders/fullExp_newHS.xls");
+		//		rd.reshapeData();
+		//ExperimentsRunner.convertScoretoPercent(models, results);
 		
-		//runOutliers(warehouses, resultsWarehouses, -1);
-		//runOutliers(random, resultsRandom, 9); 
-		//runOutliers(randomLoose, resultsRandomLoose, 4);
-		
-		//runSingleHSExperiment(models, results, 1, 50, 10);
-		//runSimpleExperiment(models, results, 10, 50, 10);
-	   // runMultipleHSExperiment(models, results, 5, 50, 10);
-		//ReshapeData rd = new ReshapeData("results/experimentResults.xls");
-		//rd.reshapeData();
+		OptimalSolutionSolver oss = new OptimalSolutionSolver();
+		oss.calcOptimalScore(audioControlSystem);
+		//oss.calcOptimalScore(toycase);
+		//oss.calcOptimalScore(toycase2);
+		//oss.calcOptimalScore(toycase3);
+		//oss.calcOptimalScore(toycase4);
+		//oss.calcOptimalScore(toycase5);
 		
 		//UMLParser.createFeatureLists("Prevayler", true, 8);
 		//UMLParser.UMLtoCSV("VOD", 32);
-		
-		//singleBatchRun(randomTMP, null,3, true);
 		
 		/*RandomizedMatchMergerTest test = new RandomizedMatchMergerTest();
 		try{
@@ -606,7 +450,7 @@ public class Main {
 		//singleBatchRun(hospitals, resultsHospitals, -1, true);
 		//singleBatchRun(warehouses, resultsWarehouses, -1, true);	
 		//singleBatchRun(random, resultsRandom, 10, true);	
-		//singleBatchRun(randomLoose, resultsRandomLoose, 10, true);	
+	//	singleBatchRun(randomLoose, resultsRandomLoose, 10, true);	
 		//singleBatchRun(randomTight, resultsRandomTight, 10, true);
 		//multipleBatchRun(random, resultsRandom, 10);	
 		//multipleBatchRun(randomLoose, resultsRandomLoose, 10);	
@@ -623,7 +467,7 @@ public class Main {
 		//singleBatchRun(ajStats, resultsAJStats, -1, true);
 		//singleBatchRun(tankWar, resultsTankWar, -1, true);
 		//singleBatchRun(PKJab, resultsPKJab, -1, true);
-		//singleBatchRun(chatSystem, resultsChatSystem, -1, true);
+	///	singleBatchRun(chatSystem, resultsChatSystem, -1, true);
 		//singleBatchRun(notepad, resultsNotepad, -1, true);
 		//singleBatchRun(mobileMedia, resultsMobileMedia, -1, true);
 		//singleBatchRun(vod1, resultsVod1, -1, true);
@@ -640,20 +484,6 @@ public class Main {
 		//createBatch("models/randomWH.xls", 15,44,2,7,60,280);
 		//createBatch("models/randomMid.xls",15,44,2,7,60,280);
 		//createBatch("models/randomBad.xls",20,30,2,16,60,60);
-		
-		//singleBatchRun(randomTMP, null,3, true);
-		
-		//singleBatchRun(hospitals, resultsHospitals,-1, true);
-		//singleBatchRun(warehouses, resultsWarehouses,-1, true);
-		
-		
-//		singleBatchRun(hospitals, resultsHospitals,3, false);
-//		singleBatchRun(hospitals, resultsHospitals,4, false);
-//		singleBatchRun(hospitals, resultsHospitals,5, false);
-//		singleBatchRun(hospitals, resultsHospitals,6, false);
-		
-		//singleBatchRun(warehouses, resultsWarehouses,3);
-		//singleBatchRun(warehouses, resultsWarehouses,4);
 		//singleBatchRun(warehouses, resultsWarehouses,5);
 
 

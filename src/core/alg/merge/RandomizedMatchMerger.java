@@ -8,6 +8,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
+import java.util.LinkedList;
 import java.util.Random;
 import java.util.Set;
 import java.util.Stack;
@@ -27,7 +28,7 @@ import core.execution.RunResult;
 
 public class RandomizedMatchMerger extends Merger implements Matchable {
 	protected ArrayList<Tuple> solution;
-	protected Hashtable<Integer, Tuple> solutionTable;
+	protected TupleTable solutionTable;
 	protected ArrayList<Element> unusedElements;
 	protected ArrayList<Element> allElements;
 	private RunResult res;
@@ -185,7 +186,8 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 	}
 	
 	private void resetContainingTuples(){
-		for (Tuple t: solution){
+		// for (Tuple t: solution){
+		for (Tuple t: solutionTable.getValues()){
 			for (Element e: t.getElements()){
 				e.setContaintingTuple(t);
 			}
@@ -276,15 +278,16 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 		for (Model m: models){
 			allElements.addAll(m.getElements());
 		}
-		//solutionTable = new Hashtable<Integer, Tuple>(prevSolution.size() * 7);
-		/*for (Tuple t: prevSolution){
-			solutionTable.put(t.getId() % solutionTable.size(), t);
-		}*/
+		solutionTable = new TupleTable(prevSolution.size() * 7);
+		for (Tuple t: prevSolution){
+			//solutionTable.put(t.getId(), t);
+			solutionTable.add(t);
+		}
 		solution.addAll(prevSolution);
 		for (Element e: allElements){
 			if (e.getContaingTuple().getSize() == 1){
-				//solution.add(e.getContaingTuple());
-				solutionTable.put(e.getContaingTuple().getId() % solutionTable.size(), e.getContaingTuple());
+				solutionTable.add(e.getContaingTuple());
+				solution.add(e.getContaingTuple());
 			}
 		}
 		int iterations = 0;
@@ -297,11 +300,17 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 				ArrayList<Element> allElemsCopy = new ArrayList<Element>(allElements);
 				if (buildNewTuple(allElemsCopy, picked)){
 					changed = true;
-					//System.out.println(AlgoUtil.calcGroupWeight(solution));
 					if (md.reshuffle){
+						solution = new ArrayList<Tuple>();
+						solution.addAll(solutionTable.getValues());
 						unusedElements = joinAllModels2();
 					}
 				}
+				//System.out.println(AlgoUtil.calcGroupWeight(solutionTable.getValues()));
+			}
+			solution = new ArrayList<Tuple>();
+			for (Tuple t: solutionTable.getValues()){
+				solution.add(t);
 			}
 			//System.out.println(AlgoUtil.calcGroupWeight(solution));
 			iterations++;
@@ -434,7 +443,7 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 	}
 	
 	private void keepValidElements(ArrayList<Element> elems, ArrayList<Element> incompatible, Tuple tup){
-		BigDecimal weight = tup.calcWeight(models);
+		BigDecimal weight = tup.getWeight();
 		Tuple compare;
 		for (int i = elems.size() - 1; i >= 0; i--){
 			int index = AlgoUtil.commonModel(elems.get(i), tup);
@@ -455,35 +464,32 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 		 * to append to the tuple if they have at least bestTuple.size() shared properties with any of
 		 * elements in the current tuple.
 		 */
-		//Hashtable<Integer, Element> elemTable = new Hashtable<Integer, Element>(models.size() * Element.maxModelElems);
-		//Hashtable<Integer, Element> incompTable = new Hashtable<Integer, Element>(models.size() * Element.maxModelElems);
-		/*for (Element e: elems){
-			elemTable.put(e.hashCode(), e);
-		}*/
-		ArrayList<Tuple> currSolution = new ArrayList<Tuple>();
-		currSolution.addAll(solution);
-		BigDecimal maxScore = AlgoUtil.calcGroupWeight(solution).add(new BigDecimal(0.00001, N_WAY.MATH_CTX));
-		
+		//System.out.println(AlgoUtil.calcGroupWeight(solutionTable.getValues()));
+		TupleTable currSolution = new TupleTable(solutionTable.size());
+		for (Tuple t: solutionTable.getValues()){
+			currSolution.add(t);
+		}
+		BigDecimal maxIncrease = new BigDecimal(0.00002, N_WAY.MATH_CTX);
+		BigDecimal currIncrease = BigDecimal.ZERO;
 		Tuple containingTup = current.getContaingTuple();
 		currSolution.remove(containingTup);
 		if (containingTup.getSize() > 1){
-			Tuple newTuple = containingTup.lessExpanded(current, models);
-			for (Element e: newTuple.getElements()){
-				e.setContaintingTuple(newTuple);
+			currIncrease = currIncrease.subtract(containingTup.getWeight());
+			containingTup = containingTup.lessExpanded(current, models);
+			for (Element e: containingTup.getElements()){
+				e.setContaintingTuple(containingTup);
 			}
-			currSolution.add(newTuple);
+			currSolution.add(containingTup);
+			currIncrease = currIncrease.add(containingTup.getWeight());
 		}
-		
 		Tuple currTuple = new Tuple().newExpanded(current, models);
 		current.setContaintingTuple(currTuple);
-		
-		ArrayList<Tuple> bestSolution = null;
-		Tuple bestTuple = null;
+		TupleTable bestSolution = null;
+		ArrayList<Element> toAddElements = new ArrayList<Element>();
+		ArrayList<Element> bestTupleElements = new ArrayList<Element>();
 		ArrayList<Element> incompatible = new ArrayList<Element>();
 		ArrayList<ArrayList<Element>> partition = new ArrayList<ArrayList<Element>>();
 		while(true){
-			//System.out.println(currTuple);
-			elems.remove(current);
 			if (!md.switchBuckets || currTuple.getSize() == 1){
 				elems = AlgoUtil.removeElementsSameModelId(current, elems);
 				incompatible = AlgoUtil.removeElementsSameModelId(current, incompatible);
@@ -492,67 +498,74 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 			elems = partition.get(0);
 			incompatible = partition.get(1);
 			keepValidElements(elems, incompatible, currTuple);
-			current= chooseElement(elems, currTuple);
+			current = chooseElement(elems, currTuple);
 			if (current == null){
 				break;
 			}
+			// Switches element with same model out.
+			Tuple oldTuple = current.getContaingTuple();
+			currSolution.remove(oldTuple);
+			BigDecimal oldWeight = currTuple.getWeight().add(oldTuple.getWeight());
 			if (md.switchBuckets){
 				int commonModel = AlgoUtil.commonModel(current, currTuple);
 				if (commonModel != -1){
 					Element replaced = currTuple.getElements().get(commonModel);
-					if (currTuple.getSize() > 1)
-						currTuple = currTuple.lessExpanded(replaced, models);
-					else
-						currTuple = new Tuple();
-					unusedElements.add(replaced);
-					//elems.add(replaced);
-					Tuple self = new Tuple();
-					self.addElement(replaced);
-					replaced.setContaintingTuple(self);
-					currSolution.add(self);
-					//Tuple prior = replaced.resetContainingTuple();
-					//prior = prior.newExpanded(replaced, models);
-					//System.out.println(prior);
-					/*for (Element e: prior.getElements()){
-						e.setContaintingTuple(prior);
-					}*/
+					currTuple = currTuple.lessExpanded(replaced, models);
+					toAddElements.add(replaced);
+					int priorId = (replaced.resetContainingTupleId());
+					if (priorId < 0 || currSolution.getTuple(priorId) == null){
+						Tuple self = new Tuple();
+						self.addElement(replaced);
+						replaced.setContaintingTuple(self);
+						currSolution.add(self);
+					}
+					else{
+						Tuple prior = currSolution.getTuple(priorId);
+						currSolution.remove(prior);
+						prior = prior.newExpanded(replaced, models);
+						for (Element e: prior.getElements()){
+							e.setContaintingTuple(prior);
+						}
+						currSolution.add(prior);
+					}
 				}
 			}
 			currTuple = currTuple.newExpanded(current, models);
-			if (md.switchTuples){
-				Tuple oldTuple = current.getContaingTuple();
-				currSolution.remove(oldTuple);
-				for (Element e: currTuple.getElements()){
-					e.setContaintingTuple(currTuple);
-				}
-				if (oldTuple.getSize() > 1){
-					oldTuple = oldTuple.lessExpanded(current, models);
-					for (Element e: oldTuple.getElements()){
-						e.setContaintingTuple(oldTuple);
-					}
-					currSolution.add(oldTuple);
-				}
+			for (Element e: currTuple.getElements()){
+				e.setContaintingTuple(currTuple);
 			}
-			currSolution.add(currTuple);
-			if (AlgoUtil.calcGroupWeight(currSolution).compareTo(maxScore) > 0){
-				//System.out.println(maxScore + ", " + AlgoUtil.calcGroupWeight(currSolution));
-				bestTuple = currTuple;
-				bestSolution = new ArrayList<Tuple>();
-				bestSolution.addAll(currSolution);
-				maxScore = AlgoUtil.calcGroupWeight(bestSolution);
+			// Update tuples of new elements.
+			if (oldTuple.getSize() > 1){
+				oldTuple = oldTuple.lessExpanded(current, models);
+				for (Element e: oldTuple.getElements()){
+					e.setContaintingTuple(oldTuple);
+				}
+				currSolution.add(oldTuple);
 			}
-			//System.out.println(currTuple);
-			currSolution.remove(currTuple);
+			currIncrease = currIncrease.add(currTuple.getWeight().add(oldTuple.getWeight()).
+					subtract(oldWeight));
+			if (currIncrease.compareTo(maxIncrease) > 0){
+				//System.out.println(currIncrease);
+				bestTupleElements.addAll(currTuple.getElements());
+				bestSolution = new TupleTable(currSolution.size());
+				for (Tuple t: currSolution.getValues()){
+					bestSolution.add(t);
+				}
+				bestSolution.add(currTuple);
+				maxIncrease = currIncrease;
+			}
 		}
 		if (bestSolution != null){
-			//System.out.println("here");
-			solution = bestSolution;
+			solutionTable = bestSolution;
 			resetContainingTuples();
-			for (Element e: bestTuple.getElements()){
+			for (Element e: bestTupleElements){
 				unusedElements.remove(e);
 			}
+			for (Element e: toAddElements){
+				unusedElements.add(e);
+			}
 			/*ArrayList<Element> usedElements = new ArrayList<Element>();
-			for (Tuple t: solution){
+			for (Tuple t: solutionTable.getValues()){
 				for (Element e: t.getElements()){
 					if (usedElements.contains(e))
 						System.out.println(e);
@@ -562,7 +575,6 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 			return true;
 		}
 		else{
-			//System.out.println("hare");
 			resetContainingTuples();
 			return false;
 		}
@@ -634,7 +646,7 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 	}
 	
 	private Element pickBestLocalElement(ArrayList<Element> elems, Tuple best){
-		BigDecimal maxWeight = best.calcWeight(models);
+		BigDecimal maxWeight = best.getWeight();
 		Element maxElement = null;
 		for (Element e: elems){
 			int index = AlgoUtil.commonModel(e, best);
@@ -642,9 +654,9 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 			if (index != -1){
 				test = test.lessExpanded(best.getElements().get(index), models);
 			}
-			if (test.calcWeight(models).compareTo(maxWeight) > 0){
+			if (test.getWeight().compareTo(maxWeight) > 0){
 				maxElement = e;
-				maxWeight = test.calcWeight(models);
+				maxWeight = test.getWeight();
 			}
 		}
 		return maxElement; 
@@ -664,8 +676,8 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 			BigDecimal currWeight;
 			Tuple ct = e.getContaingTuple();
 			Tuple ctLess = ct.getSize() > 1 ? ct.lessExpanded(e, models) : ct;
-			currWeight = (ctLess.calcWeight(models).add(test.calcWeight(models)))
-					.subtract(ct.calcWeight(models).add(best.calcWeight(models)));
+			currWeight = (ctLess.getWeight().add(test.getWeight())
+					.subtract(ct.getWeight().add(best.getWeight())));
 			if (maxWeight == null || currWeight.compareTo(maxWeight) > 0){
 				maxElement = e;
 				maxWeight = currWeight;
@@ -702,11 +714,11 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 			if (md.switchTuples){
 				Tuple ct = e.getContaingTuple();
 				Tuple ctLess = ct.getSize() > 1 ? ct.lessExpanded(e, models) : ct;
-				currWeight = (ctLess.calcWeight(models).add(test.calcWeight(models)))
-						.subtract(ct.calcWeight(models).add(best.calcWeight(models)));
+				currWeight = (ctLess.getWeight().add(test.getWeight()))
+						.subtract(ct.getWeight().add(best.getWeight()));
 				
 			}
-			else currWeight = test.calcWeight(models);
+			else currWeight = test.getWeight();
 			//if (currWeight.compareTo(BigDecimal.ZERO) > 0)
 				//count++;
 			if (currWeight.compareTo(maxWeight) > 0){
@@ -852,6 +864,64 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 	public RunResult getRunResult(int numOfModels) {
 		return res;
 	}
+	
+	public class TupleTable extends Hashtable<Integer, LinkedList<Tuple>>{
+		
+		public TupleTable (int loadFactor){
+			super(loadFactor);
+		}
+		
+		public Tuple getTuple(Integer key){
+			Tuple desired = null;
+			LinkedList<Tuple> bucket = this.get(key);
+			for (int i = bucket.size() - 1; i >= 0; i--){
+				if (bucket.get(i).getId() == key){
+					desired = bucket.get(i);
+				}
+			}
+			return desired;
+		}
+		
+		public LinkedList<Tuple> add(Tuple t){
+			Integer key = t.getId();
+			LinkedList<Tuple> bucket = null;
+			if (this.containsKey(key)){
+				bucket = this.get(key);
+				bucket.add(t);
+				this.put(key, bucket);
+			}
+			else{
+				bucket = new LinkedList<Tuple>();
+				bucket.add(t);
+				this.put(key, bucket);
+			}
+			return bucket;
+		}
+		
+		public ArrayList<Tuple> getValues(){
+			ArrayList<Tuple> valueSet = new ArrayList<Tuple>();
+			for (LinkedList<Tuple> llt: this.values()){
+				for (Tuple t: llt){
+					valueSet.add(t);
+				}
+			}
+			return valueSet;
+		}
+		public Tuple remove(Tuple t){
+			Integer key = t.getId();
+			Tuple removed = null;
+			LinkedList<Tuple> bucket = this.get(key);
+			for (int i = bucket.size() - 1; i >= 0; i--){
+			//	System.out.println(bucket.get(i));
+				if (bucket.get(i).getId() == key){
+					removed = bucket.remove(i);
+					break;
+				}
+			}
+			return removed;
+		}
+	}
+	
 	public class Individual {
 	    private final static int defaultGeneLength = 100;
 	    private Element[] genes = new Element[defaultGeneLength];

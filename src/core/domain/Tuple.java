@@ -51,6 +51,10 @@ public class Tuple {
 		cnt++;
 	}
 	
+	public void setId(int id){
+		this.id = id;
+	}
+	
 	public int getId(){
 		return id;
 	}
@@ -104,7 +108,7 @@ public class Tuple {
 	}
 	
 	public ArrayList<Element> sortedElements(){
-		if(sortedElems == null){
+		if(sortedElems == null || sortedElems.size() != elements.size()){
 			sortedElems = new ArrayList<Element>();
 			for(Element e:elements){
 				sortedElems.addAll(e.getBasedUponElements());
@@ -135,18 +139,33 @@ public class Tuple {
 	public ArrayList<Element> getRealElements(){
 		if(AlgoUtil.COMPUTE_RESULTS_CLASSICALLY)
 			return getElements();
-		if(realElements == null){
+		//if(realElements == null){
 			realElements = new ArrayList<Element>();
 			for(Element e:elements){
 				realElements.addAll(e.getBasedUponElements());
 			}
-		}
+		//}
 		return realElements;
 	}
 	
 	public void addElement(Element e){
 		elements.add(e);
 		orderedElements.add(e);
+	}
+	
+	public void addElement(Element e, ArrayList<Model> models){
+		elements.add(e);
+		orderedElements.add(e);
+		//sortedElems.remove(e);
+		this.setWeight(this.calcWeight(models));
+	}
+	
+	public boolean removeElement(Element e, ArrayList<Model> models){
+		boolean removed = elements.remove(e);
+		orderedElements.remove(e);
+		//sortedElems.remove(e);
+		this.setWeight(this.calcWeight(models));
+		return removed;
 	}
 	
 	public void addElements(Collection<Element> c){
@@ -176,6 +195,7 @@ public class Tuple {
 	public Tuple newExpanded(Element e, ArrayList<Model> mdls){
 		@SuppressWarnings("unchecked")
 		Tuple tuple = new Tuple(((ArrayList<Element>) elements.clone()));
+		tuple.setId(id);
 		tuple.addElement(e);
 		tuple.setWeight(tuple.calcWeight(mdls));
 		return tuple;
@@ -186,6 +206,7 @@ public class Tuple {
 		ArrayList<Element> elems = (ArrayList<Element>) elements.clone();
 		elems.remove(e);
 		Tuple tuple = new Tuple(elems);
+		tuple.setId(id);
 		tuple.setWeight(tuple.calcWeight(mdls));
 		return tuple;
 	}

@@ -18,6 +18,9 @@ public class RunResult {
 	public String title;
 	public double[] bins = new double[20];
 	public int iterations;
+	public double seedsUsed;
+	public double firstChange;
+	public double gap;
 	
 
 	public RunResult(double execTime, BigDecimal weight, BigDecimal avgTupleWeight, ArrayList<Tuple> sol) {
@@ -107,6 +110,18 @@ public class RunResult {
 	
 	public void addIterations(int iterations){
 		this.iterations = iterations;
+	}
+	
+	public void addSeedsUsed(double seedsUsed){
+		this.seedsUsed = seedsUsed;
+	}
+	
+	public void addFirstChangeAvg(double firstChange){
+		this.firstChange = firstChange;
+	}
+	
+	public void addGapAvg(double gap){
+		this.gap = gap;
 	}
 	
 }

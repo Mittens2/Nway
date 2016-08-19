@@ -330,7 +330,7 @@ public class Main {
 			Main.home = "";
 		}
 		
-		String hospitals = "models/Julia_study/hospitals.csv";
+		String hospitals = home + "models/Julia_study/hospitals.csv";
 		String warehouses = home + "models/Julia_study/warehouses.csv";
 		String random = home + "models/Julia_study/random.csv";
 		String randomLoose =home +  "models/Julia_study/randomLoose.csv";
@@ -421,8 +421,8 @@ public class Main {
 		
 		AlgoUtil.useTreshold(true);
 		
-		//ExperimentsRunner.runConcurrentExperiment(models, results, 1, 50, 10, 2);
-		//ExperimentsRunner.runSingleExperiment(models, results, 3,  50, 10);
+		//ExperimentsRunner.runConcurrentExperiment(models, results, 3, 50, 10, 224);
+		//ExperimentsRunner.runSeedExperiment(models, results, 3,  50, 10);
 		//AlgoUtil.calcOptimalScore(toycase5);
 		//ReshapeData rd = new ReshapeData("/home/amit/SASUniversityEdition/myfolders/fullExp_newHS.xls");
 		//		rd.reshapeData();

@@ -14,19 +14,21 @@ import core.domain.Model;
 import core.domain.Tuple;
 
 public class OptimalSolutionSolver {
+	final static int THREAD_MAX = 20000;
+	
 	class TupleGenerator implements Callable<ArrayList<Tuple>>{  
 		private ArrayList<Model> models;
 		private Tuple current;
 		private int model;
-		private int threads;
+		private int threadThreshold;
 		Element expanded;
 		
-		public TupleGenerator (ArrayList<Model> models, Tuple current, int model, Element expanded, int threads){
+		public TupleGenerator (ArrayList<Model> models, Tuple current, int model, Element expanded, int threadThreshold){
 			this.models = models;
 			this.current = current;
 			this.model = model;
 			this.expanded = expanded;
-			this.threads = threads;
+			this.threadThreshold = threadThreshold;
 		}
 		
 		@Override
@@ -52,31 +54,38 @@ public class OptimalSolutionSolver {
 				if (expanded != null){
 					current = current.newExpanded(expanded, models);
 				}
-				if (threads < 50){
-					List<TupleGenerator> generators = new ArrayList<TupleGenerator>();
-					int newThreads = threads + models.get(model).size();
-					generators.add(new TupleGenerator(models, current, model + 1, null, newThreads));
-					for (Element e: models.get(model).getElements()){
-						generators.add(new TupleGenerator(models, current, model + 1, e, newThreads));
+				int newThreadThreshold = (threadThreshold - (models.get(model).size() + 1)) / 
+						(models.get(model).size() + 1);
+				List<TupleGenerator> generators = new ArrayList<TupleGenerator>();
+				ArrayList<Element> modelElems = models.get(model).getElements();
+				int newThreads = Math.min(threadThreshold, models.get(model).size() + 1);
+				for (int i = 0; i < newThreads; i++){
+					if (i == 0){
+						generators.add(new TupleGenerator(models, current, model + 1, null, newThreadThreshold));
 					}
-					ExecutorService executor = Executors.newFixedThreadPool(models.get(model).size() + 1);
-					List<Future<ArrayList<Tuple>>> results = null;
-					try {
-						results = executor.invokeAll(generators);
-						executor.shutdown();
-						for (Future<ArrayList<Tuple>> result: results){
-							allTuples.addAll(result.get());
-						}		
-					} catch (InterruptedException | ExecutionException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
+					else{
+						generators.add(new TupleGenerator(models, current, model + 1, modelElems.get(i - 1), newThreadThreshold));
 					}
 				}
-				else{
-					allTuples.addAll(generateAllTupleCombos(current, null, model + 1));
-					for (Element e: models.get(model).getElements()){
-						allTuples.addAll(generateAllTupleCombos(current, e, model + 1));
+				for (int i = newThreads; i < models.get(model).size() + 1; i++){
+					if (i == 0){
+						allTuples.addAll(generateAllTupleCombos(current, null, model + 1));
 					}
+					else{
+						allTuples.addAll(generateAllTupleCombos(current, modelElems.get(i - 1), model + 1));
+					}
+				}
+				ExecutorService executor = Executors.newFixedThreadPool(models.get(model).size() + 1);
+				List<Future<ArrayList<Tuple>>> results = null;
+				try {
+					results = executor.invokeAll(generators);
+					executor.shutdown();
+					for (Future<ArrayList<Tuple>> result: results){
+						allTuples.addAll(result.get());
+					}		
+				} catch (InterruptedException | ExecutionException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
 				}
 			}
 			return allTuples;
@@ -86,12 +95,12 @@ public class OptimalSolutionSolver {
 	class SolutionGenerator implements Callable<ArrayList<ArrayList<Tuple>>>{
 		private ArrayList<Tuple> currSolution;
 		private ArrayList<Tuple> allTuples;
-		private int threads;
+		private int threadThreshold;
 		
-		public SolutionGenerator (ArrayList<Tuple> currSolution, ArrayList<Tuple> allTuples, int threads){
+		public SolutionGenerator (ArrayList<Tuple> currSolution, ArrayList<Tuple> allTuples, int threadThreshold){
 			this.currSolution = currSolution;
 			this.allTuples = allTuples;
-			this.threads = threads;
+			this.threadThreshold = threadThreshold;
 		}
 		
 		@Override
@@ -110,28 +119,29 @@ public class OptimalSolutionSolver {
 			else{
 				Tuple currTuple = allTuples.remove(allTuples.size() - 1);
 				ArrayList<Tuple> currSolutionCopy = new ArrayList<Tuple>();
+				currSolutionCopy.addAll(currSolution);
 				currSolutionCopy.add(currTuple);
-				if (threads < 16){
-					int newThreads = threads + 2;
-					ArrayList<SolutionGenerator> generators = new ArrayList<SolutionGenerator>();
-					generators.add(new SolutionGenerator(currSolution, allTuples, newThreads));
-					generators.add(new SolutionGenerator(currSolutionCopy, allTuples, newThreads));
-					ExecutorService executor = Executors.newFixedThreadPool(2);
-					List<Future<ArrayList<ArrayList<Tuple>>>> results = null;
-					try {
-						results = executor.invokeAll(generators);
-						executor.shutdown();
-						for (Future<ArrayList<ArrayList<Tuple>>> result: results){
-							solutions.addAll(result.get());
-						}
-					} catch (InterruptedException | ExecutionException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}
+				int newThreadThreshold = (threadThreshold - 2) / 2;
+				ArrayList<SolutionGenerator> generators = new ArrayList<SolutionGenerator>();
+				if (threadThreshold > 0){
+					generators.add(new SolutionGenerator(currSolution, allTuples, newThreadThreshold));
+					generators.add(new SolutionGenerator(currSolutionCopy, allTuples, newThreadThreshold));
 				}
 				else{
-					solutions.addAll(generateAllSolutionCombos(currSolution,allTuples));
+					solutions.addAll(generateAllSolutionCombos(currSolution, allTuples));
 					solutions.addAll(generateAllSolutionCombos(currSolutionCopy, allTuples));
+				}
+				ExecutorService executor = Executors.newFixedThreadPool(2);
+				List<Future<ArrayList<ArrayList<Tuple>>>> results = null;
+				try {
+					results = executor.invokeAll(generators);
+					executor.shutdown();
+					for (Future<ArrayList<ArrayList<Tuple>>> result: results){
+						solutions.addAll(result.get());
+					}
+				} catch (InterruptedException | ExecutionException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
 				}
 			}
 			return solutions;
@@ -140,10 +150,10 @@ public class OptimalSolutionSolver {
 	
 	public ArrayList<Tuple> calcOptimalScore(String modelsFile){
 		ArrayList<Model> models = Model.readModelsFile(modelsFile);
-		TupleGenerator tupGenerator = new TupleGenerator(models, new Tuple(), 0, null, 0);
+		TupleGenerator tupGenerator = new TupleGenerator(models, new Tuple(), 0, null, THREAD_MAX);
 		ArrayList<Tuple> allTuples = tupGenerator.call();
 		//System.out.println(allTuples);
-		SolutionGenerator solnGenerator = new SolutionGenerator(new ArrayList<Tuple>(), allTuples, 0);
+		SolutionGenerator solnGenerator = new SolutionGenerator(new ArrayList<Tuple>(), allTuples, THREAD_MAX);
 		ArrayList<ArrayList<Tuple>> allSolutions = solnGenerator.call();
 		ArrayList<Tuple> bestSolution = new ArrayList<Tuple>();
 		BigDecimal currMax = BigDecimal.ZERO;

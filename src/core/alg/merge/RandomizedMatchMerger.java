@@ -290,20 +290,33 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 				solution.add(e.getContaingTuple());
 			}
 		}
+		int gapSeeds = 0;
 		int iterations = 0;
+		double seedsUsed = 0;
+		double firstChangeSum = 0;
+		int numGaps = 0;
 	    boolean changed = true;
 		while(changed){
+			iterations++;
 			changed = false;
 			unusedElements = joinAllModels2();
 			while (System.currentTimeMillis() - startTime < (1000 * 60 * 5) && unusedElements.size() > 0){
 				Element picked = unusedElements.remove(0);
+				seedsUsed++;
 				ArrayList<Element> allElemsCopy = new ArrayList<Element>(allElements);
 				if (buildNewTuple(allElemsCopy, picked)){
-					changed = true;
+					if (!changed){
+						changed = true;
+						firstChangeSum += allElements.size() - unusedElements.size();
+					}
+					gapSeeds += seedsUsed;
+					numGaps++;
 					if (md.reshuffle){
+						changed = false;
 						solution = new ArrayList<Tuple>();
 						solution.addAll(solutionTable.getValues());
 						unusedElements = joinAllModels2();
+						iterations++;
 					}
 				}
 				//System.out.println(AlgoUtil.calcGroupWeight(solutionTable.getValues()));
@@ -312,8 +325,6 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 			for (Tuple t: solutionTable.getValues()){
 				solution.add(t);
 			}
-			//System.out.println(AlgoUtil.calcGroupWeight(solution));
-			iterations++;
 		}
 		System.out.println("iterations: " + iterations);
 		BigDecimal weight = AlgoUtil.calcGroupWeight(solution);
@@ -322,6 +333,15 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 		BigDecimal avgTupleWeight = weight.divide(new BigDecimal(solution.size()), N_WAY.MATH_CTX);
 		res = new RunResult(execTime, weight, avgTupleWeight, solution);
 		res.addIterations(iterations);
+		if (iterations == 1){
+			res.addFirstChangeAvg(0);
+			res.addGapAvg(0);
+		}
+		else{
+			res.addFirstChangeAvg(firstChangeSum / (iterations - 1));
+			res.addGapAvg(gapSeeds / numGaps);
+		}
+		res.addSeedsUsed(seedsUsed);
 		res.setTitle("Randomized");
 		clear();
 	}

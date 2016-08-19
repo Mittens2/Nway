@@ -33,6 +33,7 @@ public class MergeDescriptor {
 		this.highlight = highlight;
 		this.choose = choose;
 		this.switchTuples = switchTuples;
+		this.reshuffle = reshuffle;
 		this.switchBuckets = switchBuckets;
 	}
 	

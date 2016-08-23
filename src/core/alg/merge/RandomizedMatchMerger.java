@@ -296,35 +296,45 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 		double firstChangeSum = 0;
 		int numGaps = 0;
 	    boolean changed = true;
+	    ArrayList<Element> toRemoveElems = new ArrayList<Element>();
 		while(changed){
 			iterations++;
 			changed = false;
 			unusedElements = joinAllModels2();
 			while (System.currentTimeMillis() - startTime < (1000 * 60 * 5) && unusedElements.size() > 0){
 				Element picked = unusedElements.remove(0);
+				toRemoveElems.add(picked);
 				seedsUsed++;
+				//System.out.println(allElements.size());
+				//System.out.println(unusedElements.size());
 				ArrayList<Element> allElemsCopy = new ArrayList<Element>(allElements);
 				if (buildNewTuple(allElemsCopy, picked)){
 					if (!changed){
 						changed = true;
-						firstChangeSum += allElements.size() - unusedElements.size();
+						firstChangeSum += toRemoveElems.size();
 					}
 					gapSeeds += seedsUsed;
+					seedsUsed = 0;
 					numGaps++;
-					if (md.reshuffle){
-						changed = false;
+					if (md.reshuffle > 0){
 						solution = new ArrayList<Tuple>();
 						solution.addAll(solutionTable.getValues());
 						unusedElements = joinAllModels2();
-						iterations++;
+						if (md.reshuffle == 2){
+							for (Element e: toRemoveElems)
+								unusedElements.remove(e);
+						}
+						else{
+							changed = false;
+							iterations++;
+						}
 					}
+					toRemoveElems = new ArrayList<Element>();
 				}
 				//System.out.println(AlgoUtil.calcGroupWeight(solutionTable.getValues()));
 			}
 			solution = new ArrayList<Tuple>();
-			for (Tuple t: solutionTable.getValues()){
-				solution.add(t);
-			}
+			solution.addAll(solutionTable.getValues());
 		}
 		System.out.println("iterations: " + iterations);
 		BigDecimal weight = AlgoUtil.calcGroupWeight(solution);
@@ -338,6 +348,7 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 			res.addGapAvg(0);
 		}
 		else{
+			System.out.println(firstChangeSum);
 			res.addFirstChangeAvg(firstChangeSum / (iterations - 1));
 			res.addGapAvg(gapSeeds / numGaps);
 		}
@@ -505,7 +516,6 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 		Tuple currTuple = new Tuple().newExpanded(current, models);
 		current.setContaintingTuple(currTuple);
 		TupleTable bestSolution = null;
-		ArrayList<Element> toAddElements = new ArrayList<Element>();
 		ArrayList<Element> bestTupleElements = new ArrayList<Element>();
 		ArrayList<Element> incompatible = new ArrayList<Element>();
 		ArrayList<ArrayList<Element>> partition = new ArrayList<ArrayList<Element>>();
@@ -531,7 +541,6 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 				if (commonModel != -1){
 					Element replaced = currTuple.getElements().get(commonModel);
 					currTuple = currTuple.lessExpanded(replaced, models);
-					toAddElements.add(replaced);
 					int priorId = (replaced.resetContainingTupleId());
 					if (priorId < 0 || currSolution.getTuple(priorId) == null){
 						Tuple self = new Tuple();
@@ -578,12 +587,9 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 		if (bestSolution != null){
 			solutionTable = bestSolution;
 			resetContainingTuples();
-			for (Element e: bestTupleElements){
+			/*for (Element e: bestTupleElements){
 				unusedElements.remove(e);
-			}
-			for (Element e: toAddElements){
-				unusedElements.add(e);
-			}
+			}*/
 			/*ArrayList<Element> usedElements = new ArrayList<Element>();
 			for (Tuple t: solutionTable.getValues()){
 				for (Element e: t.getElements()){

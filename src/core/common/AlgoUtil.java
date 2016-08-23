@@ -689,10 +689,12 @@ public class AlgoUtil {
 				res = res+"_st";
 			if (md.switchBuckets)
 				res = res+"_sb";
-			if (md.reshuffle)
-				res = res+"_rs)";
+			if (md.reshuffle == 0)
+				res = res+"_rs0)";
+			else if (md.reshuffle == 1)
+				res = res+"_rs1)";
 			else
-				res = res+")";
+				res =res+"_rs2)";
 		}
 		else{
 			if(splitSize > 2)

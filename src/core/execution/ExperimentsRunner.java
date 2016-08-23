@@ -182,14 +182,16 @@ public class ExperimentsRunner{
 		header.createCell(8).setCellValue("seeds used");
 		try{
 			for (int i = 0; i < results.size(); i++){
-				double[][] valueSums = results.get(i).get();
-				String subcase = subcases.get(i);
-				for (int k = 0; k < valueSums.length; k++){
-					Row newRow = sheet.createRow(sheet.getLastRowNum() + 1);
-					newRow.createCell(0).setCellValue(subcase);
-					newRow.createCell(1).setCellValue(mdLabels[k]);
-					for (int j = 0; j < valueSums[k].length; j++){
-						newRow.createCell(j + 2).setCellValue(df.format(valueSums[k][j]));
+				if (results.get(i).get() != null){
+					double[][] valueSums = results.get(i).get();
+					String subcase = subcases.get(i);
+					for (int k = 0; k < valueSums.length; k++){
+						Row newRow = sheet.createRow(sheet.getLastRowNum() + 1);
+						newRow.createCell(0).setCellValue(subcase);
+						newRow.createCell(1).setCellValue(mdLabels[k]);
+						for (int j = 0; j < valueSums[k].length; j++){
+							newRow.createCell(j + 2).setCellValue(df.format(valueSums[k][j]));
+						}
 					}
 				}
 			}
@@ -228,7 +230,7 @@ public class ExperimentsRunner{
 			nwmScores.put(subcase, rrs.get(0).weight.doubleValue());
 		}
 		try{
-			fileIn = new FileInputStream(new File("/home/amit/SASUniversityEdition/myfolders/fullExp_newHS.xls"));
+			fileIn = new FileInputStream(new File("/home/amit/SASUniversityEdition/myfolders/scoreResults.xls"));
 			workbook = new HSSFWorkbook(fileIn);
 			scoreSheet = workbook.getSheet("Long Form");
 			percentSheet = workbook.getSheet("Percent Form");
@@ -239,10 +241,10 @@ public class ExperimentsRunner{
 			header.createCell(0).setCellValue("case");
 			header.createCell(1).setCellValue("highlight");
 			header.createCell(2).setCellValue("choose");
-			header.createCell(3).setCellValue("switchBuckets");
-			header.createCell(4).setCellValue("reshuffle");
-			header.createCell(5).setCellValue("seed");
-			header.createCell(6).setCellValue("percent");
+			//header.createCell(3).setCellValue("switchBuckets");
+			header.createCell(3).setCellValue("reshuffle");
+			header.createCell(4).setCellValue("seed");
+			header.createCell(5).setCellValue("percent");
 			for (int i = 1; i < scoreSheet.getLastRowNum(); i++){
 				Row oldRow = scoreSheet.getRow(i);
 				Row newRow = percentSheet.createRow(i);
@@ -255,7 +257,7 @@ public class ExperimentsRunner{
 				double percentIncr = (score / nwmScores.get(subcase) - 1) * 100;
 				newRow.createCell(oldRow.getLastCellNum() - 1).setCellValue(percentIncr);
 			}
-			fileOut = new FileOutputStream(new File("/home/amit/SASUniversityEdition/myfolders/fullExp_newHS.xls"));
+			fileOut = new FileOutputStream(new File("/home/amit/SASUniversityEdition/myfolders/scoreResults.xls"));
 			workbook.write(fileOut); 
 			fileIn.close();
 			fileOut.close();
@@ -307,10 +309,11 @@ public class ExperimentsRunner{
 					Row newRow = sheet.createRow(sheet.getLastRowNum() + 1);
 					newRow.createCell(0).setCellValue(subcases.get(i));
 					int cell = 1;
-					System.out.println(i + " " + j);
-					for (Double score: results.get(i).get()[j]){
-						newRow.createCell(cell).setCellValue(score);
-						cell++;
+					if (results.get(i).get() != null){
+						for (Double score: results.get(i).get()[j]){
+							newRow.createCell(cell).setCellValue(score);
+							cell++;
+						}
 					}
 				} 
 				workbooks.add(workbook);

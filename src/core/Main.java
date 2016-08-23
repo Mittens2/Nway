@@ -391,7 +391,7 @@ public class Main {
 		models.add(randomTight);
 		models.add(gasBoilerSystem);
 		models.add(audioControlSystem);
-		models.add(conferenceManagementSystem);
+		//models.add(conferenceManagementSystem);
 		models.add(ajStats);
 		models.add(tankWar);
 		models.add(PKJab);
@@ -409,7 +409,7 @@ public class Main {
 		results.add(resultsRandomTight);
 		results.add(resultsGasBoilerSystem);
 		results.add(resultsAudioControlSystem);
-		results.add(resultsConferenceManagementSystem);
+		//results.add(resultsConferenceManagementSystem);
 		results.add(resultsAJStats);
 		results.add(resultsTankWar);
 		results.add(resultsPKJab);
@@ -421,15 +421,29 @@ public class Main {
 		
 		AlgoUtil.useTreshold(true);
 		
-		//ExperimentsRunner.runConcurrentExperiment(models, results, 3, 50, 10, 224);
-		//ExperimentsRunner.runSeedExperiment(models, results, 3,  50, 10);
+		ArrayList<Model> model = Model.readModelsFile(conferenceManagementSystem);
+		int min = 100;
+		int max = 0;
+		double totes = 0;
+		for (Model mod: model){
+			int size = mod.size();
+			totes += size;
+			if (size > max)
+				max = size;
+			if (size < min)
+				min = size;
+		}
+		System.out.println("max:" + max + ", min:" + min + ", avg" + (totes / model.size()));
+		
+		//ExperimentsRunner.runConcurrentExperiment(models, results, 3, 50, 10, 168);
+		ExperimentsRunner.runSeedExperiment(models, results, 10,  50, 10);
 		//AlgoUtil.calcOptimalScore(toycase5);
-		//ReshapeData rd = new ReshapeData("/home/amit/SASUniversityEdition/myfolders/fullExp_newHS.xls");
+		//ReshapeData rd = new ReshapeData("/home/amit/SASUniversityEdition/myfolders/timeResults.xls");
 		//		rd.reshapeData();
 		//ExperimentsRunner.convertScoretoPercent(models, results);
 		
-		OptimalSolutionSolver oss = new OptimalSolutionSolver();
-		oss.calcOptimalScore(audioControlSystem);
+		//OptimalSolutionSolver oss = new OptimalSolutionSolver();
+		//oss.calcOptimalScore(conferenceManagementSystem);
 		//oss.calcOptimalScore(toycase);
 		//oss.calcOptimalScore(toycase2);
 		//oss.calcOptimalScore(toycase3);
@@ -450,7 +464,7 @@ public class Main {
 		//singleBatchRun(hospitals, resultsHospitals, -1, true);
 		//singleBatchRun(warehouses, resultsWarehouses, -1, true);	
 		//singleBatchRun(random, resultsRandom, 10, true);	
-	//	singleBatchRun(randomLoose, resultsRandomLoose, 10, true);	
+		//singleBatchRun(randomLoose, resultsRandomLoose, 10, true);	
 		//singleBatchRun(randomTight, resultsRandomTight, 10, true);
 		//multipleBatchRun(random, resultsRandom, 10);	
 		//multipleBatchRun(randomLoose, resultsRandomLoose, 10);	
@@ -467,7 +481,7 @@ public class Main {
 		//singleBatchRun(ajStats, resultsAJStats, -1, true);
 		//singleBatchRun(tankWar, resultsTankWar, -1, true);
 		//singleBatchRun(PKJab, resultsPKJab, -1, true);
-	///	singleBatchRun(chatSystem, resultsChatSystem, -1, true);
+		//singleBatchRun(chatSystem, resultsChatSystem, -1, true);
 		//singleBatchRun(notepad, resultsNotepad, -1, true);
 		//singleBatchRun(mobileMedia, resultsMobileMedia, -1, true);
 		//singleBatchRun(vod1, resultsVod1, -1, true);

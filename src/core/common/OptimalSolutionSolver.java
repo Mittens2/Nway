@@ -14,7 +14,7 @@ import core.domain.Model;
 import core.domain.Tuple;
 
 public class OptimalSolutionSolver {
-	final static int THREAD_MAX = 20000;
+	final static int THREAD_MAX = 8000;
 	
 	class TupleGenerator implements Callable<ArrayList<Tuple>>{  
 		private ArrayList<Model> models;
@@ -123,9 +123,13 @@ public class OptimalSolutionSolver {
 				currSolutionCopy.add(currTuple);
 				int newThreadThreshold = (threadThreshold - 2) / 2;
 				ArrayList<SolutionGenerator> generators = new ArrayList<SolutionGenerator>();
-				if (threadThreshold > 0){
+				if (threadThreshold == 0){
 					generators.add(new SolutionGenerator(currSolution, allTuples, newThreadThreshold));
 					generators.add(new SolutionGenerator(currSolutionCopy, allTuples, newThreadThreshold));
+				}
+				else if (threadThreshold == 1){
+					generators.add(new SolutionGenerator(currSolution, allTuples, newThreadThreshold));
+					solutions.addAll(generateAllSolutionCombos(currSolutionCopy, allTuples));
 				}
 				else{
 					solutions.addAll(generateAllSolutionCombos(currSolution, allTuples));

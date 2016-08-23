@@ -23,7 +23,7 @@ public class ReshapeData {
 		String[] highlight = {"common_all", "common_one", "common_tuple.size", "no_hl"};
 		String[] choose = {"bestLocal", "bestGlobal"};
 		String [] modelSwitch = {"off", "on"};
-		String[] reshuffle = {"off", "on"};
+		String[] reshuffle = {"none", "reorder+renew", "reorder"};
 		String[] seedings = {"rand", "score_a", "score_d", "size_a", "size_d", "bar_a", "bar_d"};
 		try {
 			fileIn = new FileInputStream(new File(inFilePath));
@@ -37,22 +37,20 @@ public class ReshapeData {
 			newFirstRow.createCell(0).setCellValue("case");
 			newFirstRow.createCell(1).setCellValue("highlight");
 			newFirstRow.createCell(2).setCellValue("choose");
-			newFirstRow.createCell(3).setCellValue("switchBuckets");
-			newFirstRow.createCell(4).setCellValue("reshuffle");
-			newFirstRow.createCell(5).setCellValue("seed");
-			newFirstRow.createCell(6).setCellValue("score");
+			newFirstRow.createCell(3).setCellValue("reshuffle");
+			newFirstRow.createCell(4).setCellValue("seed");
+			newFirstRow.createCell(5).setCellValue("time");
 			for(int i = 1; i <= 16; i++){
 				Row oldRow = origSheet.getRow(i);
 				for (int j = 0; j < size - 1; j++){
 					Row newRow = reshapeSheet.createRow((i - 1) * (size - 1) + j + 1);
 					newRow.createCell(0).setCellValue(oldRow.getCell(0).getStringCellValue());
-					newRow.createCell(1).setCellValue(highlight[j / 56]);
-					newRow.createCell(2).setCellValue(choose[(j % 56) / 28]);
-					newRow.createCell(3).setCellValue(modelSwitch[(j % 28) / 14]);
+					newRow.createCell(1).setCellValue(highlight[j / 42]);
+					newRow.createCell(2).setCellValue(choose[(j % 42) / 21]);
+					newRow.createCell(3).setCellValue(reshuffle[(j % 21) / 7]);
 					//System.out.println(oldRow.getCell(j + 1).getNumericCellValue());
-					newRow.createCell(4).setCellValue(reshuffle[(j % 14) / 7]);
-					newRow.createCell(5).setCellValue(seedings[j % 7]);
-					newRow.createCell(6).setCellValue(oldRow.getCell(j + 1).getNumericCellValue());
+					newRow.createCell(4).setCellValue(seedings[j % 7]);
+					newRow.createCell(5).setCellValue(oldRow.getCell(j + 1).getNumericCellValue());
 				}
 			}
 			fileIn.close();

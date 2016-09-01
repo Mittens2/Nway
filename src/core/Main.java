@@ -62,167 +62,6 @@ public class Main {
 		BatchRunner batcher = new BatchRunner(desc, resultsFile);
 		batcher.run();
 	}
-	
-	private static void runDetailedExperiment(ArrayList<String> modelsFiles, ArrayList<String> resultsFiles){
-		/**
-		 * Runs and experiment on any algorithm against Nwm.
-		 * Outputs results to a graph.
-		 */
-		double[][] nwmScores = new double[][]{
-				{4.595},
-				{1.522},
-				{0.977, 0.917, 0.839, 0.915, 1.005, 0.991, 1.066, 0.870, 1.077, 0.887},
-				{0.998, 0.695, 0.933, 1.055, 0.830, 1.274, 1.049, 0.987, 0.736, 1.027},
-				{0.958, 1.001, 0.950, 0.900, 0.893, 0.940, 1.008, 0.974, 0.948, 0.840},
-				{0.237},
-				{0.279},
-				{0.289},
-				};
-		ResultsPlotter rp = new ResultsPlotter("SmartHuman", "NwM");
-
-		for (int i = 0; i < modelsFiles.size(); i++){
-			String mf = modelsFiles.get(i);
-			String rf = resultsFiles.get(i);
-			String subCase = mf.substring(mf.indexOf("/") + 1, mf.indexOf("."));
-			if (subCase.charAt(0) == 'm'){
-				subCase = subCase.substring(mf.indexOf("/") + 1);
-				//rp.addMultipleValueDatapoint(multipleBatchRun(mf, rf, 10)[0], nwmScores[i], subCase);
-			}
-			else{
-				ArrayList<RunResult> runResults = singleBatchRun(mf, rf, -1, true);
-				rp.addSingleValueDataPoint(runResults.get(0).weight.doubleValue(), nwmScores[i][0], subCase);
-				if (i == 0){
-					rp.setAlg1Label(runResults.get(0).title);
-				}
-			}
-		}
-		//rp.createChart();
-		rp.setMinimumSize(new Dimension(1000, 500));
-		rp.pack();
-        RefineryUtilities.centerFrameOnScreen(rp);
-        rp.setVisible(true);
-        
-	}
-	
-	private static void runSimpleExperiment(ArrayList<String> modelsFiles, ArrayList<String> resultsFiles, int runsToAvg, 
-			int divideUp, int numOfModelsToUse){
-		/**
-		 * Runs a simple experiment (i.e. produces graphs that do not show the spread of scores).
-		 * Saves all of the graphs of the different setting of the algorithm being compared to NwM.
-		 */
-		double[] nwmScores = {
-				4.595,
-				1.522,
-				0.987, 0.904, 0.833, 0.915, 0.996, 0.984, 1.066, 0.870, 1.089, 1.000,
-				0.992, 0.910, 0.933, 1.036, 0.830, 1.278, 1.048, 0.9991, 0.740, 1.027,
-				0.958, 1.001, 0.950, 0.900, 0.893, 0.940, 1.008, 0.970, 0.948, 0.840
-				};
-		FileInputStream fileIn;
-		FileOutputStream fileOut;
-		HSSFWorkbook workbook;
-		HSSFSheet sheet;
-		try{
-			fileIn = new FileInputStream(new File("results/experimentResults.xls"));
-			workbook = new HSSFWorkbook(fileIn);
-			sheet = workbook.getSheet("Block Form");
-			if (sheet == null){
-				sheet = workbook.createSheet("Block Form");
-				Row header = sheet.createRow(0);
-				header.createCell(0).setCellValue("Case");
-				for (int i = 1; i <= 40; i++){
-					header.createCell(i).setCellValue("c" + i);
-				}
-			}
-		}
-		catch (Exception e){
-			e.printStackTrace();
-			return;
-		}
-		int subcaseID = 0;
-		//ArrayList<double[]> datasets = new ArrayList<double[]>();
-		ArrayList<ResultsPlotter> rps = new ArrayList<ResultsPlotter>();
-		for (int i = 0; i < modelsFiles.size(); i++){
-			String mf = modelsFiles.get(i);
-			String rf = resultsFiles.get(i);
-			ArrayList<Model> models = Model.readModelsFile(mf);
-			ArrayList<ArrayList<Model>> runModels = new ArrayList<ArrayList<Model>>();
-			//String subcase = mf.charAt(mf.indexOf('/') + 1) + "";
-			String subcase = mf.substring(mf.lastIndexOf("/") + 1, mf.indexOf("."));
-			//System.out.println(subcase);
-			if (models.size() > divideUp){
-				//int ind = mf.lastIndexOf('/');
-				//subcase = mf.charAt(ind + 1) + "";
-				//char secondChar = mf.charAt(ind + 1 + "random".length());
-				//subcase = Character.isLetter(secondChar) ? subcase + secondChar : subcase;
-				int runs = models.size() / numOfModelsToUse;
-				//for (int j = 0; j < runs; j++){
-				for (int j = 0; j < 1; j++){
-					runModels.add(new ArrayList<Model>(models.subList(j * numOfModelsToUse, (j + 1) * numOfModelsToUse)));
-				}
-			}
-			else
-				runModels.add(models);
-			int subcaseNum = 0;
-			for (ArrayList<Model> mods: runModels){
-				double[] scoreSums = null;
-				for (int j = 0; j < runsToAvg; j++){
-					Runner runner = new Runner(mods, rf, null, -1, false);
-					runner.execute(subcase);
-					ArrayList<RunResult> rrs = runner.getRunResults();
-					if (scoreSums == null) scoreSums = new double[rrs.size()];
-					
-					for (int k = 0; k < rrs.size(); k++){
-						if (rps.size() == k) rps.add(new ResultsPlotter(rrs.get(k).title, "NwM"));
-						scoreSums[k] += rrs.get(k).weight.doubleValue();
-					}
-				}
-				//Row newRow = sheet.createRow(subcaseID + 1);
-				Row newRow = sheet.createRow(sheet.getLastRowNum() + 1);
-				newRow.createCell(0).setCellValue(subcase);
-				for (int j = 0; j < scoreSums.length; j++){
-					rps.get(j).addDataPoint(scoreSums[j] / runsToAvg, nwmScores[subcaseID], subcase + subcaseNum);
-					newRow.createCell(j + 1).setCellValue(scoreSums[j] / runsToAvg);
-				}
-				subcaseID++;
-				subcaseNum++;
-				System.out.print(subcase + subcaseNum);
-			}
-			System.out.println();
-		}
-		try{
-			fileIn.close();
-			fileOut = new FileOutputStream(new File("results/experimentResults.xls"));
-			workbook.write(fileOut); 
-			fileOut.close();
-		}
-		catch (Exception e){
-			e.printStackTrace();
-		}
-		for (ResultsPlotter rp: rps){
-			/*CategoryDataset dataset = rp.getDataSet();
-			double[] data = new double[dataset.getColumnKeys().size()];
-			int i = 0;
-			for (Object key: dataset.getColumnKeys()){
-				//data[i] = dataset.getValue("% diff", (Comparable) key).doubleValue() / nwmScores[i];
-				i++;
-			}
-			//datasets.add(data);*/
-			rp.createChartSingle();
-		}
-	}
-	
-	private static void runOutliers(String modelsFile, String resultsFile, int outlier){
-		if (outlier == -1){
-			singleBatchRun(modelsFile, resultsFile, -1, false);
-		}
-		else{
-			ArrayList<Model> models = Model.readModelsFile(modelsFile);
-			String caseName = modelsFile.substring(modelsFile.lastIndexOf("/") + 1, modelsFile.indexOf("."));
-			System.out.println(caseName);
-			Runner runner = new Runner(new ArrayList<Model>(models.subList(outlier * 10, (outlier + 1) * 10)), resultsFile, null, 10, true);
-			runner.execute(caseName);
-		}
-	}
 		
 	private static ArrayList<RunResult> singleBatchRun(String modelsFile, String resultsFile, int numOfModelsToUse, boolean toChunkify){
 		/**
@@ -303,14 +142,9 @@ public class Main {
 		return allScores;
 	}
 	
-	/*public static void graphData(){
-	}*/
 	public static double[][] reorder(ArrayList<ArrayList<BigDecimal>> runScores){
 		/**
-		 * Prints out the average, standard deviation as well as the maximum and minimum scores for each set of runs
-		 * in runScores.
-		 * 
-		 * @param runScores The set of sets of run scores (if there are multiple conditions per some algorithm).
+		 * Reorders data from multipleBatchRun so can be printed.s
 		 */
 		int cases = runScores.get(0).size();
 		int runs = runScores.size();
@@ -323,8 +157,39 @@ public class Main {
 		return allScores;
 	}
 	
+	public static void printStats(String modelsFile){
+		/**
+		 * Prints out max number of elements, min number of elements, avergae number of elements,
+		 * and total amount of properties in a specific case study.
+		 */
+		String name = modelsFile.substring(modelsFile.lastIndexOf("/") + 1, modelsFile.indexOf("."));
+		ArrayList<Model> models = Model.readModelsFile(modelsFile);
+		int min = 100;
+		int max = 0;
+		double totes = 0;
+		for (Model mod: models){
+			int size = mod.size();
+			totes += size;
+			if (size > max)
+				max = size;
+			if (size < min)
+				min = size;
+		}
+		Set<String> props = new HashSet<String>();
+		for (Model m: models){
+			for (Element e: m.getElements()){
+				for (String p: e.getProperties()){
+					props.add(p);
+				}
+			}
+		}
+		System.out.println(name + ":" + "max:" + max + ", min:" + min + ", avg:" + (totes / models.size())
+				+ ", props:" + props.size());
+	}
+	
 	
 	public static void main(String[] args) {
+		// Set home to path where models/results files are located.
 		if (args.length == 1){
 			Main.home = args[0];
 		}
@@ -332,20 +197,20 @@ public class Main {
 			Main.home = "";
 		}
 		
+		// All models files.
 		String hospitals = home + "models/Julia_study/hospitals.csv";
 		String warehouses = home + "models/Julia_study/warehouses.csv";
 		String random = home + "models/Julia_study/random.csv";
 		String randomLoose =home +  "models/Julia_study/randomLoose.csv";
 		String randomTight = home + "models/Julia_study/randomTight.csv";
-		//String level2a = home + "models/aliens/level2a.csv";
-		//String level2b = home + "models/aliens/level2b.csv";
-		//String level3a = home + "models/aliens/level3a.csv";
+		String level2a = home + "models/aliens/level2a.csv";
+		String level2b = home + "models/aliens/level2b.csv";
+		String level3a = home + "models/aliens/level3a.csv";
 		String toycase = home + "models/toycases/toycase.csv";
 		String toycase2 = home + "models/toycases/toycase2.csv";
 		String toycase3 = home + "models/toycases/toycase3.csv";
 		String toycase4 = home + "models/toycases/toycase4.csv";
-		String toycase5 = home + "models/toycases/toycase5" +
-				".csv";
+		String toycase5 = home + "models/toycases/toycase5.csv";
 		String gasBoilerSystem = home + "models/FH/GasBoilerSystem.csv";
 		String audioControlSystem = home + "models/FH/AudioControlSystem.csv";
 		String conferenceManagementSystem = home +  "models/FH/ConferenceManagementSystem.csv";
@@ -358,15 +223,16 @@ public class Main {
 		String mobileMedia = home + "models/Egyed/MobileMedia.csv";
 		String vod1 = home + "models/Egyed/VOD1.csv";
 		String vod2 = home + "models/Egyed/VOD2.csv";
-		
+
+		// All Results files.
 		String resultsHospitals =home +  "results/hospital_results.xls";
 		String resultsWarehouses = home + "results/warehouses_results.xls";
 		String resultsRandom = home + "results/random_results.xls";
 		String resultsRandomLoose = home + "results/randomLoose_results.xls";
 		String resultsRandomTight = home + "results/randomTight_results.xls";
-		//String resultsLevel2a = home + "results/results_level2a.xls";
-		//String resultsLevel2b = "results/results_level2b.xls";
-		//String resultsLevel3a = "results/results_level3a.xls";
+		String resultsLevel2a = home + "results/results_level2a.xls";
+		String resultsLevel2b = "results/results_level2b.xls";
+		String resultsLevel3a = "results/results_level3a.xls";
 		String resultsToycase = "results/toycase_results.xls";
 		String resultsToycase2 = "results/toycase2_results.xls";
 		String resultsToycase3 = "results/toycase3_results.xls";
@@ -393,7 +259,6 @@ public class Main {
 		models.add(randomTight);
 		models.add(gasBoilerSystem);
 		models.add(audioControlSystem);
-		//models.add(conferenceManagementSystem);
 		models.add(ajStats);
 		models.add(tankWar);
 		models.add(PKJab);
@@ -403,7 +268,6 @@ public class Main {
 		models.add(vod1);
 		models.add(vod2);
 
-		
 		results.add(resultsHospitals);
 		results.add(resultsWarehouses);
 		results.add(resultsRandom);
@@ -411,7 +275,6 @@ public class Main {
 		results.add(resultsRandomTight);
 		results.add(resultsGasBoilerSystem);
 		results.add(resultsAudioControlSystem);
-		//results.add(resultsConferenceManagementSystem);
 		results.add(resultsAJStats);
 		results.add(resultsTankWar);
 		results.add(resultsPKJab);
@@ -423,33 +286,6 @@ public class Main {
 		
 		AlgoUtil.useTreshold(true);
 		
-		/*ArrayList<Model> model = Model.readModelsFile(conferenceManagementSystem);
-		int min = 100;
-		int max = 0;
-		double totes = 0;
-		for (Model mod: model){
-			int size = mod.size();
-			totes += size;
-			if (size > max)
-				max = size;
-			if (size < min)
-				min = size;
-		}
-		System.out.println("max:" + max + ", min:" + min + ", avg" + (totes / model.size()));*/
-		for (String mf: models){
-			Set<String> props = new HashSet<String>();
-			String mName = mf.substring(mf.lastIndexOf("/") + 1, mf.indexOf("."));
-			ArrayList<Model> mods = Model.readModelsFile(mf);
-			for (Model m: mods){
-				for (Element e: m.getElements()){
-					for (String p: e.getProperties()){
-						props.add(p);
-						//System.out.println(p);
-					}
-				}
-			}
-			System.out.println(mName + ":" + props.size() + " num of props");
-		}
 		
 		//ExperimentsRunner.runConcurrentExperiment(models, results, 3, 50, 10, 84);
 		//ExperimentsRunner.runSeedExperiment(models, results, 3,  50, 10);

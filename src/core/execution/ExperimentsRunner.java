@@ -230,7 +230,7 @@ public class ExperimentsRunner{
 			nwmScores.put(subcase, rrs.get(0).weight.doubleValue());
 		}
 		try{
-			fileIn = new FileInputStream(new File("/home/amit/SASUniversityEdition/myfolders/scoreResults.xls"));
+			fileIn = new FileInputStream(new File(Main.home + "results/scoreResults.xls"));
 			workbook = new HSSFWorkbook(fileIn);
 			scoreSheet = workbook.getSheet("Long Form");
 			percentSheet = workbook.getSheet("Percent Form");
@@ -257,7 +257,7 @@ public class ExperimentsRunner{
 				double percentIncr = (score / nwmScores.get(subcase) - 1) * 100;
 				newRow.createCell(oldRow.getLastCellNum() - 1).setCellValue(percentIncr);
 			}
-			fileOut = new FileOutputStream(new File("/home/amit/SASUniversityEdition/myfolders/scoreResults.xls"));
+			fileOut = new FileOutputStream(new File(Main.home + "results/scoreResults.xls"));
 			workbook.write(fileOut); 
 			fileIn.close();
 			fileOut.close();

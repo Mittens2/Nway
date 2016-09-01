@@ -36,21 +36,21 @@ public class ReshapeData {
 			Row newFirstRow = reshapeSheet.createRow(0);
 			newFirstRow.createCell(0).setCellValue("case");
 			newFirstRow.createCell(1).setCellValue("highlight");
-			newFirstRow.createCell(2).setCellValue("choose");
+			//newFirstRow.createCell(2).setCellValue("choose");
 			newFirstRow.createCell(3).setCellValue("reshuffle");
 			newFirstRow.createCell(4).setCellValue("seed");
 			newFirstRow.createCell(5).setCellValue("time");
-			for(int i = 1; i <= 16; i++){
+			for(int i = 1; i <= 15; i++){
 				Row oldRow = origSheet.getRow(i);
 				for (int j = 0; j < size - 1; j++){
 					Row newRow = reshapeSheet.createRow((i - 1) * (size - 1) + j + 1);
 					newRow.createCell(0).setCellValue(oldRow.getCell(0).getStringCellValue());
-					newRow.createCell(1).setCellValue(highlight[j / 42]);
-					newRow.createCell(2).setCellValue(choose[(j % 42) / 21]);
-					newRow.createCell(3).setCellValue(reshuffle[(j % 21) / 7]);
+					newRow.createCell(1).setCellValue(highlight[j / 21]);
+					//newRow.createCell(2).setCellValue(choose[(j % 42) / 21]);
+					newRow.createCell(2).setCellValue(reshuffle[(j % 21) / 7]);
 					//System.out.println(oldRow.getCell(j + 1).getNumericCellValue());
-					newRow.createCell(4).setCellValue(seedings[j % 7]);
-					newRow.createCell(5).setCellValue(oldRow.getCell(j + 1).getNumericCellValue());
+					newRow.createCell(3).setCellValue(seedings[j % 7]);
+					newRow.createCell(4).setCellValue(oldRow.getCell(j + 1).getNumericCellValue());
 				}
 			}
 			fileIn.close();

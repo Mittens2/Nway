@@ -672,7 +672,7 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 	}
 	
 	private Element pickBestLocalElement(ArrayList<Element> elems, Tuple best){
-		BigDecimal maxWeight = best.getWeight();
+		BigDecimal maxWeight = null;
 		Element maxElement = null;
 		for (Element e: elems){
 			int index = AlgoUtil.commonModel(e, best);
@@ -680,7 +680,7 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 			if (index != -1){
 				test = test.lessExpanded(best.getElements().get(index), models);
 			}
-			if (test.getWeight().compareTo(maxWeight) > 0){
+			if (maxWeight == null || test.getWeight().compareTo(maxWeight) > 0){
 				maxElement = e;
 				maxWeight = test.getWeight();
 			}

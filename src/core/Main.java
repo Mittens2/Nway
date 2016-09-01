@@ -9,8 +9,10 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
@@ -421,7 +423,7 @@ public class Main {
 		
 		AlgoUtil.useTreshold(true);
 		
-		ArrayList<Model> model = Model.readModelsFile(conferenceManagementSystem);
+		/*ArrayList<Model> model = Model.readModelsFile(conferenceManagementSystem);
 		int min = 100;
 		int max = 0;
 		double totes = 0;
@@ -433,12 +435,26 @@ public class Main {
 			if (size < min)
 				min = size;
 		}
-		System.out.println("max:" + max + ", min:" + min + ", avg" + (totes / model.size()));
+		System.out.println("max:" + max + ", min:" + min + ", avg" + (totes / model.size()));*/
+		for (String mf: models){
+			Set<String> props = new HashSet<String>();
+			String mName = mf.substring(mf.lastIndexOf("/") + 1, mf.indexOf("."));
+			ArrayList<Model> mods = Model.readModelsFile(mf);
+			for (Model m: mods){
+				for (Element e: m.getElements()){
+					for (String p: e.getProperties()){
+						props.add(p);
+						//System.out.println(p);
+					}
+				}
+			}
+			System.out.println(mName + ":" + props.size() + " num of props");
+		}
 		
-		//ExperimentsRunner.runConcurrentExperiment(models, results, 3, 50, 10, 168);
-		ExperimentsRunner.runSeedExperiment(models, results, 10,  50, 10);
+		//ExperimentsRunner.runConcurrentExperiment(models, results, 3, 50, 10, 84);
+		//ExperimentsRunner.runSeedExperiment(models, results, 3,  50, 10);
 		//AlgoUtil.calcOptimalScore(toycase5);
-		//ReshapeData rd = new ReshapeData("/home/amit/SASUniversityEdition/myfolders/timeResults.xls");
+		//ReshapeData rd = new ReshapeData(Main.home + "results/scoreResults.xls");
 		//		rd.reshapeData();
 		//ExperimentsRunner.convertScoretoPercent(models, results);
 		

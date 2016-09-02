@@ -194,7 +194,7 @@ public class AlgoUtil {
 			if(elementsUsedInMatch.contains(e))
 				continue;
 			if(e.getBasedUponElements().size() != 1)
-				tuples.add(e.getContaingTuple());
+				tuples.add(e.getContainingTuple());
 		}
 		return tuples;
 	}
@@ -232,8 +232,8 @@ public class AlgoUtil {
 	}
 	
 	public static boolean shouldCompose(Tuple composed, Element e1, Element e2, ArrayList<Model> models){
-		BigDecimal w1 = e1.getContaingTuple().calcWeight(models);
-		BigDecimal w2 = e2.getContaingTuple().calcWeight(models);
+		BigDecimal w1 = e1.getContainingTuple().calcWeight(models);
+		BigDecimal w2 = e2.getContainingTuple().calcWeight(models);
 		return composed.calcWeight(models).compareTo(w1.add(w2, N_WAY.MATH_CTX)) > 0;
 	}
 	
@@ -242,7 +242,7 @@ public class AlgoUtil {
 		HashSet<Element> elements = new HashSet<Element> (t.getElements());
 		BigDecimal sumOfComposingElements = BigDecimal.ZERO;
 		for(Element e:elements){
-			Tuple containing = e.getContaingTuple();
+			Tuple containing = e.getContainingTuple();
 			if(e.getBasedUponElements().size() > 1){
 				sumOfComposingElements = sumOfComposingElements.add(containing.calcWeight(mdls), N_WAY.MATH_CTX);
 			}

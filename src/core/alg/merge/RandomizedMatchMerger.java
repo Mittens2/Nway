@@ -42,17 +42,23 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 		this.md = md;
 	}
 	
-	public void run(){
+	public void improveSolution(ArrayList<Tuple> prevSolution){
 		long startTime = System.currentTimeMillis();
-		joinAllModels();
-		allElements.addAll(unusedElements);
-		execute();
-		BigDecimal weight = AlgoUtil.calcGroupWeight(solution);
-		long endTime = System.currentTimeMillis();
-		long execTime = endTime - startTime;
-		BigDecimal avgTupleWeight = weight.divide(new BigDecimal(solution.size()), N_WAY.MATH_CTX);
-		res = new RunResult(execTime, weight, avgTupleWeight, solution);
-		res.setTitle("Randomized");
+		for (Model m: models){
+			allElements.addAll(m.getElements());
+		}
+		solutionTable = new TupleTable(allElements.size());
+		for (Tuple t: prevSolution){
+			solutionTable.add(t);
+		}
+		solution.addAll(prevSolution);
+		for (Element e: allElements){
+			if (e.getContainingTuple().getSize() == 1){
+				solutionTable.add(e.getContainingTuple());
+				solution.add(e.getContainingTuple());
+			}
+		}
+		execute(startTime);
 		clear();
 	}
 	
@@ -60,57 +66,11 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 		for (Element e: allElements){
 			Tuple t = new Tuple();
 			t.addElement(e);
-			e.setContaintingTuple(t);
+			e.setContainingTuple(t);
 		}
-	}
-	private void joinAllModels(){
-		/**
-		 * Function to implement seeding strategy.
-		 */
-		ArrayList<Element> elems = new ArrayList<Element>();
-		if (md.seed == 4){
-			Collections.shuffle(models, new Random(System.nanoTime()));
-			Collections.sort(models, new ModelComparator(md.asc));
-		}
-		for (Model m: models){
-			ArrayList<Element> modelElems = new ArrayList<Element>(m.getElements());
-			if (md.seed == 3 || md.seed == 4){
-				Collections.shuffle(modelElems, new Random(System.nanoTime()));
-				Collections.sort(modelElems, new ElementComparator(md.elementAsc, false));
-			}
-			elems.addAll(modelElems);
-		}
-		if (md.seed == 0){
-			Collections.shuffle(elems, new Random(System.nanoTime()));
-		}
-		else if (md.seed == 1){
-			Collections.shuffle(elems, new Random(System.nanoTime()));
-			Collections.sort(elems, new ElementComparator(md.elementAsc, false));
-		}
-		else if (md.seed == 5){
-			ArrayList<HashMap> propProps = getPropFreqs(elems);
-			HashMap<String, Integer> propFreq = (HashMap<String, Integer>) propProps.get(0);
-			HashMap<String, Set<String>> propModels = (HashMap<String, Set<String>>) propProps.get(1);
-			for (Element e: elems){
-				int sum = 0;
-				Set<String> eModels = new HashSet<String>();
-				for (String p: e.getProperties()){
-					sum += propFreq.get(p);
-					eModels.addAll(propModels.get(p));
-				}
-				double score = sum / e.getProperties().size() * Math.log(1 + eModels.size() / models.size());
-				e.setPropScore(score);
-			}
-			Collections.shuffle(elems, new Random(System.nanoTime()));
-			Collections.sort(elems, new ElementComparator(md.elementAsc, true));
-		}
-		allElements.addAll(elems);
-		unusedElements.addAll(elems);
-		Collections.shuffle(allElements, new Random(System.nanoTime()));
-		//return elems;
 	}
 	
-	private ArrayList<Element> joinAllModels2(){
+	private ArrayList<Element> joinAllModels(){
 		ArrayList<Element> elems = new ArrayList<Element>();
 		if (md.seed == 0){
 			Collections.shuffle(solution, new Random(System.nanoTime()));
@@ -178,102 +138,31 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 	private void resetContainingTuples(){
 		for (Tuple t: solutionTable.getValues()){
 			for (Element e: t.getElements()){
-				e.setContaintingTuple(t);
+				e.setContainingTuple(t);
 			}
 		}
 	}
 	
-	private void execute(){
+	public boolean duplicateElements(){
+		ArrayList<Element> usedElements = new ArrayList<Element>();
+		for (Tuple t: solutionTable.getValues()){
+			for (Element e: t.getElements()){
+				if (usedElements.contains(e)){
+					System.out.println("detected duplicate element:" + e);
+					return true;
+				}
+				usedElements.add(e);
+			}
+		}
+		return false;
+	}
+	
+	private void execute(long startTime){
 		/**
 		 * Executes an instance of the randomized merge algorithm (DumbHuman).
 		 * 
 		 * @return The list of Tuples derived from performing randomized merge on given models.
 		 */
-		while(unusedElements.size() > 0){
-			Element picked = unusedElements.get(0);
-			unusedElements.remove(0);
-			Tuple bestTuple = new Tuple().newExpanded(picked, models);
-			if (md.switchTuples){
-				picked.setContaintingTuple(bestTuple);
-				bestTuple = buildTuple(new ArrayList<Element>(allElements), bestTuple);
-			}
-			else{
-				bestTuple = buildTuple(new ArrayList<Element>(unusedElements), bestTuple);
-			}
-			solution.add(bestTuple);
-		}
-	}
-	
-	public void improveSolution(ArrayList<Tuple> prevSolution){
-		long startTime = System.currentTimeMillis();
-		// Puts all elements in allElements so can add elements not belonging to a tuple in their own tuple.
-		joinAllModels();
-		solution.addAll(prevSolution);
-		for (Element e: allElements){
-			if (e.getContaingTuple().getSize() == 1){
-				solution.add(e.getContaingTuple());
-			}
-		}
-		unusedElements = joinAllModels2();
-		int iterations = 0;
-		int count = 0;
-		BigDecimal currentScore = AlgoUtil.calcGroupWeight(solution).subtract(new BigDecimal(0.01));
-		while(count != 1){
-			currentScore = AlgoUtil.calcGroupWeight(solution);
-			while (System.currentTimeMillis() - startTime < (1000 * 60 * 5) && unusedElements.size() > 0){
-				Element picked = unusedElements.get(0);
-				Tuple currTuple = picked.getContaingTuple();
-				unusedElements.removeAll(currTuple.getElements());
-				ArrayList<Element> allElemsCopy = new ArrayList<Element>(allElements);
-				allElemsCopy.removeAll(currTuple.getElements());
-				solution.remove(currTuple);
-				solution.add(buildTuple(new ArrayList<Element>(allElemsCopy), currTuple));
-			}
-			if (currentScore.compareTo(AlgoUtil.calcGroupWeight(solution)) >= 0){
-				count++;
-			}
-			else{
-				count = 0;
-			}
-			unusedElements.addAll(allElements);
-			iterations++;
-		}
-		System.out.println("iterations: " + iterations);
-		ArrayList<Element> usedElements = new ArrayList<Element>();
-		for (Tuple t: solution){
-			for (Element e: t.getElements()){
-				if (usedElements.contains(e))
-					System.out.println(e);
-				usedElements.add(e);
-			}
-		}
-		BigDecimal weight = AlgoUtil.calcGroupWeight(solution);
-		long endTime = System.currentTimeMillis();
-		long execTime = endTime - startTime;
-		BigDecimal avgTupleWeight = weight.divide(new BigDecimal(solution.size()), N_WAY.MATH_CTX);
-		res = new RunResult(execTime, weight, avgTupleWeight, solution);
-		res.addIterations(iterations);
-		res.setTitle("Randomized");
-		clear();
-	}
-	
-	public void improveSolution2(ArrayList<Tuple> prevSolution){
-		long startTime = System.currentTimeMillis();
-		// Puts all elements in allElements so can add elements not belonging to a tuple in their own tuple.
-		for (Model m: models){
-			allElements.addAll(m.getElements());
-		}
-		solutionTable = new TupleTable(prevSolution.size() * 7);
-		for (Tuple t: prevSolution){
-			solutionTable.add(t);
-		}
-		solution.addAll(prevSolution);
-		for (Element e: allElements){
-			if (e.getContaingTuple().getSize() == 1){
-				solutionTable.add(e.getContaingTuple());
-				solution.add(e.getContaingTuple());
-			}
-		}
 		int gapSeeds = 0;
 		int iterations = 0;
 		double seedsUsed = 0;
@@ -284,7 +173,7 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 		while(changed){
 			iterations++;
 			changed = false;
-			unusedElements = joinAllModels2();
+			unusedElements = joinAllModels();
 			while (System.currentTimeMillis() - startTime < (1000 * 60 * 5) && unusedElements.size() > 0){
 				Element picked = unusedElements.remove(0);
 				toRemoveElems.add(picked);
@@ -301,7 +190,7 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 					if (md.reshuffle > 0){
 						solution = new ArrayList<Tuple>();
 						solution.addAll(solutionTable.getValues());
-						unusedElements = joinAllModels2();
+						unusedElements = joinAllModels();
 						if (md.reshuffle == 2){
 							for (Element e: toRemoveElems)
 								unusedElements.remove(e);
@@ -317,7 +206,9 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 			solution = new ArrayList<Tuple>();
 			solution.addAll(solutionTable.getValues());
 		}
-		System.out.println("iterations: " + iterations);
+		if (duplicateElements()){
+			System.out.println("invalid solution");
+		}
 		BigDecimal weight = AlgoUtil.calcGroupWeight(solution);
 		long endTime = System.currentTimeMillis();
 		long execTime = endTime - startTime;
@@ -334,75 +225,6 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 		}
 		res.addSeedsUsed(seedsUsed);
 		res.setTitle("Randomized");
-		clear();
-	}
-	
-	private Tuple buildTuple(ArrayList<Element> elems, Tuple current){
-		/**
-		 * HSim as initally implele
-		 */
-		ArrayList<Element> incompatible = new ArrayList<Element>();
-		ArrayList<ArrayList<Element>> partition = new ArrayList<ArrayList<Element>>();
-		for (Element e: current.getElements()){
-			if (!md.switchBuckets){
-				elems = AlgoUtil.removeElementsSameModelId(e, elems);
-				incompatible = AlgoUtil.removeElementsSameModelId(e, incompatible);
-			}
-			partition = highlightElements(e, elems, incompatible, current);
-			elems = partition.get(0);
-			incompatible = partition.get(1);
-		}
-		
-		while(true){
-			// Consider all elements that also have tuple.size properties in common with any one of elements in tuple.
-			Element picked = chooseElement(elems, current);
-			if (picked == null){
-				break;
-			}
-			Element replaced = null;
-			if (md.switchBuckets){
-				int commonModel = AlgoUtil.commonModel(picked, current);
-				if (commonModel != -1){
-					replaced = current.getElements().get(commonModel);
-					if (current.getSize() > 1)
-						current = current.lessExpanded(replaced, models);
-					else
-						current = new Tuple();
-					unusedElements.add(replaced);
-					elems.add(replaced);
-					Tuple self = new Tuple();
-					self.addElement(replaced);
-					replaced.setContaintingTuple(self);
-				}
-			}
-			unusedElements.remove(picked);
-			elems.remove(picked);
-			current = current.newExpanded(picked, models);
-			if (md.switchTuples){
-				Tuple oldTuple = picked.getContaingTuple();
-				solution.remove(oldTuple);
-				for (Element e: current.getElements()){
-					e.setContaintingTuple(current);
-				}
-				if (oldTuple.getSize() > 1){
-					oldTuple = oldTuple.lessExpanded(picked, models);
-					for (Element e: oldTuple.getElements()){
-						e.setContaintingTuple(oldTuple);
-					}
-					solution.add(oldTuple);
-				}
-			}
-			if (!md.switchBuckets){
-				elems = AlgoUtil.removeElementsSameModelId(picked, elems);
-				incompatible = AlgoUtil.removeElementsSameModelId(picked, incompatible);
-			}
-			// System.out.println(elems.size());
-			partition = highlightElements(picked, elems, incompatible, current);
-			elems = partition.get(0);
-			incompatible = partition.get(1);
-			//System.out.println(current);
-		}
-		return current;
 	}
 	
 	private void keepValidElements(ArrayList<Element> elems, ArrayList<Element> incompatible, Tuple tup){
@@ -434,19 +256,19 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 		}
 		BigDecimal maxIncrease = new BigDecimal(0.00002, N_WAY.MATH_CTX);
 		BigDecimal currIncrease = BigDecimal.ZERO;
-		Tuple containingTup = current.getContaingTuple();
+		Tuple containingTup = current.getContainingTuple();
 		currSolution.remove(containingTup);
 		if (containingTup.getSize() > 1){
 			currIncrease = currIncrease.subtract(containingTup.getWeight());
 			containingTup = containingTup.lessExpanded(current, models);
 			for (Element e: containingTup.getElements()){
-				e.setContaintingTuple(containingTup);
+				e.setContainingTuple(containingTup);
 			}
 			currSolution.add(containingTup);
 			currIncrease = currIncrease.add(containingTup.getWeight());
 		}
 		Tuple currTuple = new Tuple().newExpanded(current, models);
-		current.setContaintingTuple(currTuple);
+		current.setContainingTuple(currTuple);
 		TupleTable bestSolution = null;
 		ArrayList<Element> bestTupleElements = new ArrayList<Element>();
 		ArrayList<Element> incompatible = new ArrayList<Element>();
@@ -465,7 +287,7 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 				break;
 			}
 			// Switches element with same model out.
-			Tuple oldTuple = current.getContaingTuple();
+			Tuple oldTuple = current.getContainingTuple();
 			currSolution.remove(oldTuple);
 			BigDecimal oldWeight = currTuple.getWeight().add(oldTuple.getWeight());
 			if (md.switchBuckets){
@@ -477,7 +299,7 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 					if (priorId < 0 || currSolution.getTuple(priorId) == null){
 						Tuple self = new Tuple();
 						self.addElement(replaced);
-						replaced.setContaintingTuple(self);
+						replaced.setContainingTuple(self);
 						currSolution.add(self);
 					}
 					else{
@@ -485,7 +307,7 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 						currSolution.remove(prior);
 						prior = prior.newExpanded(replaced, models);
 						for (Element e: prior.getElements()){
-							e.setContaintingTuple(prior);
+							e.setContainingTuple(prior);
 						}
 						currSolution.add(prior);
 					}
@@ -493,13 +315,13 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 			}
 			currTuple = currTuple.newExpanded(current, models);
 			for (Element e: currTuple.getElements()){
-				e.setContaintingTuple(currTuple);
+				e.setContainingTuple(currTuple);
 			}
 			// Update tuples of new elements.
 			if (oldTuple.getSize() > 1){
 				oldTuple = oldTuple.lessExpanded(current, models);
 				for (Element e: oldTuple.getElements()){
-					e.setContaintingTuple(oldTuple);
+					e.setContainingTuple(oldTuple);
 				}
 				currSolution.add(oldTuple);
 			}
@@ -519,17 +341,6 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 		if (bestSolution != null){
 			solutionTable = bestSolution;
 			resetContainingTuples();
-			/*for (Element e: bestTupleElements){
-				unusedElements.remove(e);
-			}*/
-			/*ArrayList<Element> usedElements = new ArrayList<Element>();
-			for (Tuple t: solutionTable.getValues()){
-				for (Element e: t.getElements()){
-					if (usedElements.contains(e))
-						System.out.println(e);
-					usedElements.add(e);
-				}
-			}*/
 			return true;
 		}
 		else{
@@ -563,15 +374,6 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 		if (elems.size() == 0){
 			return null;
 		}
-		/*if (md.choose == 0){ //Choose element that increases the score the most.
-			return pickMaxElement(elems, best);
-		}
-		else if (md.choose == 1){
-			return pickRandomElement(elems, best);
-		}
-		else{
-			return pickWorstElement(elems, best);
-		}*/
 		if (md.choose == 0){
 			return pickBestLocalElement(elems, best);
 		}
@@ -581,10 +383,6 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 		else{
 			return pickLowestBarElement(elems);
 		}
-		/*else if (md.choose == 1){
-			return pickElementShareProps(elems, best);
-			//return pickElementLastShareProps(elems, best);
-		}*/
 	}
 	
 	private Element pickBestLocalElement(ArrayList<Element> elems, Tuple best){
@@ -616,7 +414,7 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 				}
 			}
 			BigDecimal currWeight;
-			Tuple ct = e.getContaingTuple();
+			Tuple ct = e.getContainingTuple();
 			Tuple ctLess = ct.getSize() > 1 ? ct.lessExpanded(e, models) : ct;
 			currWeight = (ctLess.getWeight().add(test.getWeight())
 					.subtract(ct.getWeight().add(best.getWeight())));
@@ -639,132 +437,6 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 		return lowestBarElement;
 	}
 	
-	
-	private Element pickMaxElement(ArrayList<Element> elems, Tuple best){
-		BigDecimal maxWeight = md.switchTuples? BigDecimal.ZERO : best.calcWeight(models);
-		Element maxElement = null;
-		//int count = 0;
-		for (Element e: elems){
-			int index = AlgoUtil.commonModel(e, best);
-			Tuple test;
-			test = best.newExpanded(e, models);
-			if (index != -1){
-				test = test.lessExpanded(best.getElements().get(index), models);
-			}
-			BigDecimal currWeight;
-			if (md.switchTuples){
-				Tuple ct = e.getContaingTuple();
-				Tuple ctLess = ct.getSize() > 1 ? ct.lessExpanded(e, models) : ct;
-				currWeight = (ctLess.getWeight().add(test.getWeight()))
-						.subtract(ct.getWeight().add(best.getWeight()));
-				
-			}
-			else currWeight = test.getWeight();
-			//if (currWeight.compareTo(BigDecimal.ZERO) > 0)
-				//count++;
-			if (currWeight.compareTo(maxWeight) > 0){
-				//System.out.println(currWeight + "," + maxWeight);
-				maxElement = e;
-				maxWeight = currWeight;
-			}
-		}
-		//System.out.println(count);
-		return maxElement;
-	}
-	
-	private Element pickRandomElement(ArrayList<Element> elems, Tuple best){
-		ArrayList<Integer> randList = new ArrayList<Integer>();
-		for (int i = 0; i < elems.size(); i++){
-			randList.add(i);
-		}
-		Collections.shuffle(randList);
-		while (randList.size() > 0){
-			Element random = elems.get(randList.get(randList.size() - 1));
-			randList.remove(randList.size() - 1);
-			Tuple test = best.newExpanded(random, models);
-			BigDecimal currWeight;
-			if (md.switchTuples){
-				Tuple ct = random.getContaingTuple();
-				Tuple ctLess = ct.getSize() > 1 ? ct.lessExpanded(random, models) : ct;
-				currWeight = (ctLess.calcWeight(models).add(test.calcWeight(models)))
-						.subtract(ct.calcWeight(models).add(best.calcWeight(models)));
-			}
-			else currWeight = test.calcWeight(models).subtract(best.calcWeight(models));
-			if (currWeight.compareTo(BigDecimal.ZERO) > 0)
-				return random;
-		}
-		return null;
-	}
-	
-	private Element pickWorstElement(ArrayList<Element> elems, Tuple best){
-		BigDecimal minWeight = BigDecimal.TEN;
-		Element minElement = null;
-		for (Element e: elems){
-			Tuple test = best.newExpanded(e, models);
-			BigDecimal currWeight;
-			if (md.switchTuples){
-				Tuple ct = e.getContaingTuple();
-				Tuple ctLess = ct.getSize() > 1 ? ct.lessExpanded(e, models) : ct;
-				currWeight = (ctLess.calcWeight(models).add(test.calcWeight(models)))
-						.subtract(ct.calcWeight(models).add(best.calcWeight(models)));
-				
-			}
-			else currWeight = test.calcWeight(models).subtract(best.calcWeight(models));
-			if (currWeight.compareTo(BigDecimal.ZERO) > 0 && currWeight.compareTo(minWeight) < 0){
-				minElement = e;
-				minWeight = currWeight;
-			}
-		}
-		return minElement;
-	}
-	
-	private Element pickElementShareProps(ArrayList<Element> elems, Tuple best){
-		Element maxElement = null;
-		int maxElementSharedProps = Integer.MIN_VALUE;
-		for (Element e: elems){
-			ArrayList<Element> tupleElems = new ArrayList<Element>(best.getElements());
-			tupleElems.add(e);
-			HashMap<String, Integer> propFreqs = getSortedProperties(tupleElems);
-			int sharedProps = 0;
-			for (String p: e.getProperties()){
-				sharedProps += propFreqs.get(p);
-			}
-			if (sharedProps > maxElementSharedProps){
-				Tuple test = best.newExpanded(e, models);
-				BigDecimal currWeight;
-				if (md.switchTuples){
-					Tuple ct = e.getContaingTuple();
-					Tuple ctLess = ct.getSize() > 1 ? ct.lessExpanded(e, models) : ct;
-					currWeight = (ctLess.calcWeight(models).add(test.calcWeight(models)))
-							.subtract(ct.calcWeight(models).add(best.calcWeight(models)));
-					
-				}
-				else currWeight = test.calcWeight(models).subtract(best.calcWeight(models));
-				if (currWeight.compareTo(BigDecimal.ZERO) > 0){
-				//if (test.calcWeight(models).compareTo(best.calcWeight(models)) > 0){
-					maxElementSharedProps = sharedProps;
-					maxElement = e;
-				}
-			}
-		}
-		return maxElement; 
-	}
-	
-	private Element pickElementLastShareProps(ArrayList<Element> elems, Tuple best){
-		int maxProps = 0;
-		Element maxElement = null;
-		for (Element tupleE: best.getElements()){
-			for (Element e: elems){
-				int commonProps = AlgoUtil.getCommonProperties(tupleE, e);
-				if (commonProps > maxProps){
-					maxProps = commonProps;
-					maxElement = e;
-				}
-			}
-		}
-		return maxElement;
-	}
-
 	@Override
 	public ArrayList<Tuple> getTuplesInMatch() {
 		// TODO Auto-generated method stub
@@ -790,6 +462,7 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 	
 	public class TupleTable extends Hashtable<Integer, LinkedList<Tuple>>{
 		
+		private static final long serialVersionUID = 1L;
 		public TupleTable (int loadFactor){
 			super(loadFactor);
 		}

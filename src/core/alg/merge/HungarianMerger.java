@@ -224,7 +224,7 @@ public class HungarianMerger extends Merger implements Matchable{
 				return true;
 		}
 		
-		if(AlgoUtil.areNeighbours(e1.getContaingTuple(), e2.getContaingTuple()))
+		if(AlgoUtil.areNeighbours(e1.getContainingTuple(), e2.getContainingTuple()))
 			return true;
 		return false;
 	}

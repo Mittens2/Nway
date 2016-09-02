@@ -83,9 +83,13 @@ public class OptimalSolutionSolver {
 					for (Future<ArrayList<Tuple>> result: results){
 						allTuples.addAll(result.get());
 					}		
-				} catch (InterruptedException | ExecutionException e1) {
+				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
-					e1.printStackTrace();
+					e.printStackTrace();
+				} 
+				catch (ExecutionException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
 			}
 			return allTuples;
@@ -143,9 +147,12 @@ public class OptimalSolutionSolver {
 					for (Future<ArrayList<ArrayList<Tuple>>> result: results){
 						solutions.addAll(result.get());
 					}
-				} catch (InterruptedException | ExecutionException e1) {
+				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
-					e1.printStackTrace();
+					e.printStackTrace();
+				} catch (ExecutionException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
 			}
 			return solutions;

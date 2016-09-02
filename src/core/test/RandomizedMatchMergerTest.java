@@ -71,7 +71,7 @@ public class RandomizedMatchMergerTest {
 			}
 		}
 		rmm = new RandomizedMatchMerger((ArrayList<Model>) toycase4Models.clone(), md_hl0_sd2);
-		rmm.run();
+		rmm.improveSolution(new ArrayList<Tuple>());
 		assertEquals(soln, rmm.getTuplesInMatch());
 		assertEquals(AlgoUtil.calcGroupWeight(rmm.getTuplesInMatch()), BigDecimal.ZERO);
 		
@@ -86,7 +86,7 @@ public class RandomizedMatchMergerTest {
 		soln.add(t1);
 		soln.add(t2);
 		rmm = new RandomizedMatchMerger((ArrayList<Model>) toycase5Models.clone(), md_hl0_sd2);
-		rmm.run();
+		rmm.improveSolution(new ArrayList<Tuple>());
 		assertEquals(soln, rmm.getTuplesInMatch());
 		assertEquals(new BigDecimal(2.0 / 3.0, N_WAY.MATH_CTX).doubleValue(), 
 				AlgoUtil.calcGroupWeight(rmm.getTuplesInMatch()).doubleValue(), epsilon);
@@ -102,7 +102,7 @@ public class RandomizedMatchMergerTest {
 		soln.add(t1);
 		soln.add(t2);
 		rmm = new RandomizedMatchMerger((ArrayList<Model>) toycase2Models.clone(), md_hl0_sd2);
-		rmm.run();
+		rmm.improveSolution(new ArrayList<Tuple>());
 		assertEquals(soln, rmm.getTuplesInMatch());
 		assertEquals(new BigDecimal(4.0 / 18.0, N_WAY.MATH_CTX).doubleValue(), 
 				AlgoUtil.calcGroupWeight(rmm.getTuplesInMatch()).doubleValue(), epsilon);
@@ -121,7 +121,7 @@ public class RandomizedMatchMergerTest {
 		soln2.add(t1);
 		soln2.add(t2);
 		rmm = new RandomizedMatchMerger((ArrayList<Model>) toycase2Models.clone(), md_hl0_sd1d);
-		rmm.run();
+		rmm.improveSolution(new ArrayList<Tuple>());
 		System.out.println(rmm.getTuplesInMatch());
 		assertTrue(soln1.equals(rmm.getTuplesInMatch()) || soln2.equals(rmm.getTuplesInMatch()));
 		assertEquals(new BigDecimal(4.0 / 18.0, N_WAY.MATH_CTX).doubleValue(), 
@@ -129,14 +129,14 @@ public class RandomizedMatchMergerTest {
 		
 		// Test 5
 		rmm = new RandomizedMatchMerger((ArrayList<Model>) toycase2Models.clone(), md_hl2_sd2);
-		rmm.run();
+		rmm.improveSolution(new ArrayList<Tuple>());
 		assertEquals(soln, rmm.getTuplesInMatch());
 		assertEquals(new BigDecimal(4.0 / 18.0, N_WAY.MATH_CTX).doubleValue(), 
 				AlgoUtil.calcGroupWeight(rmm.getTuplesInMatch()).doubleValue(), epsilon);
 		
 		// Test 6
 		rmm = new RandomizedMatchMerger((ArrayList<Model>) toycase2Models.clone(), md_hl2_sd5d);
-		rmm.run();
+		rmm.improveSolution(new ArrayList<Tuple>());
 		System.out.println(rmm.getTuplesInMatch());
 		assertTrue(soln1.equals(rmm.getTuplesInMatch()) || soln2.equals(rmm.getTuplesInMatch()));
 		assertEquals(new BigDecimal(4.0 / 18.0, N_WAY.MATH_CTX).doubleValue(), 
@@ -149,14 +149,14 @@ public class RandomizedMatchMergerTest {
 		t1 = t1.newExpanded(m3.getElements().get(0), toycase2Models);
 		soln.add(t1);
 		rmm = new RandomizedMatchMerger((ArrayList<Model>) toycase2Models.clone(), md_hl3_sd2);
-		rmm.run();
+		rmm.improveSolution(new ArrayList<Tuple>());
 		assertEquals(soln, rmm.getTuplesInMatch());
 		assertEquals(new BigDecimal(4.0 / 9.0, N_WAY.MATH_CTX).doubleValue(), 
 				AlgoUtil.calcGroupWeight(rmm.getTuplesInMatch()).doubleValue(), epsilon);
 		
 		// Test 8
 		rmm = new RandomizedMatchMerger((ArrayList<Model>) toycase2Models.clone(), md_hl1_sd2);
-		rmm.run();
+		rmm.improveSolution(new ArrayList<Tuple>());
 		assertEquals(soln, rmm.getTuplesInMatch());
 		assertEquals(new BigDecimal(4.0 / 9.0, N_WAY.MATH_CTX).doubleValue(), 
 				AlgoUtil.calcGroupWeight(rmm.getTuplesInMatch()).doubleValue(), epsilon);		
@@ -198,7 +198,7 @@ public class RandomizedMatchMergerTest {
 		RandomizedMatchMerger rmm1 = new RandomizedMatchMerger((ArrayList<Model>) models.clone(), md_hl0_sd2);
 		//RandomizedMatchMerger rmm2 = new RandomizedMatchMerger((ArrayList<Model>) models.clone(), md_hl3_sd2);
 		MultiModelMerger rmm2 = new ChainingOptimizingMerger((ArrayList<Model>) models.clone());
-		rmm1.run();
+		rmm1.improveSolution(new ArrayList<Tuple>());
 		rmm2.run();
 		ArrayList<Tuple> rmm1Tuples = rmm1.getTuplesInMatch();
 		ArrayList<Tuple> rmm2Tuples = rmm2.getTuplesInMatch();

@@ -23,8 +23,8 @@ public class MultiModelHungarian extends HungarianMerger {
 		ArrayList<Model> tmp = new ArrayList<Model>();
 		tmp.add(models.get(0));
 		t.setWeight(t.calcWeight(tmp));
-		Tuple e1Container = e1.getContaingTuple();
-		Tuple e2Container = e2.getContaingTuple();
+		Tuple e1Container = e1.getContainingTuple();
+		Tuple e2Container = e2.getContainingTuple();
 		if(		AlgoUtil.areNeighbours(e1Container, e2Container) ||
 				e1Container.haveCommonModelWith(e2Container)||
 				areInOrder(e1, e2)||

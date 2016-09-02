@@ -153,11 +153,11 @@ public class Element {
 		return id;
 	}
 	
-	public Tuple getContaingTuple(){
+	public Tuple getContainingTuple(){
 		return containingTuple;
 	}
 	
-	public void setContaintingTuple(Tuple t){
+	public void setContainingTuple(Tuple t){
 		containingTuple = t;
 		setContainingTupleId(t.getId());
 	}

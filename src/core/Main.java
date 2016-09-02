@@ -313,7 +313,7 @@ public class Main {
 			e.printStackTrace();
 		}*/
 		
-		//singleBatchRun(hospitals, resultsHospitals, -1, true);
+		singleBatchRun(hospitals, resultsHospitals, -1, true);
 		//singleBatchRun(warehouses, resultsWarehouses, -1, true);	
 		//singleBatchRun(random, resultsRandom, 10, true);	
 		//singleBatchRun(randomLoose, resultsRandomLoose, 10, true);	

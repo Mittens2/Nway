@@ -79,7 +79,7 @@ public abstract class Merger {
 		Tuple t = null;
 		for(Element e:merged.getElements()){
 			if(e.getBasedUponElements().size() > 1){
-				t = e.getContaingTuple();
+				t = e.getContainingTuple();
 				t.setWeight(t.calcWeight(srcModels));
 			}
 		}
@@ -132,7 +132,7 @@ public abstract class Merger {
 		Model m = mergeMatchedModels();
 		for(Element e:m.getElements()){
 			if(e.getBasedUponElements().size() > 1 || AlgoUtil.COMPUTE_RESULTS_CLASSICALLY){
-				tpls.add(e.getContaingTuple());
+				tpls.add(e.getContainingTuple());
 			}
 		}
 		this.mergedTuples = tpls;

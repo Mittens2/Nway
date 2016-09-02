@@ -97,8 +97,8 @@ public class GreedyStepper extends AlgoBase implements TupleExaminer {
 		
 		
 		for(Element e:t.getElements()){
-			if(!AlgoUtil.isNonValidTuple(e.getContaingTuple())){
-				addTupleToSolution(e.getContaingTuple());
+			if(!AlgoUtil.isNonValidTuple(e.getContainingTuple())){
+				addTupleToSolution(e.getContainingTuple());
 			}
 		}
 	}

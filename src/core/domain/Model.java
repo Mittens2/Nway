@@ -170,7 +170,7 @@ public class Model {
 		ArrayList<Tuple> res = new ArrayList<Tuple>();
 			for(Element e:getElements()){
 				if(e.getBasedUponElements().size() > 1)
-					res.add(e.getContaingTuple());
+					res.add(e.getContainingTuple());
 			}
 			return res;
 	}

@@ -144,7 +144,7 @@ public class Main {
 	
 	public static double[][] reorder(ArrayList<ArrayList<BigDecimal>> runScores){
 		/**
-		 * Reorders data from multipleBatchRun so can be printed.s
+		 * Reorders data from multipleBatchRun so can be printed.
 		 */
 		int cases = runScores.get(0).size();
 		int runs = runScores.size();

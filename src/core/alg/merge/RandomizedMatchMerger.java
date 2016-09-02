@@ -33,6 +33,7 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 	protected ArrayList<Element> allElements;
 	private RunResult res;
 	private MergeDescriptor md;
+	private int timeout = (60 * 1000) * 5; // Default is 5 minutes.
 
 	public RandomizedMatchMerger(ArrayList<Model> models, MergeDescriptor md){
 		super(models);
@@ -58,7 +59,11 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 				solution.add(e.getContainingTuple());
 			}
 		}
-		execute(startTime);
+		try {
+			execute(startTime);
+		} catch (InvalidSolutionException e1) {
+			e1.printStackTrace();
+		}
 		clear();
 	}
 	
@@ -157,39 +162,36 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 		return false;
 	}
 	
-	private void execute(long startTime){
+	private void execute(long startTime) throws InvalidSolutionException{
 		/**
 		 * Executes an instance of the randomized merge algorithm (DumbHuman).
 		 * 
 		 * @return The list of Tuples derived from performing randomized merge on given models.
 		 */
-		int gapSeeds = 0;
+		double gapSeeds = 0;
 		int iterations = 0;
-		double seedsUsed = 0;
+		int seedsUsed = 0;
 		double firstChangeSum = 0;
 		int numGaps = 0;
 	    boolean changed = true;
-	    ArrayList<Element> toRemoveElems = new ArrayList<Element>();
 		while(changed){
+			ArrayList<Element> toRemoveElems = new ArrayList<Element>();
 			iterations++;
 			changed = false;
 			unusedElements = joinAllModels();
-			while (System.currentTimeMillis() - startTime < (1000 * 60 * 5) && unusedElements.size() > 0){
+			while (System.currentTimeMillis() - startTime < timeout && unusedElements.size() > 0){
 				Element picked = unusedElements.remove(0);
 				toRemoveElems.add(picked);
 				seedsUsed++;
-				ArrayList<Element> allElemsCopy = new ArrayList<Element>(allElements);
-				if (buildNewTuple(allElemsCopy, picked)){
+				if (buildNewTuple(new ArrayList<Element>(allElements), picked)){
 					if (!changed){
 						changed = true;
 						firstChangeSum += toRemoveElems.size();
 					}
-					gapSeeds += seedsUsed;
-					seedsUsed = 0;
+					gapSeeds = seedsUsed;
 					numGaps++;
 					if (md.reshuffle > 0){
-						solution = new ArrayList<Tuple>();
-						solution.addAll(solutionTable.getValues());
+						solution = solutionTable.getValues();
 						unusedElements = joinAllModels();
 						if (md.reshuffle == 2){
 							for (Element e: toRemoveElems)
@@ -203,11 +205,11 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 					toRemoveElems = new ArrayList<Element>();
 				}
 			}
-			solution = new ArrayList<Tuple>();
-			solution.addAll(solutionTable.getValues());
+			solution = solutionTable.getValues();
 		}
+		System.out.println("iterations:" + iterations);
 		if (duplicateElements()){
-			System.out.println("invalid solution");
+			throw new InvalidSolutionException("found duplicate elements!");
 		}
 		BigDecimal weight = AlgoUtil.calcGroupWeight(solution);
 		long endTime = System.currentTimeMillis();
@@ -437,6 +439,10 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 		return lowestBarElement;
 	}
 	
+	public void setTimeout(int timeout){
+		this.timeout = timeout;
+	}
+	
 	@Override
 	public ArrayList<Tuple> getTuplesInMatch() {
 		// TODO Auto-generated method stub
@@ -516,6 +522,14 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 			}
 			return removed;
 		}
+	}
+	
+	public class InvalidSolutionException extends Exception {
+		private static final long serialVersionUID = 1L;
+
+		public InvalidSolutionException(String message) {
+	        super(message);
+	    }
 	}
 
 }

@@ -370,32 +370,17 @@ public class Runner extends ResultsWriter{
 			//boolean randomize = false;
 			for (int highlight = 1; highlight < 2; highlight++){
 				for (int choose = 1; choose < 2; choose++){
-					boolean switchTuples = true;
-					for (int sb = 1; sb < 2; sb++){
-						boolean switchBuckets = (sb == 1);
-						for (int reshuffle = 2; reshuffle < 3; reshuffle++){
-							// Seedings used for improving on NwM.
-							retVal.add(new MergeDescriptor(false, false, highlight, choose, switchTuples, switchBuckets, reshuffle, 0));
-							retVal.add(new MergeDescriptor(true, true, highlight, choose, switchTuples,switchBuckets, reshuffle, 1));
-							retVal.add(new MergeDescriptor(false, false, highlight, choose, switchTuples,switchBuckets, reshuffle, 1));
-							retVal.add(new MergeDescriptor(true, true, highlight, choose, switchTuples,switchBuckets, reshuffle, 2));
-							retVal.add(new MergeDescriptor(false, false, highlight, choose, switchTuples,switchBuckets, reshuffle, 2));
-							retVal.add(new MergeDescriptor(true, true, highlight, choose, switchTuples,switchBuckets, reshuffle, 3));
-							retVal.add(new MergeDescriptor(false, false, highlight, choose, switchTuples,switchBuckets, reshuffle, 3));
-							// By convention if parameter is not used set to false
-							//retVal.add(new MergeDescriptor(false, false, highlight, choose, switchTuples, switchBuckets, 0));
-							//retVal.add(new MergeDescriptor(false, true, highlight, choose, switchTuples,switchBuckets, 1));
-							//retVal.add(new MergeDescriptor(false, false, highlight, choose, switchTuples,switchBuckets, 1));
-							//retVal.add(new MergeDescriptor(false, false, highlight, choose, switchTuples,switchBuckets, 2));
-							//retVal.add(new MergeDescriptor(false, true, highlight, choose, switchTuples,switchBuckets, 3));
-							//retVal.add(new MergeDescriptor(false, false, highlight, choose, switchTuples,switchBuckets, 3));
-							//retVal.add(new MergeDescriptor(true, true, highlight, choose, switchTuples,switchBuckets, 4));
-							//retVal.add(new MergeDescriptor(true, false, highlight, choose, switchTuples,switchBuckets, 4));
-							//retVal.add(new MergeDescriptor(false, true, highlight, choose, switchTuples,switchBuckets, 4));
-							//retVal.add(new MergeDescriptor(false, false, highlight, choose, switchTuples,switchBuckets, 4));
-							//retVal.add(new MergeDescriptor(false, true, highlight, choose, switchTuples,switchBuckets, 5));
-							//retVal.add(new MergeDescriptor(false, false, highlight, choose, switchTuples,switchBuckets, 5));
-						}
+					for (int reshuffle = 2; reshuffle < 3; reshuffle++){
+						boolean switchTuples = true;
+						boolean switchModels = true;
+						// Seedings used for improving on NwM.
+						retVal.add(new MergeDescriptor(false, false, highlight, choose, switchTuples, switchModels, reshuffle, 0));
+						retVal.add(new MergeDescriptor(true, true, highlight, choose, switchTuples,switchModels, reshuffle, 1));
+						retVal.add(new MergeDescriptor(false, false, highlight, choose, switchTuples,switchModels, reshuffle, 1));
+						retVal.add(new MergeDescriptor(true, true, highlight, choose, switchTuples,switchModels, reshuffle, 2));
+						retVal.add(new MergeDescriptor(false, false, highlight, choose, switchTuples,switchModels, reshuffle, 2));
+						retVal.add(new MergeDescriptor(true, true, highlight, choose, switchTuples,switchModels, reshuffle, 3));
+						retVal.add(new MergeDescriptor(false, false, highlight, choose, switchTuples,switchModels, reshuffle, 3));
 					}
 				}
 			}

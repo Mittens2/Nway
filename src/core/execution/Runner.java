@@ -81,8 +81,8 @@ public class Runner extends ResultsWriter{
 		//runOnGreedy(5);
 		//}
 		AlgoUtil.COMPUTE_RESULTS_CLASSICALLY = false;
-		//results.addAll(runBigHungarian(caseName));
-		results.addAll(runRandomizedMatch());
+		results.addAll(runBigHungarian(caseName));
+		//results.addAll(runRandomizedMatch());
 		//results.addAll(runNwMwithHS(caseName));
 		
 		//runLocalSearches(3);
@@ -368,9 +368,9 @@ public class Runner extends ResultsWriter{
 		ArrayList<MergeDescriptor> retVal = new ArrayList<MergeDescriptor>();
 		if (pol == N_WAY.ALG_POLICY.RANDOM){
 			//boolean randomize = false;
-			for (int highlight = 1; highlight < 2; highlight++){
+			for (int highlight = 0; highlight < 4; highlight++){
 				for (int choose = 1; choose < 2; choose++){
-					for (int reshuffle = 2; reshuffle < 3; reshuffle++){
+					for (int reshuffle = 0; reshuffle < 3; reshuffle++){
 						boolean switchTuples = true;
 						boolean switchModels = true;
 						// Seedings used for improving on NwM.

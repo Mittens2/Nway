@@ -23,6 +23,7 @@ import org.jfree.data.category.CategoryDataset;
 import org.jfree.ui.RefineryUtilities;
 
 import core.common.AlgoUtil;
+import core.common.GameSolutionParser;
 import core.common.OptimalSolutionSolver;
 import core.common.ResultsPlotter;
 import core.common.Statistics;
@@ -32,7 +33,6 @@ import core.domain.Tuple;
 import core.execution.BatchRunner;
 import core.execution.BatchRunner.BatchRunDescriptor;
 import core.execution.ExperimentsRunner;
-import core.execution.ReshapeData;
 import core.execution.RunResult;
 import core.execution.Runner;
 import core.execution.UMLParser;
@@ -253,7 +253,7 @@ public class Main {
 		ArrayList<String> results = new ArrayList<String>();
 		
 		models.add(hospitals);
-		models.add(warehouses);
+		/*models.add(warehouses);
 		models.add(random);
 		models.add(randomLoose);
 		models.add(randomTight);
@@ -266,7 +266,7 @@ public class Main {
 		models.add(notepad);
 		models.add(mobileMedia);
 		models.add(vod1);
-		models.add(vod2);
+		models.add(vod2);*/
 
 		results.add(resultsHospitals);
 		results.add(resultsWarehouses);
@@ -286,13 +286,14 @@ public class Main {
 		
 		AlgoUtil.useTreshold(true);
 		
-		
+		//GameSolutionParser parser = new GameSolutionParser(Main.home + "models/Hospital.txt", hospitals);
+		//parser.createNewGame(Main.home + "models/newHopsitals.txt");
 		//ExperimentsRunner.runConcurrentExperiment(models, results, 3, 50, 10, 84);
+		ExperimentsRunner.convertScoreToLong();
+		ExperimentsRunner.convertScoreToPercent(models, results);
 		//ExperimentsRunner.runSeedExperiment(models, results, 3,  50, 10);
 		//AlgoUtil.calcOptimalScore(toycase5);
-		//ReshapeData rd = new ReshapeData(Main.home + "results/scoreResults.xls");
-		//		rd.reshapeData();
-		//ExperimentsRunner.convertScoretoPercent(models, results);
+		
 		
 		//OptimalSolutionSolver oss = new OptimalSolutionSolver();
 		//oss.calcOptimalScore(conferenceManagementSystem);
@@ -313,7 +314,7 @@ public class Main {
 			e.printStackTrace();
 		}*/
 		
-		singleBatchRun(hospitals, resultsHospitals, -1, true);
+		//singleBatchRun(hospitals, resultsHospitals, -1, true);
 		//singleBatchRun(warehouses, resultsWarehouses, -1, true);	
 		//singleBatchRun(random, resultsRandom, 10, true);	
 		//singleBatchRun(randomLoose, resultsRandomLoose, 10, true);	

@@ -208,66 +208,6 @@ public class ExperimentsRunner{
 		}
 	}
 	
-	public static void convertScoretoPercent(ArrayList<String> modelsFiles, ArrayList<String> resultsFiles){
-		FileInputStream fileIn;
-		FileOutputStream fileOut;
-		HSSFWorkbook workbook;
-		HSSFSheet percentSheet;
-		HSSFSheet scoreSheet;
-		final DecimalFormat df = new DecimalFormat("###.#####");
-		Map<String, Double> nwmScores = new HashMap<String, Double>();
-		for (int i = 0; i < modelsFiles.size(); i++){
-			String mf = modelsFiles.get(i);
-			String rf = resultsFiles.get(i);
-			ArrayList<Model> models = Model.readModelsFile(mf);
-			if (models.size() > 20){
-				models = new ArrayList<Model>(models.subList(0, 10));
-			}
-			String subcase = mf.substring(mf.lastIndexOf("/") + 1, mf.indexOf("."));
-			Runner runner = new Runner(models, rf, null, -1, false);
-			runner.execute(subcase);
-			ArrayList<RunResult> rrs = runner.getRunResults();
-			nwmScores.put(subcase, rrs.get(0).weight.doubleValue());
-		}
-		try{
-			fileIn = new FileInputStream(new File(Main.home + "results/scoreResults.xls"));
-			workbook = new HSSFWorkbook(fileIn);
-			scoreSheet = workbook.getSheet("Long Form");
-			percentSheet = workbook.getSheet("Percent Form");
-			if (percentSheet == null){
-				percentSheet = workbook.createSheet("Percent Form");
-			}
-			Row header = percentSheet.createRow(0);
-			header.createCell(0).setCellValue("case");
-			header.createCell(1).setCellValue("highlight");
-			header.createCell(2).setCellValue("choose");
-			//header.createCell(3).setCellValue("switchBuckets");
-			header.createCell(3).setCellValue("reshuffle");
-			header.createCell(4).setCellValue("seed");
-			header.createCell(5).setCellValue("percent");
-			for (int i = 1; i < scoreSheet.getLastRowNum(); i++){
-				Row oldRow = scoreSheet.getRow(i);
-				Row newRow = percentSheet.createRow(i);
-				String subcase = oldRow.getCell(0).getStringCellValue();
-				newRow.createCell(0).setCellValue(subcase);
-				for (int j = 1; j < oldRow.getLastCellNum() - 1; j++){
-					newRow.createCell(j).setCellValue(oldRow.getCell(j).getStringCellValue());
-				}
-				double score = oldRow.getCell(oldRow.getLastCellNum() - 1).getNumericCellValue();
-				double percentIncr = (score / nwmScores.get(subcase) - 1) * 100;
-				newRow.createCell(oldRow.getLastCellNum() - 1).setCellValue(percentIncr);
-			}
-			fileOut = new FileOutputStream(new File(Main.home + "results/scoreResults.xls"));
-			workbook.write(fileOut); 
-			fileIn.close();
-			fileOut.close();
-		}
-		catch (Exception e){
-			e.printStackTrace();
-			return;
-		}
-	}
-	
 	public static void runConcurrentExperiment(ArrayList<String> modelsFiles, ArrayList<String> resultsFiles,
 			int runsToAvg, int divideUp, int numOfModelsToUse, int numCases){
 		ExecutorService executor = Executors.newFixedThreadPool(15);
@@ -336,6 +276,112 @@ public class ExperimentsRunner{
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		}
+		convertScoreToLong();
+		convertScoreToPercent(modelsFiles, resultsFiles);
+	}
+
+	public static void convertScoreToLong(){
+		FileOutputStream fileOut;
+		FileInputStream fileIn;
+		HSSFWorkbook workbook;
+		String[] highlight = {"common_all", "common_one", "common_tuple.size", "no_hl"};
+		String[] choose = {"bestLocal", "bestGlobal"};
+		String [] modelSwitch = {"off", "on"};
+		String[] reshuffle = {"none", "reorder+renew", "reorder"};
+		String[] seedings = {"rand", "score_a", "score_d", "size_a", "size_d", "bar_a", "bar_d"};
+		String inFilePath = Main.home + "results/scoreResults.xls";
+		try {
+			fileIn = new FileInputStream(new File(inFilePath));
+			workbook = new HSSFWorkbook(fileIn);
+			HSSFSheet origSheet = workbook.getSheet("Block Form");
+			HSSFSheet reshapeSheet = workbook.getSheet("Long Form");
+			if(reshapeSheet == null)
+				reshapeSheet = workbook.createSheet("Long Form");
+			int size = origSheet.getRow(0).getLastCellNum();
+			Row newFirstRow = reshapeSheet.createRow(0);
+			newFirstRow.createCell(0).setCellValue("case");
+			newFirstRow.createCell(1).setCellValue("highlight");
+			newFirstRow.createCell(2).setCellValue("reshuffle");
+			newFirstRow.createCell(3).setCellValue("seed");
+			newFirstRow.createCell(4).setCellValue("score");
+			for(int i = 1; i <= origSheet.getLastRowNum(); i++){
+				Row oldRow = origSheet.getRow(i);
+				for (int j = 0; j < size - 1; j++){
+					Row newRow = reshapeSheet.createRow((i - 1) * (size - 1) + j + 1);
+					newRow.createCell(0).setCellValue(oldRow.getCell(0).getStringCellValue());
+					newRow.createCell(1).setCellValue(highlight[j / 21]);
+					newRow.createCell(2).setCellValue(reshuffle[(j % 21) / 7]);
+					newRow.createCell(3).setCellValue(seedings[j % 7]);
+					newRow.createCell(4).setCellValue(oldRow.getCell(j + 1).getNumericCellValue());
+				}
+			}
+			fileIn.close();
+			fileOut = new FileOutputStream(new File(inFilePath));
+			workbook.write(fileOut); 
+			fileOut.close();
+		}catch(Exception e){
+			e.printStackTrace();
+			
+		}
+	}
+	
+	public static void convertScoreToPercent(ArrayList<String> modelsFiles, ArrayList<String> resultsFiles){
+		FileInputStream fileIn;
+		FileOutputStream fileOut;
+		HSSFWorkbook workbook;
+		HSSFSheet percentSheet;
+		HSSFSheet scoreSheet;
+		final DecimalFormat df = new DecimalFormat("###.#####");
+		Map<String, Double> nwmScores = new HashMap<String, Double>();
+		for (int i = 0; i < modelsFiles.size(); i++){
+			String mf = modelsFiles.get(i);
+			String rf = resultsFiles.get(i);
+			ArrayList<Model> models = Model.readModelsFile(mf);
+			if (models.size() > 20){
+				models = new ArrayList<Model>(models.subList(0, 10));
+			}
+			String subcase = mf.substring(mf.lastIndexOf("/") + 1, mf.indexOf("."));
+			Runner runner = new Runner(models, rf, null, -1, false);
+			runner.execute(subcase);
+			ArrayList<RunResult> rrs = runner.getRunResults();
+			nwmScores.put(subcase, rrs.get(0).weight.doubleValue());
+		}
+		try{
+			fileIn = new FileInputStream(new File(Main.home + "results/scoreResults.xls"));
+			workbook = new HSSFWorkbook(fileIn);
+			scoreSheet = workbook.getSheet("Long Form");
+			percentSheet = workbook.getSheet("Percent Form");
+			if (percentSheet == null){
+				percentSheet = workbook.createSheet("Percent Form");
+			}
+			Row header = percentSheet.createRow(0);
+			header.createCell(0).setCellValue("case");
+			header.createCell(1).setCellValue("highlight");
+			//header.createCell(2).setCellValue("choose");
+			header.createCell(2).setCellValue("reshuffle");
+			header.createCell(3).setCellValue("seed");
+			header.createCell(4).setCellValue("percent");
+			for (int i = 1; i < scoreSheet.getLastRowNum(); i++){
+				Row oldRow = scoreSheet.getRow(i);
+				Row newRow = percentSheet.createRow(i);
+				String subcase = oldRow.getCell(0).getStringCellValue();
+				newRow.createCell(0).setCellValue(subcase);
+				for (int j = 1; j < oldRow.getLastCellNum() - 1; j++){
+					newRow.createCell(j).setCellValue(oldRow.getCell(j).getStringCellValue());
+				}
+				double score = oldRow.getCell(oldRow.getLastCellNum() - 1).getNumericCellValue();
+				double percentIncr = (score / nwmScores.get(subcase) - 1) * 100;
+				newRow.createCell(oldRow.getLastCellNum() - 1).setCellValue(percentIncr);
+			}
+			fileOut = new FileOutputStream(new File(Main.home + "results/scoreResults.xls"));
+			workbook.write(fileOut); 
+			fileIn.close();
+			fileOut.close();
+		}
+		catch (Exception e){
+			e.printStackTrace();
+			return;
 		}
 	}
 }

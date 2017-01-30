@@ -1,0 +1,8 @@
+1,Server,n_Server;m_main;m_initServer__wrappee__Color;m_initServer;m_connectTo;m_broadcast__wrappee__Color;m_broadcast;m_removeConnection;m_send;f_history
+2,Server,n_Server;f_name;m_main;m_intialize__wrappee__GUI;m_intialize;m_connectTo;m_broadcast;m_removeConnection;m_addLineListener;m_removeLineListener;m_fireAddLine;m_getName
+3,Server,n_Server;m_main;m_connectTo;m_broadcast__wrappee__TextColor;m_broadcast;m_removeConnection;m_init;f_stream;f_newline
+4,Server,n_Server;f_password;m_connectTo;m_broadcast;m_removeConnection;m_getPassword
+5,Server,n_Server;m_main;m_acceptConnections__wrappee__Colors;m_acceptConnections;m_connectTo;m_broadcast;m_removeConnection;m_getPasswordHash
+5,ConnectionMessage,n_ConnectionMessage;f_serialVersionUID;f_password;m_getPassword
+6,Server,n_Server;f_serverPort;m_main;m_getConfiguration;m_connectTo;m_broadcast;m_removeConnection;f_conn;f_userData;m_getDB
+7,Server,n_Server;f_log;m_main;m_connectTo;m_broadcast;m_removeConnection

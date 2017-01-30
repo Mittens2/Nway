@@ -4,11 +4,14 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -20,9 +23,17 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Row;
 
 import core.Main;
+import core.alg.merge.ChainingOptimizingMerger;
+import core.alg.merge.MergeDescriptor;
+import core.alg.merge.MultiModelMerger;
+import core.alg.merge.RandomizedMatchMerger;
+import core.common.AlgoUtil;
+import core.common.GameSolutionParser;
 import core.common.ResultsPlotter;
 import core.common.Statistics;
+import core.domain.Element;
 import core.domain.Model;
+import core.domain.Tuple;
 
 public class ExperimentsRunner{
 	static class ExperimentRunner implements Callable<double[][]>{  
@@ -279,6 +290,83 @@ public class ExperimentsRunner{
 		}
 		convertScoreToLong();
 		convertScoreToPercent(modelsFiles, resultsFiles);
+	}
+	
+	public static void runMetricsExperiment(ArrayList<String> modelsFiles,
+			ArrayList<String> mmSols, String[] solvers){
+		ArrayList<ArrayList<ArrayList<Double>>> metrics = new ArrayList<ArrayList<ArrayList<Double>>>();
+		for (int i = 0; i < modelsFiles.size(); i++){
+			ArrayList<ArrayList<Double>> currRun = new ArrayList<ArrayList<Double>>();
+			ArrayList<Model> models = Model.readModelsFile(modelsFiles.get(i));
+			if (models.size() > 50){
+				models = new ArrayList<Model>(models.subList(0, 10));
+			}
+			MergeDescriptor md_hl1_sd2a = new MergeDescriptor(true, true, 1, 1, true, true, 2, 2);
+			
+			// NwM solution
+			MultiModelMerger nwm = new ChainingOptimizingMerger((ArrayList<Model>) models.clone());
+			nwm.run();
+			ArrayList<Tuple> nwmTuples = nwm.getTuplesInMatch();
+			// HSim solutions
+			Set<Element> nwmElems = new HashSet<Element>(); 
+			for (Tuple t: nwmTuples){
+				for (Element e: t.getElements()){
+					e.setContainingTuple(t);
+					nwmElems.add(e);
+				}
+			}
+			RandomizedMatchMerger rmm = new RandomizedMatchMerger((ArrayList<Model>) models.clone(), md_hl1_sd2a);
+			rmm.improveSolution(nwmTuples);
+			for (Model m: models){
+				for (Element e: m.getElements()){
+					if (!nwmElems.contains(e)){
+						nwmTuples.add(e.getContainingTuple());
+					}
+				}
+			}
+			ArrayList<Tuple> rmmTuples = rmm.getTuplesInMatch();
+			currRun.add(AlgoUtil.calcQualityMetrics(nwmTuples));
+			currRun.add(AlgoUtil.calcQualityMetrics(rmmTuples));
+			// MM solution
+			if (solvers.length > 2){
+				GameSolutionParser parser = new GameSolutionParser(mmSols.get(i), models);
+				ArrayList<Tuple> mmTuples = parser.solutionCalculator();
+				currRun.add(AlgoUtil.calcQualityMetrics(mmTuples));
+			}
+			metrics.add(currRun);
+		}
+		
+		HSSFWorkbook workbook;
+		HSSFSheet sheet;
+		FileOutputStream fileOut;
+		try{
+			final DecimalFormat df = new DecimalFormat("#.##");
+			df.setRoundingMode(RoundingMode.HALF_UP);
+			workbook = new HSSFWorkbook();
+			sheet = workbook.createSheet("Metrics");
+			Row header = sheet.createRow(0);
+			header.createCell(0).setCellValue("case");
+			header.createCell(1).setCellValue("solver");
+			header.createCell(2).setCellValue("% correct");
+			header.createCell(3).setCellValue("% reduction classes");
+			header.createCell(4).setCellValue("% reduction attributes");
+			header.createCell(5).setCellValue("% reduction variable properties");
+			for (int i = 0; i < metrics.size(); i++) {
+				for (int j = 0; j < metrics.get(i).size(); j++){
+					Row newRow = sheet.createRow(sheet.getLastRowNum() + 1);
+					newRow.createCell(0).setCellValue(modelsFiles.get(i).substring(modelsFiles.get(i).lastIndexOf("/") + 1, modelsFiles.get(i).indexOf(".")));
+					newRow.createCell(1).setCellValue(solvers[j]);
+					for (int k = 0; k < metrics.get(i).get(j).size(); k++){
+						newRow.createCell(k + 2).setCellValue(df.format(metrics.get(i).get(j).get(k)));
+					}
+				}
+			}
+			fileOut = new FileOutputStream(new File("results/metricResults.xls"));
+			workbook.write(fileOut);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	public static void convertScoreToLong(){

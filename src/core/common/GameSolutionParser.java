@@ -24,15 +24,16 @@ public class GameSolutionParser {
 	private JSONArray gameModel;
 	private ArrayList<Model> models;
 	
-	public GameSolutionParser(String filePath, String modelsFile){
-		models = Model.readModelsFile(modelsFile);
+	public GameSolutionParser(String filePath, ArrayList<Model> models){
+		//models = Model.readModelsFile(modelsFile);
+		this.models = models;
 		if (models.size() > 16){
 			models = new ArrayList<Model>(models.subList(0, 10));
 		}
 		JSONParser parser = new JSONParser();
 		try {
 			gameModel = (JSONArray) parser.parse(new FileReader(filePath));
-			System.out.println(gameModel);
+			//System.out.println(gameModel);
 			} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -57,8 +58,12 @@ public class GameSolutionParser {
 				int element = Integer.parseInt(elemDescriptor[1]);
 				currTuple = currTuple.newExpanded(models.get(model).getElements().get(element), models);
 			}
-			solution.add(currTuple);
+			if (currTuple.getSize() > 0){
+				solution.add(currTuple);
+			}
 		}
+		System.out.println("MM solution score: " + AlgoUtil.calcGroupWeight(solution));
+		//AlgoUtil.printTuples(solution);
 		return solution;
 	}
 	

@@ -14,7 +14,7 @@ import core.domain.Model;
 import core.domain.Tuple;
 
 public class OptimalSolutionSolver {
-	final static int THREAD_MAX = 8000;
+	final static int THREAD_MAX = 2000;
 	
 	class TupleGenerator implements Callable<ArrayList<Tuple>>{  
 		private ArrayList<Model> models;
@@ -163,8 +163,9 @@ public class OptimalSolutionSolver {
 		ArrayList<Model> models = Model.readModelsFile(modelsFile);
 		TupleGenerator tupGenerator = new TupleGenerator(models, new Tuple(), 0, null, THREAD_MAX);
 		ArrayList<Tuple> allTuples = tupGenerator.call();
-		//System.out.println(allTuples);
-		SolutionGenerator solnGenerator = new SolutionGenerator(new ArrayList<Tuple>(), allTuples, THREAD_MAX);
+		System.out.println(allTuples.size());
+		ArrayList<Tuple> bestSolution = new ArrayList<Tuple>();
+		/*SolutionGenerator solnGenerator = new SolutionGenerator(new ArrayList<Tuple>(), allTuples, THREAD_MAX);
 		ArrayList<ArrayList<Tuple>> allSolutions = solnGenerator.call();
 		ArrayList<Tuple> bestSolution = new ArrayList<Tuple>();
 		BigDecimal currMax = BigDecimal.ZERO;
@@ -177,7 +178,7 @@ public class OptimalSolutionSolver {
 				}
 			}
 		}
-		System.out.println(bestSolution);
+		System.out.println(bestSolution);*/
 		return bestSolution;
 	}
 	private static boolean isValidSolution(ArrayList<Tuple> solution, ArrayList<Model> models){

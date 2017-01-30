@@ -4,6 +4,9 @@ import static org.junit.Assert.*;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.junit.After;
 import org.junit.Before;
@@ -11,10 +14,13 @@ import org.junit.Test;
 
 import core.alg.merge.ChainingOptimizingMerger;
 import core.alg.merge.MergeDescriptor;
+import core.alg.merge.Merger;
 import core.alg.merge.MultiModelMerger;
 import core.alg.merge.RandomizedMatchMerger;
 import core.common.AlgoUtil;
+import core.common.GameSolutionParser;
 import core.common.N_WAY;
+import core.common.TupleComparator;
 import core.domain.Element;
 import core.domain.Model;
 import core.domain.Tuple;
@@ -32,15 +38,16 @@ public class RandomizedMatchMergerTest {
 	protected MergeDescriptor md_hl2_sd2;
 	protected MergeDescriptor md_hl2_sd5d;
 	protected MergeDescriptor md_hl3_sd2;
+	protected MergeDescriptor md_hl1_sd2a;
 	protected RandomizedMatchMerger rmm;
 	
 	
 	@Before
 	public void setUp() throws Exception {
-		hospitalModels = Model.readModelsFile("models/hospitals.csv");
-		toycase2Models = Model.readModelsFile("models/toycase2.csv");
-		toycase4Models = Model.readModelsFile("models/toycase4.csv"); 
-		toycase5Models = Model.readModelsFile("models/toycase5.csv");
+		hospitalModels = Model.readModelsFile("models/Julia_study/hospitals.csv");
+		toycase2Models = Model.readModelsFile("models/toycases/toycase2.csv");
+		toycase4Models = Model.readModelsFile("models/toycases/toycase4.csv"); 
+		toycase5Models = Model.readModelsFile("models/toycases/toycase5.csv");
 		// md -> models_asc, elem_asc, hl, ch, st, sd.
 		md_hl0_sd2 = new MergeDescriptor(false, false, 0, 0, true, false, 0, 2);
 		md_hl0_sd1d = new MergeDescriptor(false, false, 0, 0, true,false, 0, 1);
@@ -48,6 +55,7 @@ public class RandomizedMatchMergerTest {
 		md_hl2_sd2 = new MergeDescriptor(false, false, 2, 0, true,false, 0, 2);
 		md_hl2_sd5d = new MergeDescriptor(false, false, 2, 0, true,false, 0, 5);
 		md_hl3_sd2 = new MergeDescriptor(false, false, 3, 0, true,false, 0, 2);
+		md_hl1_sd2a = new MergeDescriptor(true, true, 1, 1, true, true, 2, 2);
 	}
 
 	@After
@@ -191,32 +199,4 @@ public class RandomizedMatchMergerTest {
 	public void testAllDiffModelsInMatch(){
 		
 	}
-	
-	@Test
-	public void testRMMandNWMdiff(String modelsFile){
-		ArrayList<Model> models = Model.readModelsFile(modelsFile);
-		RandomizedMatchMerger rmm1 = new RandomizedMatchMerger((ArrayList<Model>) models.clone(), md_hl0_sd2);
-		//RandomizedMatchMerger rmm2 = new RandomizedMatchMerger((ArrayList<Model>) models.clone(), md_hl3_sd2);
-		MultiModelMerger rmm2 = new ChainingOptimizingMerger((ArrayList<Model>) models.clone());
-		rmm1.improveSolution(new ArrayList<Tuple>());
-		rmm2.run();
-		ArrayList<Tuple> rmm1Tuples = rmm1.getTuplesInMatch();
-		ArrayList<Tuple> rmm2Tuples = rmm2.getTuplesInMatch();
-		ArrayList<Tuple> intersection = new ArrayList<Tuple>(rmm1Tuples);
-		intersection.retainAll(rmm2Tuples);
-		ArrayList<Tuple> rmm1Only = new ArrayList<Tuple>(rmm1Tuples);
-		ArrayList<Tuple> rmm2Only = new ArrayList<Tuple>(rmm2Tuples);
-		rmm1Only.removeAll(intersection);
-		rmm2Only.removeAll(intersection);
-		RunResult rr1 = rmm1.getRunResult(models.size());
-		RunResult rr2 = rmm2.getRunResult(models.size());
-		rr1.setTitle(AlgoUtil.nameOfMergeDescription(md_hl0_sd2, -1));
-		//rr2.setTitle(AlgoUtil.nameOfMergeDescription(md_hl3_sd2, -1));
-		System.out.println("Tuples belonging exclusively to " + rr1);
-		AlgoUtil.printTuples(rmm1Only);
-		System.out.println();
-		System.out.println("Tuples belonging exclusively to " + rr2);
-		AlgoUtil.printTuples(rmm2Only);
-	}
-
 }

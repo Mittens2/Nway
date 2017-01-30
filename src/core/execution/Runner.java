@@ -71,19 +71,19 @@ public class Runner extends ResultsWriter{
 	//	runOnLocalSearch(N_WAY.ALG_POLICY.REPLACE_FIRST_BY_SQUARES, "LS triwise");
 		//addManualRun();
 		AlgoUtil.COMPUTE_RESULTS_CLASSICALLY = true;
-		/*runOnPairs();
-		if(!toChunkify){
+		//runOnPairs();
+		/*if(!toChunkify){
 			runOnGreedy(models.size());
-		}
-		else{*/
+		}*/
+		//else{
 		//	runOnGreedy(3);
 			//runOnGreedy(4);
 		//runOnGreedy(5);
 		//}
 		AlgoUtil.COMPUTE_RESULTS_CLASSICALLY = false;
-		results.addAll(runBigHungarian(caseName));
+		//results.addAll(runBigHungarian(caseName));
 		//results.addAll(runRandomizedMatch());
-		//results.addAll(runNwMwithHS(caseName));
+		results.addAll(runNwMwithHS(caseName));
 		
 		//runLocalSearches(3);
 		/*if(! toChunkify){
@@ -258,7 +258,7 @@ public class Runner extends ResultsWriter{
 		result.add(rr);
 		System.out.println(rr);
 		//AlgoUtil.printTuples(mmm.getTuplesInMatch());
-		//AlgoUtil.printTuples(solution);
+		AlgoUtil.printTuples(solution);
 		//writeResults(result, "New Hungarian");
 		return result;
 	}
@@ -277,6 +277,7 @@ public class Runner extends ResultsWriter{
 		}
 		prevSolution = loadTuplesFromFile(file);
 		System.out.println("NwM alone: " + AlgoUtil.calcGroupWeight(prevSolution));
+		AlgoUtil.printTuples(prevSolution);
 		for(MergeDescriptor md:mds){
 			for (Tuple t: prevSolution){
 				for (Element e: t.getElements()){
@@ -336,7 +337,7 @@ public class Runner extends ResultsWriter{
 		//System.out.println(models.size());
 		rr.setTitle(AlgoUtil.nameOfMergeDescription(md, -1));
 		System.out.println(rr);
-		//AlgoUtil.printTuples(rmm.getTuplesInMatch());
+		AlgoUtil.printTuples(rmm.getTuplesInMatch());
 		return rr;
 	}
 	
@@ -368,19 +369,19 @@ public class Runner extends ResultsWriter{
 		ArrayList<MergeDescriptor> retVal = new ArrayList<MergeDescriptor>();
 		if (pol == N_WAY.ALG_POLICY.RANDOM){
 			//boolean randomize = false;
-			for (int highlight = 0; highlight < 4; highlight++){
+			for (int highlight = 1; highlight < 2; highlight++){
 				for (int choose = 1; choose < 2; choose++){
-					for (int reshuffle = 0; reshuffle < 3; reshuffle++){
+					for (int reshuffle = 2; reshuffle < 3; reshuffle++){
 						boolean switchTuples = true;
-						boolean switchModels = true;
+						boolean switchModels = false;
 						// Seedings used for improving on NwM.
-						retVal.add(new MergeDescriptor(false, false, highlight, choose, switchTuples, switchModels, reshuffle, 0));
+						/*retVal.add(new MergeDescriptor(false, false, highlight, choose, switchTuples, switchModels, reshuffle, 0));
 						retVal.add(new MergeDescriptor(true, true, highlight, choose, switchTuples,switchModels, reshuffle, 1));
 						retVal.add(new MergeDescriptor(false, false, highlight, choose, switchTuples,switchModels, reshuffle, 1));
-						retVal.add(new MergeDescriptor(true, true, highlight, choose, switchTuples,switchModels, reshuffle, 2));
-						retVal.add(new MergeDescriptor(false, false, highlight, choose, switchTuples,switchModels, reshuffle, 2));
-						retVal.add(new MergeDescriptor(true, true, highlight, choose, switchTuples,switchModels, reshuffle, 3));
-						retVal.add(new MergeDescriptor(false, false, highlight, choose, switchTuples,switchModels, reshuffle, 3));
+						*/retVal.add(new MergeDescriptor(true, true, highlight, choose, switchTuples,switchModels, reshuffle, 2));
+						//retVal.add(new MergeDescriptor(false, false, highlight, choose, switchTuples,switchModels, reshuffle, 2));
+						//retVal.add(new MergeDescriptor(true, true, highlight, choose, switchTuples,switchModels, reshuffle, 3));
+						//retVal.add(new MergeDescriptor(false, false, highlight, choose, switchTuples,switchModels, reshuffle, 3));
 					}
 				}
 			}

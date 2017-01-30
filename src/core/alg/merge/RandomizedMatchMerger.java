@@ -33,7 +33,7 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 	protected ArrayList<Element> allElements;
 	private RunResult res;
 	private MergeDescriptor md;
-	private int timeout = (60 * 1000) * 3; // Default is 5 minutes.
+	private int timeout = (60 * 1000) * 20; // Default is 5 minutes.
 
 	public RandomizedMatchMerger(ArrayList<Model> models, MergeDescriptor md){
 		super(models);
@@ -207,7 +207,7 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 			}
 			solution = solutionTable.getValues();
 		}
-		System.out.println("iterations:" + iterations);
+		//System.out.println("iterations:" + iterations);
 		if (duplicateElements()){
 			throw new InvalidSolutionException("found duplicate elements!");
 		}

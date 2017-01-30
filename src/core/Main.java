@@ -11,6 +11,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
@@ -26,6 +27,7 @@ import core.common.AlgoUtil;
 import core.common.GameSolutionParser;
 import core.common.OptimalSolutionSolver;
 import core.common.ResultsPlotter;
+import core.common.SolverDifference;
 import core.common.Statistics;
 import core.domain.Element;
 import core.domain.Model;
@@ -168,6 +170,7 @@ public class Main {
 		int max = 0;
 		double totes = 0;
 		for (Model mod: models){
+			System.out.println(mod.size());
 			int size = mod.size();
 			totes += size;
 			if (size > max)
@@ -183,8 +186,44 @@ public class Main {
 				}
 			}
 		}
-		System.out.println(name + ":" + "max:" + max + ", min:" + min + ", avg:" + (totes / models.size())
+		System.out.println(name + ": " + "max:" + max + ", min:" + min + ", avg:" + (totes / models.size())
 				+ ", props:" + props.size());
+		//System.out.println(name + ": " + props.size());
+	}
+	
+	public static void testTuples(ArrayList<Model> models){
+		int[][] elemMap = new int[6][3];
+		int numTuples = 2;
+		elemMap[0][0] = 0;
+		elemMap[0][1] = 0;
+		elemMap[0][2] = 0;
+		elemMap[1][0] = 0;
+		elemMap[1][1] = 1;
+		elemMap[1][2] = 1;
+		elemMap[2][0] = 1;
+		elemMap[2][1] = 0;
+		elemMap[2][2] = 0;
+		elemMap[3][0] = 2;
+		elemMap[3][1] = 0;
+		elemMap[3][2] = 0;
+		elemMap[4][0] = 3;
+		elemMap[4][1] = 0;
+		elemMap[4][2] = 0;
+		elemMap[5][0] = 4;
+		elemMap[5][1] = 0;
+		elemMap[5][2] = 0;
+		Tuple[] tuples = new Tuple[numTuples];
+		for (int i = 0; i < tuples.length; i++){
+			tuples[i] = new Tuple();
+		}
+		for (int i = 0; i < elemMap.length; i++){
+			tuples[elemMap[i][2]] = tuples[elemMap[i][2]].newExpanded(models.get(elemMap[i][0]).getElements().get(elemMap[i][1]), models);
+		}
+		ArrayList<Tuple> newTuples = new ArrayList<Tuple>();
+		for (Tuple t: tuples){
+			newTuples.add(t);
+		}
+		AlgoUtil.printTuples(newTuples);
 	}
 	
 	
@@ -211,6 +250,9 @@ public class Main {
 		String toycase3 = home + "models/toycases/toycase3.csv";
 		String toycase4 = home + "models/toycases/toycase4.csv";
 		String toycase5 = home + "models/toycases/toycase5.csv";
+		String toycase6 = home + "models/toycases/toycase6.csv";
+		String toycase7 = home + "models/toycases/toycase7.csv";
+		String toyChat = home + "models/toycases/toyChat.csv";
 		String gasBoilerSystem = home + "models/FH/GasBoilerSystem.csv";
 		String audioControlSystem = home + "models/FH/AudioControlSystem.csv";
 		String conferenceManagementSystem = home +  "models/FH/ConferenceManagementSystem.csv";
@@ -249,16 +291,22 @@ public class Main {
 		String resultsVod1 = home + "results/vod1_results.xls";
 		String resultsVod2 = home + "results/vod2_results.xls";
 		
+		// All MM solution files.
+		String mmHospital = home + "models/MMsolutions/Hospital.txt";
+		String mmGasBoiler = home + "models/MMsolutions/GasBoiler.txt";
+		String mmRandomTight = home + "models/MMsolutions/RandomTight.txt";
+		
 		ArrayList<String> models = new ArrayList<String>();
 		ArrayList<String> results = new ArrayList<String>();
+		ArrayList<String> mmFiles = new ArrayList<String>();
 		
 		models.add(hospitals);
-		/*models.add(warehouses);
-		models.add(random);
-		models.add(randomLoose);
+		//models.add(warehouses);
+		//models.add(random);
+		//models.add(randomLoose);
 		models.add(randomTight);
 		models.add(gasBoilerSystem);
-		models.add(audioControlSystem);
+		/*models.add(audioControlSystem);
 		models.add(ajStats);
 		models.add(tankWar);
 		models.add(PKJab);
@@ -284,35 +332,31 @@ public class Main {
 		results.add(resultsVod1);
 		results.add(resultsVod2);
 		
-		AlgoUtil.useTreshold(true);
+		mmFiles.add(mmHospital);
+		mmFiles.add(mmRandomTight);
+		mmFiles.add(mmGasBoiler);
 		
-		//GameSolutionParser parser = new GameSolutionParser(Main.home + "models/Hospital.txt", hospitals);
+		//AlgoUtil.useTreshold(true);
+		
+		//GameSolutionParser parser = new GameSolutionParser(Main.home + "models/GasBoiler.txt", gasModels);
 		//parser.createNewGame(Main.home + "models/newHopsitals.txt");
+	
+		//String[] solvers =  {"NwM", "HSim", "MM"};
+		//ExperimentsRunner.runMetricsExperiment(models, mmFiles, solvers);
 		//ExperimentsRunner.runConcurrentExperiment(models, results, 3, 50, 10, 84);
-		ExperimentsRunner.convertScoreToLong();
-		ExperimentsRunner.convertScoreToPercent(models, results);
 		//ExperimentsRunner.runSeedExperiment(models, results, 3,  50, 10);
-		//AlgoUtil.calcOptimalScore(toycase5);
-		
 		
 		//OptimalSolutionSolver oss = new OptimalSolutionSolver();
-		//oss.calcOptimalScore(conferenceManagementSystem);
-		//oss.calcOptimalScore(toycase);
-		//oss.calcOptimalScore(toycase2);
-		//oss.calcOptimalScore(toycase3);
-		//oss.calcOptimalScore(toycase4);
-		//oss.calcOptimalScore(toycase5);
+		//oss.calcOptimalScore(audioControlSystem);
+		//oss.calcOptimalScore(toyChat);
 		
 		//UMLParser.createFeatureLists("Prevayler", true, 8);
 		//UMLParser.UMLtoCSV("VOD", 32);
 		
-		/*RandomizedMatchMergerTest test = new RandomizedMatchMergerTest();
-		try{
-			test.setUp();
-			test.testRMMandNWMdiff(level3a);
-		} catch (Exception e){
-			e.printStackTrace();
-		}*/
+		ArrayList<Model> testModels = Model.readModelsFile(hospitals);
+		String gameFilePath = home + "models/MMsolutions/Hospital.txt";
+		SolverDifference.testMMandNwMDiff(testModels, gameFilePath, true);
+		//testTuples(testModels);
 		
 		//singleBatchRun(hospitals, resultsHospitals, -1, true);
 		//singleBatchRun(warehouses, resultsWarehouses, -1, true);	
@@ -328,6 +372,11 @@ public class Main {
 		//singleBatchRun(toycase, resultsToycase, -1, true);
 		//singleBatchRun(toycase2, resultsToycase2, -1, true);
 		//singleBatchRun(toycase3, resultsToycase3, -1, true);
+		//singleBatchRun(toycase4, resultsToycase3, -1, true);
+		//singleBatchRun(toycase5, resultsToycase3, -1, true);
+		//singleBatchRun(toycase6, resultsToycase, -1, true);
+		//singleBatchRun(toycase7, resultsToycase, -1, true);
+		//singleBatchRun(toyChat, resultsToycase, -1, true);
 		//singleBatchRun(gasBoilerSystem, resultsGasBoilerSystem, -1, true);
 		//singleBatchRun(audioControlSystem, resultsAudioControlSystem, -1, true);
 		//singleBatchRun(conferenceManagementSystem, resultsConferenceManagementSystem, -1, true);
@@ -339,7 +388,6 @@ public class Main {
 		//singleBatchRun(mobileMedia, resultsMobileMedia, -1, true);
 		//singleBatchRun(vod1, resultsVod1, -1, true);
 		//singleBatchRun(vod2, resultsVod2, -1, true);
-		
 		//singleBatchRun(ahead, resultsAhead, 3, true);
 		
 		//workOnBatch(random10, resultRandom10);
@@ -351,10 +399,6 @@ public class Main {
 		//createBatch("models/randomWH.xls", 15,44,2,7,60,280);
 		//createBatch("models/randomMid.xls",15,44,2,7,60,280);
 		//createBatch("models/randomBad.xls",20,30,2,16,60,60);
-		//singleBatchRun(warehouses, resultsWarehouses,5);
-
-
-		//singleBatchRun(hospitals, resultsHospitals);
 		
 		//ArrayList<Model> models = Model.readModelsFile(randomTMP);
 		//MultiModelMerger mmm = new MultiModelMerger(models);

@@ -8,7 +8,9 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 
 import core.alg.TupleExaminer;
@@ -383,6 +385,108 @@ public class AlgoUtil {
 		return res;
 	}
 	
+	public static double calcPercentCorrect(Collection<Tuple> c){
+		Set<String> correct = new HashSet<String>();
+		Set<String> incorrect = new HashSet<String>();
+		for (Iterator<Tuple> iterator = c.iterator(); iterator.hasNext();){
+			Tuple t = (Tuple) iterator.next();
+			Set<String> labels = new HashSet<String>();
+			for (Element e :t.getElements()){
+				labels.add(e.getLabel());
+			}
+			if (labels.size() > 1){
+				for (String label: labels){
+					correct.remove(label);
+				}
+				incorrect.addAll(labels);
+			}
+			else{
+				String label = labels.iterator().next(); 
+				if (correct.contains(label)){
+					correct.remove(label);
+					incorrect.add(label);
+				}
+				else{
+					correct.add(label);
+				}
+			}
+		}
+		return ((double) correct.size()) / (correct.size() + incorrect.size());
+	}
+	
+	public static ArrayList<Double> calcQualityMetrics(Collection<Tuple> c){
+		// Reduction in # classes
+		ArrayList<Double> metrics = new ArrayList<Double>();
+		metrics.add(calcPercentCorrect(c));
+		int classesTotal = 0;
+		int classesMerged = 0;
+		for (Iterator<Tuple> iterator = c.iterator(); iterator.hasNext();){
+			classesMerged++;
+			Tuple t = (Tuple) iterator.next();
+			for (Element e :t.getElements()){
+				classesTotal++;
+			}
+		}
+		metrics.add((1 - ((double) classesMerged) / classesTotal) * 100);
+		// Reduction in # attributes
+		int attTotal = 0;
+		int attMerged = 0;
+		for (Iterator<Tuple> iterator = c.iterator(); iterator.hasNext();){
+			Tuple t = (Tuple) iterator.next();
+			Set<String> propUnion = new HashSet<String>();
+			for (Element e :t.getElements()){
+				attTotal += e.getProperties().size();
+				propUnion.addAll(e.getProperties());
+			}
+			attMerged += propUnion.size();
+		}
+		metrics.add((1 - ((double) attMerged) / attTotal) * 100);
+		// Reduce % of variable class attributes (1)
+		/*int attVar = 0;
+		for (Iterator<Tuple> iterator = c.iterator(); iterator.hasNext();){
+			Tuple t = (Tuple) iterator.next();
+			Set<String> propVar = new HashSet<String>();
+			Set<String> propMerge = new HashSet<String>();
+			for (Element e :t.getElements()){
+				for (String p: e.getProperties()){
+					if (propVar.contains(p)){
+						propVar.remove(p);
+						propMerge.add(p);
+					}
+					else if (!propMerge.contains(p)){
+						propVar.add(p);
+					}
+				}
+			}
+			attVar += propVar.size();
+		}
+		metrics.add((1 - ((double) attVar) / attTotal) * 100);*/
+		// Reduce % variable class attributes (2)
+		int attAll = 0;
+		int attNotAll = 0;
+		for (Iterator<Tuple> iterator = c.iterator(); iterator.hasNext();){
+			Tuple t = (Tuple) iterator.next();
+			Map<String, Integer> propFreq = new HashMap<String, Integer>();
+			for (Element e :t.getElements()){
+				attNotAll += e.getProperties().size();
+				for (String p: e.getProperties()){
+					if (propFreq.get(p) != null)
+						propFreq.put(p, propFreq.get(p) + 1);
+					else
+						propFreq.put(p, 1);
+				}
+			}
+
+			for (String p: propFreq.keySet()){
+				if (propFreq.get(p) == t.getSize())
+					attAll++;
+			}
+			//attNotAll += propFreq.keySet().size();
+		}
+		metrics.add((((double) attAll) / attNotAll) * 100);
+		return metrics;
+	}
+	
 	public static String getLexicographicRepresentation(Element elem){
 		ArrayList<String> mdls = new ArrayList<String>();
 		for(Element e:elem.getBasedUponElements()){
@@ -590,6 +694,7 @@ public class AlgoUtil {
 		}
 		return variants;
 	}*/
+	
 	
 	public static ArrayList<Model> getModelsByCohesiveness(ArrayList<Model> models,final boolean asc){
 		ArrayList<HungarianMerger> merges = generateAllModelPairs(models);

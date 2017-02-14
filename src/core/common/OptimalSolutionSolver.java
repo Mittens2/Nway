@@ -14,7 +14,7 @@ import core.domain.Model;
 import core.domain.Tuple;
 
 public class OptimalSolutionSolver {
-	final static int THREAD_MAX = 2000;
+	final static int THREAD_MAX = 20;
 	
 	class TupleGenerator implements Callable<ArrayList<Tuple>>{  
 		private ArrayList<Model> models;
@@ -60,6 +60,8 @@ public class OptimalSolutionSolver {
 				ArrayList<Element> modelElems = models.get(model).getElements();
 				int newThreads = Math.min(threadThreshold, models.get(model).size() + 1);
 				for (int i = 0; i < newThreads; i++){
+					//if (i == (threadThreshold - (models.get(model).size() + 1)) % (models.get(model).size() + 1))
+						//newThreadThreshold--;
 					if (i == 0){
 						generators.add(new TupleGenerator(models, current, model + 1, null, newThreadThreshold));
 					}
@@ -160,10 +162,18 @@ public class OptimalSolutionSolver {
 	}
 	
 	public ArrayList<Tuple> calcOptimalScore(String modelsFile){
+		long startTime = System.currentTimeMillis();
 		ArrayList<Model> models = Model.readModelsFile(modelsFile);
+		/*System.out.println(models.size());
+		ArrayList<Model> subModels = new ArrayList<Model>();
+		subModels.addAll(models.subList(0, 8));
+		models = subModels;
+		System.out.println(models.size());*/
 		TupleGenerator tupGenerator = new TupleGenerator(models, new Tuple(), 0, null, THREAD_MAX);
 		ArrayList<Tuple> allTuples = tupGenerator.call();
-		System.out.println(allTuples.size());
+		long endTime = System.currentTimeMillis();
+		long execTime = endTime - startTime;
+		System.out.println(allTuples.size() + " time:" + execTime / (1000));
 		ArrayList<Tuple> bestSolution = new ArrayList<Tuple>();
 		/*SolutionGenerator solnGenerator = new SolutionGenerator(new ArrayList<Tuple>(), allTuples, THREAD_MAX);
 		ArrayList<ArrayList<Tuple>> allSolutions = solnGenerator.call();

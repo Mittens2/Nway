@@ -221,9 +221,9 @@ public class Tuple {
 		}
 		return sb.
 				
-				append("\t(scaled = ").append(AlgoUtil.truncateWeight(new BigDecimal(scaledWeight, N_WAY.MATH_CTX))).
+				/*append("\t(scaled = ").append(AlgoUtil.truncateWeight(new BigDecimal(scaledWeight, N_WAY.MATH_CTX))).
 				append(")\t").
-				append(collectElements()).
+				append(collectElements()).*/
 				toString();
 	}
 	

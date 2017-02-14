@@ -81,9 +81,9 @@ public class Runner extends ResultsWriter{
 		//runOnGreedy(5);
 		//}
 		AlgoUtil.COMPUTE_RESULTS_CLASSICALLY = false;
-		//results.addAll(runBigHungarian(caseName));
+		results.addAll(runBigHungarian(caseName));
 		//results.addAll(runRandomizedMatch());
-		results.addAll(runNwMwithHS(caseName));
+		//results.addAll(runNwMwithHS(caseName));
 		
 		//runLocalSearches(3);
 		/*if(! toChunkify){
@@ -378,9 +378,9 @@ public class Runner extends ResultsWriter{
 						/*retVal.add(new MergeDescriptor(false, false, highlight, choose, switchTuples, switchModels, reshuffle, 0));
 						retVal.add(new MergeDescriptor(true, true, highlight, choose, switchTuples,switchModels, reshuffle, 1));
 						retVal.add(new MergeDescriptor(false, false, highlight, choose, switchTuples,switchModels, reshuffle, 1));
-						*/retVal.add(new MergeDescriptor(true, true, highlight, choose, switchTuples,switchModels, reshuffle, 2));
+						*///retVal.add(new MergeDescriptor(true, true, highlight, choose, switchTuples,switchModels, reshuffle, 2));
 						//retVal.add(new MergeDescriptor(false, false, highlight, choose, switchTuples,switchModels, reshuffle, 2));
-						//retVal.add(new MergeDescriptor(true, true, highlight, choose, switchTuples,switchModels, reshuffle, 3));
+						retVal.add(new MergeDescriptor(true, true, highlight, choose, switchTuples,switchModels, reshuffle, 3));
 						//retVal.add(new MergeDescriptor(false, false, highlight, choose, switchTuples,switchModels, reshuffle, 3));
 					}
 				}

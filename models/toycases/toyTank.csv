@@ -1,0 +1,17 @@
+1,Missile,n_Missile;m_init__wrappee__Sound_fuer_pc;m_init
+2,Tool,n_Tool;m_init__wrappee__einfrieren;m_init__wrappee__Feuerkraft;m_init
+3,Missile,n_Missile;m_explodieren;m_init__wrappee__Sound_fuer_pc;m_init
+3,Tool,n_Tool;m_init__wrappee__Energie;m_init__wrappee__Beschleunigung;m_init
+4,Missile,n_Missile;m_init__wrappee__Sound_fuer_pc;m_init
+4,Tool,n_Tool;m_init__wrappee__Feuerkraft;m_init
+5,Missile,n_Missile;m_explodieren
+5,Tool,n_Tool;m_init__wrappee__Energie;m_init__wrappee__Mars;m_init__wrappee__Bombe;m_init
+6,Missile,n_Missile;m_explodieren;m_init__wrappee__Sound_fuer_pc;m_init
+6,Tool,n_Tool;m_init
+7,Missile,n_Missile;m_explodieren
+7,Tool,n_Tool;m_init__wrappee__Beschleunigung;m_init__wrappee__Mars;m_init
+8,Missile,n_Missile;m_explodieren
+8,Tool,n_Tool;m_init__wrappee__Beschleunigung;m_init
+9,Tool,n_Tool;m_init__wrappee__Feuerkraft;m_init
+10,Missile,n_Missile;m_explodieren
+10,Tool,n_Tool;m_init;m_toolMalen

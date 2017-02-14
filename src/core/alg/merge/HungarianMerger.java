@@ -125,7 +125,7 @@ public class HungarianMerger extends Merger implements Matchable{
 				//elementsUsedInMatch.addAll(t.getElements()); //  taking the elements as represented at the models and not the real elements
 			}
 		}
-		
+		//System.out.println(tuplesInMatch);
 		Collections.sort(tuplesInMatch, new Comparator<Tuple>() {
 			@Override
 			public int compare(Tuple t1, Tuple t2) {

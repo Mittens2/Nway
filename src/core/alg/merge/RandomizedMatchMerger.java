@@ -48,6 +48,9 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 		for (Model m: models){
 			allElements.addAll(m.getElements());
 		}
+		for (Tuple t: prevSolution){
+			allElements.addAll(t.getElements());
+		}
 		solutionTable = new TupleTable(allElements.size());
 		for (Tuple t: prevSolution){
 			solutionTable.add(t);

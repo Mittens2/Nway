@@ -1,6 +1,7 @@
 package core.execution;
 
 import java.io.File;
+
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -9,19 +10,20 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Scanner;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Row;
 
-
 public class UMLParser {
-	
+	private static Random rand;
 	public static class UMLClass{
 		public String name;
 		public String depID;
@@ -33,6 +35,48 @@ public class UMLParser {
 		}
 	}
 	
+	public static class LogicalExp{
+		public ArrayList<Operation> ops;
+		public ArrayList<LogicalExp> children;
+		public String name;
+		public boolean not;
+		public LogicalExp(){
+			this.name = "";
+			this.ops = new ArrayList<Operation>();
+			this.children = new ArrayList<LogicalExp>();
+		}
+		public void addChild(LogicalExp child){
+			children.add(child);
+		}
+		public ArrayList<LogicalExp> getChildren(){
+			return children;
+		}
+		public void addOp(String op){
+			switch (op){
+				case "implies": ops.add(Operation.implies);
+					break;
+				case "iff": ops.add(Operation.iff);
+					break;
+				case "and": ops.add(Operation.and);
+					break;
+				case "or": ops.add(Operation.or);
+					break;
+			}
+		}
+		public ArrayList<Operation> getOps(){
+			return ops;
+		}
+		public void isNot(){
+			not = true;
+		}
+		public void setName(String name){
+			this.name = name;
+		}
+		
+	}
+	public enum Operation{
+		implies, iff, and, or;
+	}
 	public class Dependency{
 		public ArrayList<String> dependencies;
 		
@@ -128,8 +172,8 @@ public class UMLParser {
 	
 	public static void UMLtoCSV(String caseName, int desired){
 		ArrayList<ArrayList<UMLClass>> umlcs = new ArrayList<ArrayList<UMLClass>>();
-		for (int i = 16; i < desired; i++){
-			umlcs.add(parseUML("/home/amit/workspace/" + caseName +
+		for (int i = 0; i < desired; i++){
+			umlcs.add(parseUML("/Users/amitkadan/programming/workspace/" + caseName +
 		+ i + "/" + caseName + i + "_java.xmi"));
 		}
 		writeToFile(umlcs, caseName);
@@ -138,7 +182,7 @@ public class UMLParser {
 	private static void writeToFile(ArrayList<ArrayList<UMLClass>> umlclasses, String modelName){
 		try{
 			
-			PrintWriter writer = new PrintWriter("models/" + modelName + ".csv", "utf-8");
+			PrintWriter writer = new PrintWriter("models/FH/" + modelName + ".csv", "utf-8");
 			int modNum = 1;
 			for (ArrayList<UMLClass> model: umlclasses){
 				for (UMLClass element: model){
@@ -157,102 +201,254 @@ public class UMLParser {
 			e.printStackTrace();
 		}
 	}
-	private static ArrayList<String> getFeatures1(ArrayList<ArrayList<String>> lines, String dependent){
-		ArrayList<String> currLine = new ArrayList<String>();
-		ArrayList<String> features = new ArrayList<String>();
+	
+	private static Set<String> getFeatures1(Map<String, List<String>> lines, String dependent, String cmd){
+		List<String> currLine = lines.get(dependent);
+		Set<String> features = new HashSet<String>();
 		String[] dependencies;
-		// Find desired line.
-		for (ArrayList<String> line: lines){
-			if (line.get(0).equals(dependent)){
-				currLine = line;
-			}
-		}
 		// Read dependencies.
-		if (currLine.size() == 0){
-			//System.out.println(dependent);
-			features.add(dependent);
-		}
-		else if (currLine.size() == 2){
-			dependencies = currLine.get(1).split("\\s+\\|\\s+");
-			for (String dep: dependencies){
-				features.add(dep);
+		if (currLine == null){// Base case
+			if (cmd.equals("[")){
+				if (rand.nextBoolean())
+					features.add(dependent);
+			}
+			else{
+				features.add(dependent);
 			}
 		}
-		// Dependencies recurse further.
-		else if (currLine.size() == 3){
-			dependencies = currLine.get(1).split("\\s+");
+		else if (currLine.size() == 1){// Case 1: list separated by "|"
+			dependencies = currLine.get(0).split("\\s+\\|\\s+");
+			if (cmd.equals("]")){
+				if (rand.nextBoolean())
+					features.add(dependencies[rand.nextInt(dependencies.length)]);
+			}
+			else if (cmd.equals("+")){
+				if (dependencies.length == 1) features.add(dependencies[0]);
+				else{
+					int randInt = rand.nextInt(dependencies.length);
+					ArrayList<Integer> featInds = new ArrayList<Integer>();
+					for (int i = 0; i < dependencies.length; i++) featInds.add(i);
+					Collections.shuffle(featInds, new Random(System.nanoTime()));
+					for (int i = 0; i < randInt; i++) features.add(dependencies[featInds.get(i)]);
+				}
+			}
+			else if (cmd.equals("*")){
+				int randInt = rand.nextInt(dependencies.length);
+				ArrayList<Integer> featInds = new ArrayList<Integer>();
+				for (int i = 0; i < dependencies.length; i++) featInds.add(i);
+				Collections.shuffle(featInds, new Random(System.nanoTime()));
+				for (int i = 0; i < randInt; i++) features.add(dependencies[featInds.get(i)]);
+			}
+			else{
+				features.add(dependencies[rand.nextInt(dependencies.length)]);
+			}
+		}
+		else if (currLine.size() == 2){// Case 2: dependencies recurse further
+			dependencies = currLine.get(0).split("\\s+");
+			ArrayList<Set<String>> callFeatures = new ArrayList<Set<String>>();
 			for (String dep: dependencies){
-				ArrayList<String> allFeatures = new ArrayList<String>();
-				//System.out.println(dep);
 				char exp = dep.charAt(dep.length() - 1);
 				if (exp == ']'){
-					boolean keep = new Random().nextBoolean();
-					if (keep)
-						features.addAll(getFeatures1(lines, dep.substring(1, dep.length() - 1)));
+					callFeatures.add(getFeatures1(lines, dep.substring(1, dep.length() - 1), "["));
 				}
 				else if (exp == '*'){
-					allFeatures.addAll(getFeatures1(lines, dep.substring(0, dep.length() - 1)));
-					int rand = new Random().nextInt(allFeatures.size());
-					ArrayList<Integer> featInds = new ArrayList<Integer>();
-					for (int i = 0; i < allFeatures.size(); i++) featInds.add(i);
-					Collections.shuffle(featInds, new Random(System.nanoTime()));
-					for (int i = 0; i < rand; i++) features.add(allFeatures.get(featInds.get(i)));
+					callFeatures.add(getFeatures1(lines, dep.substring(0, dep.length() - 1), "*"));
 				}
 				else if (exp == '+'){
-					allFeatures.addAll(getFeatures1(lines, dep.substring(0, dep.length() - 1)));
-					int rand = new Random().nextInt(allFeatures.size()) + 1;
-					ArrayList<Integer> featInds = new ArrayList<Integer>();
-					for (int i = 0; i < allFeatures.size(); i++) featInds.add(i);
-					Collections.shuffle(featInds, new Random(System.nanoTime()));
-					for (int i = 0; i < rand; i++) features.add(allFeatures.get(featInds.get(i)));
+					callFeatures.add(getFeatures1(lines, dep.substring(0, dep.length() - 1), "+"));
 				}
 				else{
-					allFeatures.addAll(getFeatures1(lines, dep));
-					if (allFeatures.size() > 0)
-						features.add(allFeatures.get(new Random().nextInt(allFeatures.size())));
+					callFeatures.add(getFeatures1(lines, dep, ""));
 				}
+			}
+			if (cmd == "*"){
+				Collections.shuffle(callFeatures, new Random(System.nanoTime()));
+				for (int i = 0; i < rand.nextInt(callFeatures.size()); i++) features.addAll(callFeatures.get(i));
+			}
+			else if (cmd == "+"){
+				Collections.shuffle(callFeatures, new Random(System.nanoTime()));
+				for (int i = 0; i < 1 + rand.nextInt(callFeatures.size() - 1); i++) features.addAll(callFeatures.get(i));
+			}
+			else if (cmd == "["){
+				if (rand.nextBoolean()) features.addAll(callFeatures.get(rand.nextInt(callFeatures.size())));
+			}
+			else if (cmd == "all"){
+				for (Set<String> callFeature: callFeatures) features.addAll(callFeature);
+			}
+			else{
+				features.addAll(callFeatures.get(rand.nextInt(callFeatures.size())));
 			}
 		}
 		return features;
 	}
 	
+	private static ArrayList<LogicalExp> readLogicalDeps(Scanner scan){
+		ArrayList<LogicalExp> logExps = new ArrayList<LogicalExp>();
+		while (scan.hasNext()){
+			String line = scan.next().trim();
+			if (line.contains("#"))
+				break;
+			String[] curr = line.split("implies|iff");
+			LogicalExp root = new LogicalExp();
+			if (line.contains("implies"))
+				root.addOp("implies");
+			else
+				root.addOp("iff");
+			root.addChild(getLogicalExp(curr[0].trim()));
+			root.addChild(getLogicalExp(curr[1].trim()));
+			logExps.add(root);
+		}
+		return logExps;
+	}
+	
+	private static LogicalExp getLogicalExp(String exp){
+		String[] exps = exp.split("\\s+(?![^\\(]*\\))");
+		LogicalExp root = new LogicalExp();
+		//for (String s: exps) System.out.print(s + ", ");
+		//System.out.println();
+		if (exps.length == 1){
+			if (exps[0].startsWith("(")){
+				exps[0] = exps[0].substring(1, exps[0].length() - 1);
+				root.addChild(getLogicalExp(exps[0]));
+			}
+			else{
+				root.setName(exps[0]);
+			}
+		}
+		else{
+			for (int i = 0; i < exps.length; i++){
+				if (exps[i].equals("not")){
+					i++;
+					LogicalExp child = getLogicalExp(exps[i]);
+					child.isNot();
+					root.addChild(child);
+				}
+				else if (exps[i].equals("and") || exps[i].equals("or")){
+					root.addOp(exps[i]);
+				}
+				else{
+					if (exps[i].startsWith("(")){
+						exps[i] = exps[i].substring(1, exps[i].length() - 1);
+					}
+					root.addChild(getLogicalExp(exps[i]));
+				}
+			}
+		}
+		return root;
+	}
+	private static void parseLogicalExps(Set<String> features, ArrayList<LogicalExp> logExps){
+		for (LogicalExp le: logExps){
+			if (le.ops.get(0) == Operation.iff){
+				if (evalLogicalExps(features, le.children.get(0))){
+					features.addAll(getLogicalConsequences(le.children.get(1)));
+				}
+				if (evalLogicalExps(features, le.children.get(1))){
+					features.addAll(getLogicalConsequences(le.children.get(0)));
+				}
+			}
+			else{
+				if (evalLogicalExps(features, le.children.get(0))){
+					features.addAll(getLogicalConsequences(le.children.get(1)));
+				}
+			}
+		}
+	}
+	private static boolean evalLogicalExps(Set<String> features, LogicalExp exp){
+		if (!exp.name.equals("")){
+			if (exp.not ^ features.contains(exp.name))
+				return true;
+			else
+				return false;
+		}
+		ArrayList<LogicalExp> children = exp.getChildren();
+		ArrayList<Operation> ops = exp.getOps();
+		boolean statement = evalLogicalExps(features, children.get(0));
+		for (int i = 0; i < ops.size(); i++){
+			if (ops.get(i) == Operation.and){
+				statement = statement && evalLogicalExps(features, children.get(i + 1));
+			}
+			else{
+				statement = statement || evalLogicalExps(features, children.get(i + 1));
+			}
+			if (!statement)
+				break;
+		}
+		return statement;
+
+	}
+	
+	private static Set<String> getLogicalConsequences(LogicalExp exp){
+		Set<String> newFeats = new HashSet<String>();
+		if (!exp.name.equals("")){
+			newFeats.add(exp.name);
+		}
+		else{
+			ArrayList<LogicalExp> children = exp.getChildren();
+			ArrayList<Operation> ops = exp.getOps();
+			newFeats.addAll(getLogicalConsequences(children.get(0)));
+			for (int i = 0; i < ops.size(); i++){
+				if (ops.get(i) == Operation.and){
+					newFeats.addAll(getLogicalConsequences(children.get(i + 1)));
+				}
+				else{
+					int random = rand.nextInt(3);
+					if (random == 1){
+						newFeats = getLogicalConsequences(children.get(i + 1));
+					}
+					else if (random == 2){
+						newFeats.addAll(getLogicalConsequences(children.get(i + 1)));
+					}
+				}
+			}
+		}
+		System.out.println(newFeats);
+		return newFeats;
+	}
+	
 	public static void createFeatureLists(String caseName, boolean random, int desired){
-		String filePath = "/home/amit/Downloads/SuperimpositionExamples/Java/" + caseName + "/" + caseName;
+		String filePath = "/Users/amitkadan/Downloads/SuperimpositionExamples/Java/***Potential/" + caseName + "/" + caseName;
 		File file = new File(filePath + ".model");
-		ArrayList<ArrayList<String>> featureCombs = new ArrayList<ArrayList<String>>();
+		ArrayList<Set<String>> featureCombs = new ArrayList<Set<String>>();
 		if (file.exists()){
 			try{
+				rand = new Random();
 				Scanner scan = new Scanner(file);
 				scan.useDelimiter(";");
-				ArrayList<ArrayList<String>> lines = new ArrayList<ArrayList<String>>();
+				Map<String, List<String>> lines = new HashMap<String, List<String>>();
+				ArrayList<LogicalExp> logExps = new ArrayList<LogicalExp>();
 				while (scan.hasNext()){
-					ArrayList<String> line = new ArrayList<String>();
 					String currLine = scan.next().trim();
-					line.addAll(Arrays.asList(currLine.split("\\s*:+\\s*")));
-					//System.out.println(line);
-					lines.add(line);
-				}
-				for (int i = 0; i < desired; i++){
-					ArrayList<String> features = getFeatures1(lines, "SPL");
-					featureCombs.add(features);
+					if (currLine.startsWith("%")){// Logical statement dependencies
+						logExps = readLogicalDeps(scan);
+					}
+					else{
+						List<String> line = Arrays.asList(currLine.split("\\s*:+\\s*"));
+						lines.put(line.get(0), line.subList(1, line.size()));
+					}
 				}
 				scan.close();
+				for (int i = 0; i < desired; i++){
+					Set<String> features = getFeatures1(lines, caseName, "all");
+					featureCombs.add(features);
+				}
+				for (Set<String> features: featureCombs)
+					parseLogicalExps(features, logExps);
 			} catch (Exception e){
 				e.printStackTrace();
 			}
 		}
 		else{
-			filePath = filePath + "Comp.features";
-			file = new File(filePath);
-			featureCombs = getFeatures2(file, random, desired);
+			//filePath = filePath + "Comp.features";
+			//file = new File(filePath);
+			//featureCombs = getFeatures2(file, random, desired);
 		}
 		try{
 			int count = 0;
-			for (ArrayList<String> featureList: featureCombs){
+			for (Set<String> featureList: featureCombs){
 				PrintWriter writer = new PrintWriter(filePath + count + ".features", "utf-8");
 				for (String feature: featureList) {
 					writer.println(feature);
-					System.out.println(feature);
+					//System.out.println(feature);
 				}
 				count++;
 				writer.close();
@@ -261,7 +457,7 @@ public class UMLParser {
 			e.printStackTrace();
 		}
 	}
-	public static ArrayList<ArrayList<String>> getFeatures2(File file, boolean random, int desired){
+	/*public static ArrayList<Set<String>> getFeatures2(File file, boolean random, int desired){
 		try{
 			// Scan features from file.
 			Scanner scan = new Scanner(file);
@@ -272,7 +468,7 @@ public class UMLParser {
 			}
 			scan.close();
 			// Randomly choose 1 to features.size() features.
-			ArrayList<ArrayList<String>> featureCombs = new ArrayList<ArrayList<String>>();
+			ArrayList<Set<String>> featureCombs = new ArrayList<Set<String>>();
 			if (random){
 				for (int j = 0; j < desired; j++){
 					ArrayList<Integer> seeds = new ArrayList<Integer>();
@@ -292,7 +488,7 @@ public class UMLParser {
 			else{
 				ArrayList<String> featureBase = new ArrayList<String>(features.subList(0, 5));
 				featureCombs = getAllFeatureCombs(new ArrayList<String>(), new ArrayList<String>(features.subList(5,  9)));
-				for (ArrayList<String> feats: featureCombs)
+				for (Sett<String> feats: featureCombs)
 					feats.addAll(featureBase);
 			}
 			return featureCombs;
@@ -301,7 +497,7 @@ public class UMLParser {
 		}
 		return null;
 	}
-	private static ArrayList<ArrayList<String>> getAllFeatureCombs(ArrayList<String> soFar, ArrayList<String> features)
+	private static ArrayList<Set<String>> getAllFeatureCombs(ArrayList<String> soFar, ArrayList<String> features)
 	{
 	    ArrayList<ArrayList<String>> combs=new ArrayList<ArrayList<String>>();
 	    // Loop through the first list looking for elements
@@ -316,5 +512,5 @@ public class UMLParser {
 	       combs.add(temp);
 	    }
 	    return combs;
-	}
+	}*/
 }

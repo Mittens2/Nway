@@ -1,8 +1,11 @@
 package core.common;
 
+import java.io.File;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Scanner;
 import java.util.Set;
 
 import org.junit.Test;
@@ -19,10 +22,11 @@ public class SolverDifference {
 
 	final static MergeDescriptor md_hl1_sd2a = new MergeDescriptor(true, true, 1, 1, true, true, 2, 2);
 	
-	public static void testRMMandNwMDiff(ArrayList<Model> models, boolean printNums){
-		MultiModelMerger nwm = new ChainingOptimizingMerger((ArrayList<Model>) models.clone());
-		nwm.run();
-		ArrayList<Tuple> nwmTuples = nwm.getTuplesInMatch();
+	public static void testRMMandNwMDiff(ArrayList<Model> models, String nwmFilePath, boolean printNums){
+		//MultiModelMerger nwm = new ChainingOptimizingMerger((ArrayList<Model>) models.clone());
+		//nwm.run();
+		//ArrayList<Tuple> nwmTuples = nwm.getTuplesInMatch();
+		ArrayList<Tuple> nwmTuples = readNwMSolution(nwmFilePath, models);
 		for (Tuple t: nwmTuples){
 			for (Element e: t.getElements()){
 				e.setContainingTuple(t);
@@ -35,30 +39,34 @@ public class SolverDifference {
 		ArrayList<ArrayList<Tuple>> disjoint = getDisjoinTuples(rmmTuples, nwmTuples);
 		ArrayList<Tuple> rmmOnly = disjoint.get(0);
 		ArrayList<Tuple> nwmOnly = disjoint.get(1);
+		final DecimalFormat df = new DecimalFormat("#.##");
 		System.out.println("Tuples belonging exclusively to NwM: " + AlgoUtil.calcGroupWeight(nwmTuples));
-		AlgoUtil.printTuples(nwmOnly);
+		AlgoUtil.printTuples(nwmTuples);
 		if (printNums) printNumberForm(nwmOnly, models);
-		//System.out.print(AlgoUtil.calcQualityMetrics(nwmTuples));
+		System.out.print(df.format(AlgoUtil.calcPercentCorrect(nwmTuples) * 100));
 		System.out.println();
 		System.out.println("Tuples belonging exclusively to HSim: " + AlgoUtil.calcGroupWeight(rmmTuples));
-		AlgoUtil.printTuples(rmmOnly);
+		//AlgoUtil.printTuples(rmmOnly);
 		if (printNums) printNumberForm(rmmOnly, models);
-		//System.out.print(AlgoUtil.calcQualityMetrics(rmmTuples));
+		System.out.print(df.format(AlgoUtil.calcPercentCorrect(rmmTuples) * 100));
 	}
 	
-	public static void testMMandNwMDiff(ArrayList<Model> models, String filePath, boolean printNums){
-		GameSolutionParser parser = new GameSolutionParser(filePath, models);
+	public static void testMMandNwMDiff(ArrayList<Model> models, String gameFilePath, String nwmFilePath, boolean printNums){
+		if (models.size() > 60){
+			models = new ArrayList<Model>(models.subList(0, 10));
+		}
+		GameSolutionParser parser = new GameSolutionParser(gameFilePath, models);
 		ArrayList<Tuple> mmTuples = parser.solutionCalculator();
-		MultiModelMerger nwm = new ChainingOptimizingMerger((ArrayList<Model>) models.clone());
-		nwm.run();
-		ArrayList<Tuple> nwmTuples = nwm.getTuplesInMatch();
+		//MultiModelMerger nwm = new ChainingOptimizingMerger((ArrayList<Model>) models.clone());
+		//nwm.run();
+		ArrayList<Tuple> nwmTuples = readNwMSolution(nwmFilePath, models);
 		addMissingElements(models, nwmTuples);
 		getDisjoinTuples(nwmTuples, mmTuples);
-		System.out.println("Tuples belonging exclusively to MM");
+		System.out.println("Tuples belonging exclusively to MM: " + AlgoUtil.calcGroupWeight(mmTuples));
 		AlgoUtil.printTuples(mmTuples);
 		if (printNums) printNumberForm(mmTuples, models);
 		System.out.println();
-		System.out.println("Tuples belonging exclusively to NwM");
+		System.out.println("Tuples belonging exclusively to NwM: " + AlgoUtil.calcGroupWeight(nwmTuples));
 		AlgoUtil.printTuples(nwmTuples);
 		if (printNums) printNumberForm(nwmTuples, models);
 	}
@@ -138,5 +146,28 @@ public class SolverDifference {
 			}
 			System.out.println();
 		}
+	}
+	
+	private static ArrayList<Tuple> readNwMSolution(String filePath, ArrayList<Model> models){
+		ArrayList<Tuple> nwmSolution = new ArrayList<Tuple>();
+		try{
+			Scanner scan = new Scanner(new File(filePath));
+			int tupNum = 0;
+			Tuple currTuple = new Tuple();
+			while(scan.hasNext()){
+				String[] line = scan.next().split(";");
+				if (Integer.parseInt(line[0]) != tupNum){
+					nwmSolution.add(currTuple);
+					currTuple = new Tuple();
+					tupNum++;
+				}
+				currTuple = currTuple.newExpanded(models.get(Integer.parseInt(line[1]) - 1).
+						getElementByLabel(line[2]), models);
+			}
+			nwmSolution.add(currTuple);
+		} catch (Exception e){
+			e.printStackTrace();
+		}
+		return nwmSolution;
 	}
 }

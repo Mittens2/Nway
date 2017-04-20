@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -176,14 +177,24 @@ public class Main {
 		int min = 100;
 		int max = 0;
 		double totes = 0;
+		int possibs = 1;
 		for (Model mod: models){
 			//System.out.println(mod.size());
 			int size = mod.size();
 			totes += size;
+			possibs *= (mod.size() + 1);
 			if (size > max)
 				max = size;
 			if (size < min)
 				min = size;
+		}
+		int incompat = 0;
+		//possibs -= 1;
+		for (int i = 0; i < models.size(); i++){
+			incompat += (((double) possibs) / (models.get(i).size() + 1));
+			for (int j = 0; j < i; j++){
+				incompat -= (((double) possibs) / (models.get(i).size() + 1) / (models.get(j).size() + 1));
+			}
 		}
 		Set<String> props = new HashSet<String>();
 		for (Model m: models){
@@ -194,7 +205,8 @@ public class Main {
 				}
 			}
 		}
-		System.out.println(name + ": " + "max:" + max + ", min:" + min + ", avg:" + (totes / models.size())
+		System.out.println(name + ": " + "max:" + max + ", min:" + min + ", avg:" + 
+		(totes / models.size()) + ", possible tuples:" + possibs + ", possible solutions:" + possibs * (possibs - incompat)
 				+ ", props:" + props.size());
 		//System.out.println(name + ": " + props.size());
 	}
@@ -205,39 +217,36 @@ public class Main {
 		// 2<4>,3<8>,4<3>,5<3>,6<2>,7<7>,8<6>
 		// 1<6>,3<7>,8<7>
 		ArrayList<Model> models = Model.readModelsFile(modelsFile);
-		int[][] elemMap = new int[10][3];
+		int[][] elemMap = new int[9][3];
 		int numTuples = 2;
 		//
-		elemMap[0][0] = 0;
-		elemMap[0][1] = 6;
-		elemMap[0][2] = 1;
-		elemMap[1][0] = 1;
-		elemMap[1][1] = 4;
+		elemMap[0][0] = 9;
+		elemMap[0][1] = 28;
+		elemMap[0][2] = 0;
+		elemMap[1][0] = 10;
+		elemMap[1][1] = 38;
 		elemMap[1][2] = 0;
-		elemMap[2][0] = 2;
-		elemMap[2][1] = 8;
+		elemMap[2][0] = 1;
+		elemMap[2][1] = 38;
 		elemMap[2][2] = 0;
-		elemMap[3][0] = 3;
-		elemMap[3][1] = 3;
+		elemMap[3][0] = 4;
+		elemMap[3][1] = 38;
 		elemMap[3][2] = 0;
-		elemMap[4][0] = 4;
-		elemMap[4][1] = 3;
+		elemMap[4][0] = 5;
+		elemMap[4][1] = 29;
 		elemMap[4][2] = 0;
-		elemMap[5][0] = 5;
-		elemMap[5][1] = 2;
+		elemMap[5][0] = 6;
+		elemMap[5][1] = 38;
 		elemMap[5][2] = 0;
-		elemMap[6][0] = 6;
-		elemMap[6][1] = 7;
+		elemMap[6][0] = 7;
+		elemMap[6][1] = 29;
 		elemMap[6][2] = 0;
-		elemMap[7][0] = 7;
-		elemMap[7][1] = 6;
+		elemMap[7][0] = 8;
+		elemMap[7][1] = 38;
 		elemMap[7][2] = 0;
-		elemMap[8][0] = 2;
-		elemMap[8][1] = 7;
-		elemMap[8][2] = 1;
-		elemMap[9][0] = 7;
-		elemMap[9][1] = 7;
-		elemMap[9][2] = 1;
+		elemMap[8][0] = 3;
+		elemMap[8][1] = 19;
+		elemMap[8][2] = 0;
 		Tuple[] tuples = new Tuple[numTuples];
 		for (int i = 0; i < tuples.length; i++){
 			tuples[i] = new Tuple();
@@ -253,18 +262,22 @@ public class Main {
 		System.out.println(AlgoUtil.calcGroupWeight(newTuples));
 	}
 	
-	private static void writeToFile(ArrayList<Element> elements, String modelName){
+	private static void writeToFile(ArrayList<Model> models, String modelName){
 		try{
-			PrintWriter writer = new PrintWriter("models/FH/sub" + modelName + ".csv", "utf-8");
-			for (Element e: elements){
-				writer.print(e.getModelId());
-				writer.print("," + e.getLabel() + ",");
-				ArrayList<String> properties = new ArrayList<String>(e.getProperties());
-				while (properties.size() > 1){
-					writer.print(properties.remove(properties.size() - 1) + ";");
+			PrintWriter writer = new PrintWriter("models/FH_nogen/fixed_" + modelName + ".csv", "utf-8");
+			//for (Element e: elements){
+			for (Model m: models){
+				for (Element e: m.getElements()){
+					writer.print(e.getModelId());
+					writer.print("," + e.getLabel() + ",");
+					//ArrayList<String> properties = new ArrayList<String>(e.getProperties());
+					Set<String> properties = new HashSet<String>(e.getProperties());
+					for (Iterator<String> iterator = properties.iterator(); iterator.hasNext();){
+						writer.print(iterator.next() + ";");
+					}
+					//writer.print(properties.get(0));
+					writer.println();
 				}
-				writer.print(properties.get(0));
-				writer.println();
 			}
 			writer.close();
 		} catch (Exception e){
@@ -288,8 +301,9 @@ public class Main {
 	}
 	
 	private static void writeSubModel(String casename){
-		ArrayList<Model> models = Model.readModelsFile(Main.home + "models/FH/" + casename + ".csv");
-		writeToFile(loadTuplesFromFile(new File(Main.home + "models/NwMsolutions/" + casename + ".csv"), models), casename);
+		ArrayList<Model> models = Model.readModelsFile(Main.home + "models/FH_nogen/" + casename + ".csv");
+		//writeToFile(loadTuplesFromFile(new File(Main.home + "models/NwMsolutions/" + casename + ".csv"), models), casename);
+		writeToFile(models, casename);
 	}
 	
 	
@@ -327,7 +341,7 @@ public class Main {
 		String tankWar = home + "models/FH/TankWar.csv";
 		String PKJab = home + "models/FH/PKJab.csv";
 		String chatSystem = home + "models/FH_nogen/ChatSystem.csv";
-		String notepad = home + "models/FH_nogen/Notepad.csv";
+		String notepad = home + "models/FH_nogen/fixed_Notepad.csv";
 		String ahead = home + "models/FH_nogen/ahead.csv";
 		String mobileMedia = home + "models/Egyed/MobileMedia.csv";
 		String vod1 = home + "models/Egyed/VOD1.csv";
@@ -371,13 +385,13 @@ public class Main {
 		ArrayList<String> results = new ArrayList<String>();
 		ArrayList<String> mmFiles = new ArrayList<String>();
 		
-		models.add(hospitals);
+		//models.add(hospitals);
 		//models.add(warehouses);
-		//models.add(random);
+		models.add(random);
 		//models.add(randomLoose);
-		models.add(randomTight);
-		models.add(gasBoilerSystem);
-		/*models.add(audioControlSystem);
+		//models.add(randomTight);
+		/*models.add(gasBoilerSystem);
+		models.add(audioControlSystem);
 		models.add(ajStats);
 		models.add(tankWar);
 		models.add(PKJab);
@@ -407,12 +421,17 @@ public class Main {
 		mmFiles.add(mmRandomTight);
 		mmFiles.add(mmGasBoiler);
 		
-		printStats(randomLoose);
-		//testTuples(hospitals);
+		//printStats(audioControlSystem);
+		//testTuples(ajStats);
+		//writeSubModel("notepad");
 		
 		//AlgoUtil.useTreshold(true);
 		
-		//GameSolutionParser parser = new GameSolutionParser(Main.home + "models/GasBoiler.txt", gasModels);
+		//ArrayList<Model> testModels = new ArrayList<Model>(Model.readModelsFile(random).subList(0, 10));
+	
+		//ArrayList<Model> testModels = Model.readModelsFile(audioControlSystem);
+		//GameSolutionParser parser = new GameSolutionParser(Main.home + "models/MMsolutions/audio_buckets.txt", testModels);
+		//parser.solutionCalculator();
 		//parser.createNewGame(Main.home + "models/newHopsitals.txt");
 	
 		//String[] solvers =  {"NwM", "HSim", "MM"};
@@ -420,25 +439,30 @@ public class Main {
 		//ExperimentsRunner.runConcurrentExperiment(models, results, 3, 50, 10, 84);
 		//ExperimentsRunner.runSeedExperiment(models, results, 3,  50, 10);
 		
-		//OptimalSolutionSolver oss = new OptimalSolutionSolver();
+		//ArrayList<Model> audio = Model.readModelsFile(audioControlSystem);
+		//OptimalSolutionSolver oss = new OptimalSolutionSolver(audio);
 		//oss.calcOptimalScore(audioControlSystem);
 		//oss.calcOptimalScore(toyChat);
 		
 		//UMLParser.createFeatureLists("MobileMedia8", true, 8);
 		//UMLParser.UMLtoCSV("MobileMedia8", 8);
 		
-		//ArrayList<Model> testModels = Model.readModelsFile(mobileMedia8);
-		//String gameFilePath = home + "models/MMsolutions/Hospital.txt";
-		//SolverDifference.testRMMandNwMDiff(testModels, false);
+		//for (String caseStudy: models){
+		//String caseStudy = ajStats;
+		//ArrayList<Model> testModels = Model.readModelsFile(caseStudy);
+		//String gameFilePath = home + "models/MMsolutions/audio_buckets.txt";
+		//String nwmFilePath = home + "models/NwMsolutions/" + caseStudy.substring(caseStudy.lastIndexOf("/"));
+		//SolverDifference.testRMMandNwMDiff(testModels, nwmFilePath, true);
+		//}
+		
 		//testTuples(testModels);
 		
 		//writeSubModel("BerkeleyDB");
-		
-		//singleBatchRun(hospitals, resultsHospitals, -1, true);
-		//singleBatchRun(warehouses, resultsWarehouses, -1, true);	
-		//singleBatchRun(random, resultsRandom, 10, true);	
-		//singleBatchRun(randomLoose, resultsRandomLoose, 10, true);	
-		//singleBatchRun(randomTight, resultsRandomTight, 10, true);
+		singleBatchRun(hospitals, resultsHospitals, -1, true);
+		singleBatchRun(warehouses, resultsWarehouses, -1, true);	
+		singleBatchRun(random, resultsRandom, 10, true);	
+		singleBatchRun(randomLoose, resultsRandomLoose, 10, true);	
+		singleBatchRun(randomTight, resultsRandomTight, 10, true);
 		//multipleBatchRun(random, resultsRandom, 10);	
 		//multipleBatchRun(randomLoose, resultsRandomLoose, 10);	
 		//multipleBatchRun(randomTight, resultsRandomTight, 10);
@@ -461,6 +485,7 @@ public class Main {
 		//singleBatchRun(tankWar, resultsTankWar, -1, true);
 		//singleBatchRun(PKJab, resultsPKJab, -1, true);
 		//singleBatchRun(chatSystem, resultsChatSystem, -1, true);
+		//singleBatchRun(notepad, resultsNotepad, -1, true);
 		//singleBatchRun(notepad, resultsNotepad, -1, true);
 		//singleBatchRun(mobileMedia, resultsMobileMedia, -1, true);
 		//singleBatchRun(vod1, resultsVod1, -1, true);

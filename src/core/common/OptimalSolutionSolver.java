@@ -2,7 +2,9 @@ package core.common;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -15,6 +17,11 @@ import core.domain.Tuple;
 
 public class OptimalSolutionSolver {
 	final static int THREAD_MAX = 20;
+	private ArrayList<Model> models;
+	
+	public OptimalSolutionSolver(ArrayList<Model> models){
+		this.models = models;
+	}
 	
 	class TupleGenerator implements Callable<ArrayList<Tuple>>{  
 		private ArrayList<Model> models;
@@ -97,7 +104,7 @@ public class OptimalSolutionSolver {
 			return allTuples;
 		}
 	}
-	
+
 	class SolutionGenerator implements Callable<ArrayList<ArrayList<Tuple>>>{
 		private ArrayList<Tuple> currSolution;
 		private ArrayList<Tuple> allTuples;
@@ -161,21 +168,20 @@ public class OptimalSolutionSolver {
 		}
 	}
 	
+	
+	
 	public ArrayList<Tuple> calcOptimalScore(String modelsFile){
 		long startTime = System.currentTimeMillis();
 		ArrayList<Model> models = Model.readModelsFile(modelsFile);
-		/*System.out.println(models.size());
 		ArrayList<Model> subModels = new ArrayList<Model>();
 		subModels.addAll(models.subList(0, 8));
 		models = subModels;
-		System.out.println(models.size());*/
-		TupleGenerator tupGenerator = new TupleGenerator(models, new Tuple(), 0, null, THREAD_MAX);
-		ArrayList<Tuple> allTuples = tupGenerator.call();
+		TupleGenerator tupGen = new TupleGenerator(models, new Tuple(), 0, null, THREAD_MAX);
+		ArrayList<Tuple> allTuples = tupGen.call();
 		long endTime = System.currentTimeMillis();
 		long execTime = endTime - startTime;
 		System.out.println(allTuples.size() + " time:" + execTime / (1000));
-		ArrayList<Tuple> bestSolution = new ArrayList<Tuple>();
-		/*SolutionGenerator solnGenerator = new SolutionGenerator(new ArrayList<Tuple>(), allTuples, THREAD_MAX);
+		SolutionGenerator solnGenerator = new SolutionGenerator(new ArrayList<Tuple>(), allTuples, THREAD_MAX);
 		ArrayList<ArrayList<Tuple>> allSolutions = solnGenerator.call();
 		ArrayList<Tuple> bestSolution = new ArrayList<Tuple>();
 		BigDecimal currMax = BigDecimal.ZERO;
@@ -188,7 +194,7 @@ public class OptimalSolutionSolver {
 				}
 			}
 		}
-		System.out.println(bestSolution);*/
+		System.out.println(bestSolution);
 		return bestSolution;
 	}
 	private static boolean isValidSolution(ArrayList<Tuple> solution, ArrayList<Model> models){

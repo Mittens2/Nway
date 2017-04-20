@@ -19,7 +19,6 @@ public class Tuple {
 	private ArrayList<Element> realElements = null;
 	private int numberOfModels = -1;
 	private long scaledWeight;
-	
 	private ArrayList<Element> sortedElems = null;
 	private BigDecimal weight = BigDecimal.ZERO;
 	private int id;

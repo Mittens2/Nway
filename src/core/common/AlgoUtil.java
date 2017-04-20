@@ -386,7 +386,7 @@ public class AlgoUtil {
 	}
 	
 	public static double calcPercentCorrect(Collection<Tuple> c){
-		Set<String> correct = new HashSet<String>();
+		/*Set<String> correct = new HashSet<String>();
 		Set<String> incorrect = new HashSet<String>();
 		for (Iterator<Tuple> iterator = c.iterator(); iterator.hasNext();){
 			Tuple t = (Tuple) iterator.next();
@@ -411,7 +411,47 @@ public class AlgoUtil {
 				}
 			}
 		}
-		return ((double) correct.size()) / (correct.size() + incorrect.size());
+		return ((double) correct.size()) / (correct.size() + incorrect.size());*/
+		Map<String, Double[]> ratios = new HashMap<String, Double[]>();
+		for (Iterator<Tuple> iterator = c.iterator(); iterator.hasNext();){
+			Tuple t = (Tuple) iterator.next();
+			Map<String, Integer> labels = new HashMap<String, Integer>();
+			for (Element e :t.getElements()){
+				String label = e.getLabel();
+				if (labels.containsKey(label)) labels.put(label, labels.get(label));
+				else labels.put(label, 1);
+			}
+			int size = t.getSize();
+			/*if (size == 1){
+				String label = labels.keySet().iterator().next();
+				if (ratios.containsKey(label)){
+					Double[] value = ratios.get(label);
+					value[1]++;
+					ratios.put(label, value);
+				}
+				else{
+					Double[] value = {0., 1.};
+					ratios.put(label, value);
+				}
+			}*/
+			for (String label: labels.keySet()){
+				if (ratios.containsKey(label)){
+					Double[] value = ratios.get(label);
+					value[0] += labels.get(label) / size;
+					value[1]++;
+					ratios.put(label, value);
+				}
+				else{
+					Double[] value = {((double) labels.get(label)) / size, 1.};
+					ratios.put(label, value);
+				}	
+			}
+		}
+		double score = 0;
+		for (String key: ratios.keySet()){
+			score += ratios.get(key)[0] / ratios.get(key)[1];
+		}
+		return score;
 	}
 	
 	public static ArrayList<Double> calcQualityMetrics(Collection<Tuple> c){

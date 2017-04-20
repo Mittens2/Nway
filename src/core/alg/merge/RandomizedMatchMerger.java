@@ -33,7 +33,7 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 	protected ArrayList<Element> allElements;
 	private RunResult res;
 	private MergeDescriptor md;
-	private int timeout = (60 * 1000) * 60; // Default is 5 minutes.
+	private int timeout = (60 * 1000) * 5; // Default is 5 minutes.
 
 	public RandomizedMatchMerger(ArrayList<Model> models, MergeDescriptor md){
 		super(models);

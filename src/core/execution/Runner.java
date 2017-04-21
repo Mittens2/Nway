@@ -277,7 +277,7 @@ public class Runner extends ResultsWriter{
 		}
 		prevSolution = loadTuplesFromFile(file);
 		System.out.println("NwM alone: " + AlgoUtil.calcGroupWeight(prevSolution));
-		AlgoUtil.printTuples(prevSolution);
+		//AlgoUtil.printTuples(prevSolution);
 		for(MergeDescriptor md:mds){
 			for (Tuple t: prevSolution){
 				for (Element e: t.getElements()){
@@ -337,7 +337,7 @@ public class Runner extends ResultsWriter{
 		//System.out.println(models.size());
 		rr.setTitle(AlgoUtil.nameOfMergeDescription(md, -1));
 		System.out.println(rr);
-		AlgoUtil.printTuples(rmm.getTuplesInMatch());
+		//AlgoUtil.printTuples(rmm.getTuplesInMatch());
 		return rr;
 	}
 	
@@ -370,7 +370,7 @@ public class Runner extends ResultsWriter{
 		if (pol == N_WAY.ALG_POLICY.RANDOM){
 			//boolean randomize = false;
 			for (int highlight = 3; highlight < 4; highlight++){
-				for (int choose = 1; choose < 2; choose++){
+				for (int choose = 1; choose < 3; choose++){
 					for (int reshuffle = 2; reshuffle < 3; reshuffle++){
 						boolean switchTuples = true;
 						boolean switchModels = false;

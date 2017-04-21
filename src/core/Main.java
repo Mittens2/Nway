@@ -205,7 +205,7 @@ public class Main {
 				}
 			}
 		}
-		System.out.println(name + ": " + "max:" + max + ", min:" + min + ", avg:" + 
+		System.out.println(name + ": " + "elements: " + totes + ", max:" + max + ", min:" + min + ", avg:" +  
 		(totes / models.size()) + ", possible tuples:" + possibs + ", possible solutions:" + possibs * (possibs - incompat)
 				+ ", props:" + props.size());
 		//System.out.println(name + ": " + props.size());
@@ -421,7 +421,7 @@ public class Main {
 		mmFiles.add(mmRandomTight);
 		mmFiles.add(mmGasBoiler);
 		
-		//printStats(audioControlSystem);
+		printStats(hospitals);
 		//testTuples(ajStats);
 		//writeSubModel("notepad");
 		
@@ -459,10 +459,10 @@ public class Main {
 		
 		//writeSubModel("BerkeleyDB");
 		singleBatchRun(hospitals, resultsHospitals, -1, true);
-		singleBatchRun(warehouses, resultsWarehouses, -1, true);	
-		singleBatchRun(random, resultsRandom, 10, true);	
-		singleBatchRun(randomLoose, resultsRandomLoose, 10, true);	
-		singleBatchRun(randomTight, resultsRandomTight, 10, true);
+		//singleBatchRun(warehouses, resultsWarehouses, -1, true);	
+		//singleBatchRun(random, resultsRandom, 10, true);	
+		//singleBatchRun(randomLoose, resultsRandomLoose, 10, true);	
+		//singleBatchRun(randomTight, resultsRandomTight, 10, true);
 		//multipleBatchRun(random, resultsRandom, 10);	
 		//multipleBatchRun(randomLoose, resultsRandomLoose, 10);	
 		//multipleBatchRun(randomTight, resultsRandomTight, 10);

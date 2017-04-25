@@ -122,7 +122,6 @@ public class HumanSimulator {
 				currIncrease = currIncrease.add(currTuple.getWeight().add(oldTuple.getWeight()).
 						subtract(oldWeight));
 				if (currIncrease.compareTo(maxIncrease) > 0){
-					//System.out.println(currIncrease);
 					bestTupleElements.addAll(currTuple.getElements());
 					bestSolution = rmm.new TupleTable(currSolution.size());
 					for (Tuple t: currSolution.getValues()){

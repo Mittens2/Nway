@@ -36,7 +36,6 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 	private MergeDescriptor md;
 	private long startTime;
 	private HumanSimulator hsim;
-	private int iterations;
 	boolean noImprove;
 
 	public RandomizedMatchMerger(ArrayList<Model> models, MergeDescriptor md){
@@ -47,7 +46,6 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 		usedSeeds = new ArrayList<Element>();
 		this.md = md;
 		hsim = new HumanSimulator(models, md.choose, md.switchBuckets, this);
-		iterations = 0;
 		noImprove = true;
 	}
 	
@@ -85,10 +83,7 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 		}
 		if (seeds.size() == 0){
 			if (noImprove)
-				iterations++;
-			if (iterations == 1){
 				return null;
-			}
 			noImprove = true;
 			usedSeeds = new ArrayList<Element>();
 			seeds = joinAllModels();
@@ -135,18 +130,21 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 	private ArrayList<Element> joinAllModels(){
 		ArrayList<Element> elems = new ArrayList<Element>();
 		ArrayList<Tuple> currTuples = solutionTable.getValues();
+		// Random
 		if (md.seed == 0){
 			Collections.shuffle(currTuples, new Random(System.nanoTime()));
 			for (Tuple t: currTuples){
 				elems.addAll(t.getElements());
 			}
 		}
+		// Size/Weight
 		else if (md.seed < 3){
 			Collections.sort(currTuples, new TupleComparator(md.asc, md.seed == 1));
 			for (Tuple t: currTuples){
 				elems.addAll(t.getElements());
 			}
 		}
+		// By Bar
 		else{
 			generateBars(currTuples);
 			elems.addAll(allElements);

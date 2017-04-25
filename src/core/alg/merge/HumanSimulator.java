@@ -22,7 +22,7 @@ public class HumanSimulator {
 	private boolean switchBuckets;
 	private Strategy strategy;
 	private RandomizedMatchMerger rmm;
-	private int timeout = (60 * 1000) * 5;
+	private int timeout = 3000;
 	
 	public HumanSimulator(ArrayList<Model> models, int strategy, boolean switchBuckets, RandomizedMatchMerger rmm){
 		this.models = models;
@@ -41,112 +41,104 @@ public class HumanSimulator {
 	
 	public void play(){
 		long startTime = System.currentTimeMillis();
-		while (System.currentTimeMillis() - startTime < timeout){
-			if (!rmm.game())
-				break;
+		Element seed = rmm.getSeed(false);
+		while (seed != null && System.currentTimeMillis() - startTime < timeout){
+			ArrayList<Element> elems = new ArrayList<Element>(rmm.allElements);
+			TupleTable currSolution = rmm.new TupleTable(rmm.solutionTable.size());
+			for (Tuple t: rmm.solutionTable.getValues()){
+				currSolution.add(t);
+			}
+			BigDecimal maxIncrease = new BigDecimal(0.00002, N_WAY.MATH_CTX);
+			BigDecimal currIncrease = BigDecimal.ZERO;
+			Tuple containingTup = seed.getContainingTuple();
+			currSolution.remove(containingTup);
+			if (containingTup.getSize() > 1){
+				currIncrease = currIncrease.subtract(containingTup.getWeight());
+				containingTup = containingTup.lessExpanded(seed, models);
+				for (Element e: containingTup.getElements()){
+					e.setContainingTuple(containingTup);
+				}
+				currSolution.add(containingTup);
+				currIncrease = currIncrease.add(containingTup.getWeight());
+			}
+			Tuple currTuple = new Tuple().newExpanded(seed, models);
+			seed.setContainingTuple(currTuple);
+			TupleTable bestSolution = null;
+			ArrayList<Element> bestTupleElements = new ArrayList<Element>();
+			ArrayList<Element> incompatible = new ArrayList<Element>();
+			ArrayList<ArrayList<Element>> partition = new ArrayList<ArrayList<Element>>();
+			while(true){
+				if (!switchBuckets || currTuple.getSize() == 1){
+					elems = AlgoUtil.removeElementsSameModelId(seed, elems);
+					incompatible = AlgoUtil.removeElementsSameModelId(seed, incompatible);
+				}
+				partition = rmm.highlightElements(seed, elems, incompatible, currTuple);
+				elems = partition.get(0);
+				incompatible = partition.get(1);
+				rmm.keepValidElements(elems, incompatible, currTuple);
+				seed = chooseElement(elems, currTuple);
+				if (seed == null){
+					break;
+				}
+				// Switches element with same model out.
+				Tuple oldTuple = seed.getContainingTuple();
+				currSolution.remove(oldTuple);
+				BigDecimal oldWeight = currTuple.getWeight().add(oldTuple.getWeight());
+				if (switchBuckets){
+					int commonModel = AlgoUtil.commonModel(seed, currTuple);
+					if (commonModel != -1){
+						Element replaced = currTuple.getElements().get(commonModel);
+						currTuple = currTuple.lessExpanded(replaced, models);
+						int priorId = (replaced.resetContainingTupleId());
+						if (priorId < 0 || currSolution.getTuple(priorId) == null){
+							Tuple self = new Tuple();
+							self.addElement(replaced);
+							replaced.setContainingTuple(self);
+							currSolution.add(self);
+						}
+						else{
+							Tuple prior = currSolution.getTuple(priorId);
+							currSolution.remove(prior);
+							prior = prior.newExpanded(replaced, models);
+							for (Element e: prior.getElements()){
+								e.setContainingTuple(prior);
+							}
+							currSolution.add(prior);
+						}
+					}
+				}
+				currTuple = currTuple.newExpanded(seed, models);
+				for (Element e: currTuple.getElements()){
+					e.setContainingTuple(currTuple);
+				}
+				// Update tuples of new elements.
+				if (oldTuple.getSize() > 1){
+					oldTuple = oldTuple.lessExpanded(seed, models);
+					for (Element e: oldTuple.getElements()){
+						e.setContainingTuple(oldTuple);
+					}
+					currSolution.add(oldTuple);
+				}
+				currIncrease = currIncrease.add(currTuple.getWeight().add(oldTuple.getWeight()).
+						subtract(oldWeight));
+				if (currIncrease.compareTo(maxIncrease) > 0){
+					//System.out.println(currIncrease);
+					bestTupleElements.addAll(currTuple.getElements());
+					bestSolution = rmm.new TupleTable(currSolution.size());
+					for (Tuple t: currSolution.getValues()){
+						bestSolution.add(t);
+					}
+					bestSolution.add(currTuple);
+					maxIncrease = currIncrease;
+				}
+			}
+			if (bestSolution != null){
+				rmm.updateSolution(bestSolution);
+			}
+			rmm.resetContainingTuples();
+			seed = rmm.getSeed(bestSolution != null);
 		}
 		rmm.end();
-	}
-	
-	public boolean strategy(ArrayList<Element> elems, Element seed, TupleTable oldSolution){
-		TupleTable currSolution = rmm.new TupleTable(oldSolution.size());
-		for (Tuple t: oldSolution.getValues()){
-			currSolution.add(t);
-		}
-		BigDecimal maxIncrease = new BigDecimal(0.00002, N_WAY.MATH_CTX);
-		BigDecimal currIncrease = BigDecimal.ZERO;
-		Tuple containingTup = seed.getContainingTuple();
-		currSolution.remove(containingTup);
-		if (containingTup.getSize() > 1){
-			currIncrease = currIncrease.subtract(containingTup.getWeight());
-			containingTup = containingTup.lessExpanded(seed, models);
-			for (Element e: containingTup.getElements()){
-				e.setContainingTuple(containingTup);
-			}
-			currSolution.add(containingTup);
-			currIncrease = currIncrease.add(containingTup.getWeight());
-		}
-		Tuple currTuple = new Tuple().newExpanded(seed, models);
-		seed.setContainingTuple(currTuple);
-		TupleTable bestSolution = null;
-		ArrayList<Element> bestTupleElements = new ArrayList<Element>();
-		ArrayList<Element> incompatible = new ArrayList<Element>();
-		ArrayList<ArrayList<Element>> partition = new ArrayList<ArrayList<Element>>();
-		while(true){
-			if (!switchBuckets || currTuple.getSize() == 1){
-				elems = AlgoUtil.removeElementsSameModelId(seed, elems);
-				incompatible = AlgoUtil.removeElementsSameModelId(seed, incompatible);
-			}
-			partition = rmm.highlightElements(seed, elems, incompatible, currTuple);
-			elems = partition.get(0);
-			incompatible = partition.get(1);
-			rmm.keepValidElements(elems, incompatible, currTuple);
-			seed = chooseElement(elems, currTuple);
-			if (seed == null){
-				break;
-			}
-			// Switches element with same model out.
-			Tuple oldTuple = seed.getContainingTuple();
-			currSolution.remove(oldTuple);
-			BigDecimal oldWeight = currTuple.getWeight().add(oldTuple.getWeight());
-			if (switchBuckets){
-				int commonModel = AlgoUtil.commonModel(seed, currTuple);
-				if (commonModel != -1){
-					Element replaced = currTuple.getElements().get(commonModel);
-					currTuple = currTuple.lessExpanded(replaced, models);
-					int priorId = (replaced.resetContainingTupleId());
-					if (priorId < 0 || currSolution.getTuple(priorId) == null){
-						Tuple self = new Tuple();
-						self.addElement(replaced);
-						replaced.setContainingTuple(self);
-						currSolution.add(self);
-					}
-					else{
-						Tuple prior = currSolution.getTuple(priorId);
-						currSolution.remove(prior);
-						prior = prior.newExpanded(replaced, models);
-						for (Element e: prior.getElements()){
-							e.setContainingTuple(prior);
-						}
-						currSolution.add(prior);
-					}
-				}
-			}
-			currTuple = currTuple.newExpanded(seed, models);
-			for (Element e: currTuple.getElements()){
-				e.setContainingTuple(currTuple);
-			}
-			// Update tuples of new elements.
-			if (oldTuple.getSize() > 1){
-				oldTuple = oldTuple.lessExpanded(seed, models);
-				for (Element e: oldTuple.getElements()){
-					e.setContainingTuple(oldTuple);
-				}
-				currSolution.add(oldTuple);
-			}
-			currIncrease = currIncrease.add(currTuple.getWeight().add(oldTuple.getWeight()).
-					subtract(oldWeight));
-			if (currIncrease.compareTo(maxIncrease) > 0){
-				//System.out.println(currIncrease);
-				bestTupleElements.addAll(currTuple.getElements());
-				bestSolution = rmm.new TupleTable(currSolution.size());
-				for (Tuple t: currSolution.getValues()){
-					bestSolution.add(t);
-				}
-				bestSolution.add(currTuple);
-				maxIncrease = currIncrease;
-			}
-		}
-		if (bestSolution != null){
-			rmm.updateSolution(bestSolution);
-//			solutionTable = bestSolution;
-			rmm.resetContainingTuples();
-			return true;
-		}
-		else{
-			rmm.resetContainingTuples();
-			return false;
-		}
 	}
 	private Element chooseElement(ArrayList<Element> elems, Tuple best){
 		if (elems.size() == 0){

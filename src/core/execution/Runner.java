@@ -369,7 +369,7 @@ public class Runner extends ResultsWriter{
 		ArrayList<MergeDescriptor> retVal = new ArrayList<MergeDescriptor>();
 		if (pol == N_WAY.ALG_POLICY.RANDOM){
 			//boolean randomize = false;
-			for (int highlight = 3; highlight < 4; highlight++){
+			for (int highlight = 2; highlight < 3; highlight++){
 				for (int choose = 1; choose < 2; choose++){
 					for (int reshuffle = 2; reshuffle < 3; reshuffle++){
 						boolean switchTuples = true;

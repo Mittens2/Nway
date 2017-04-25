@@ -34,10 +34,10 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 	protected ArrayList<Element> usedSeeds;
 	private RunResult res;
 	private MergeDescriptor md;
-	boolean improved = false;
 	private long startTime;
 	private HumanSimulator hsim;
-	private int settle;
+	private int iterations;
+	boolean noImprove;
 
 	public RandomizedMatchMerger(ArrayList<Model> models, MergeDescriptor md){
 		super(models);
@@ -47,13 +47,12 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 		usedSeeds = new ArrayList<Element>();
 		this.md = md;
 		hsim = new HumanSimulator(models, md.choose, md.switchBuckets, this);
-		settle = 0;
-		improved = false;
+		iterations = 0;
+		noImprove = true;
 	}
 	
 	public void improveSolution(ArrayList<Tuple> prevSolution){
-		if (startTime == 0)
-			startTime = System.currentTimeMillis();
+		startTime = System.currentTimeMillis();
 		for (Model m: models){
 			allElements.addAll(m.getElements());
 		}
@@ -61,48 +60,42 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 		for (Tuple t: prevSolution){
 			solutionTable.add(t);
 		}
-		solution.addAll(prevSolution);
 		for (Element e: allElements){
 			if (e.getContainingTuple().getSize() == 1){
 				solutionTable.add(e.getContainingTuple());
-				solution.add(e.getContainingTuple());
 			}
 		}
 		seeds = joinAllModels();
 		hsim.play();
 	}
 	
-	public boolean game(){
+	public Element getSeed(boolean improved){
 		//double gapSeeds = 0;
 		//int iterations = 0;
 		//int seedsUsed = 0;
 		//double firstChangeSum = 0;
 		//int numGaps = 0;
 		if (md.reshuffle > 0 && improved){
-			solution = solutionTable.getValues();
+			noImprove = false;
 			seeds = joinAllModels();
 			if (md.reshuffle == 2){
 				for (Element e: usedSeeds)
 					seeds.remove(e);
 			}
-			else{
-				improved = false;
-			}
-			usedSeeds = new ArrayList<Element>();
 		}
 		if (seeds.size() == 0){
-			settle++;
-			if (settle > 1){
-				return false;
+			if (noImprove)
+				iterations++;
+			if (iterations == 1){
+				return null;
 			}
-			solution = solutionTable.getValues();
+			noImprove = true;
 			usedSeeds = new ArrayList<Element>();
 			seeds = joinAllModels();
 		}
 		Element picked = seeds.remove(0);
 		usedSeeds.add(picked);
-		improved = hsim.strategy(new ArrayList<Element>(allElements), picked, solutionTable);
-		return true;
+		return picked;
 	}
 	
 	public void end(){
@@ -141,20 +134,21 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 	
 	private ArrayList<Element> joinAllModels(){
 		ArrayList<Element> elems = new ArrayList<Element>();
+		ArrayList<Tuple> currTuples = solutionTable.getValues();
 		if (md.seed == 0){
-			Collections.shuffle(solution, new Random(System.nanoTime()));
-			for (Tuple t: solution){
+			Collections.shuffle(currTuples, new Random(System.nanoTime()));
+			for (Tuple t: currTuples){
 				elems.addAll(t.getElements());
 			}
 		}
 		else if (md.seed < 3){
-			Collections.sort(solution, new TupleComparator(md.asc, md.seed == 1));
-			for (Tuple t: solution){
+			Collections.sort(currTuples, new TupleComparator(md.asc, md.seed == 1));
+			for (Tuple t: currTuples){
 				elems.addAll(t.getElements());
 			}
 		}
 		else{
-			generateBars(solution);
+			generateBars(currTuples);
 			elems.addAll(allElements);
 			Collections.sort(elems, new ElementComparator(md.asc, true));
 		}
@@ -350,17 +344,21 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 	
 	public ArrayList<ArrayList<Element>> highlightElements(Element picked, ArrayList<Element> elems, 
 			ArrayList<Element> incompatible, Tuple current){
+		// One with all
 		if (md.highlight == 0){
 			return AlgoUtil.partitionShared(picked, elems, 1);
 		}
+		// One with one
 		else if (md.highlight == 1){
 			elems.addAll(incompatible);
 			return AlgoUtil.getElementsWithSharedProperties(current, elems, 1);
 		}
+		// Tuple.size with tuple
 		else if (md.highlight == 2){
 			elems.addAll(incompatible);
 			return AlgoUtil.getElementsWithSharedProperties(current, elems, current.getSize());
 		}
+		// No highlight
 		else{
 			ArrayList<ArrayList<Element>> partition = new ArrayList<ArrayList<Element>>();
 			partition.add(elems);
@@ -370,7 +368,7 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 	}
 	
 	public void updateSolution(TupleTable newSolution){
-		solutionTable = newSolution;
+		solutionTable = (TupleTable) newSolution;
 	}
 	
 	@Override

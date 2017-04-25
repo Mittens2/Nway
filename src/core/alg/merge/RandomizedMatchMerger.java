@@ -29,28 +29,34 @@ import core.execution.RunResult;
 public class RandomizedMatchMerger extends Merger implements Matchable {
 	protected ArrayList<Tuple> solution;
 	protected TupleTable solutionTable;
-	protected ArrayList<Element> unusedElements;
+	protected ArrayList<Element> seeds;
 	protected ArrayList<Element> allElements;
+	protected ArrayList<Element> usedSeeds;
 	private RunResult res;
 	private MergeDescriptor md;
-	private int timeout = (60 * 1000) * 5; // Default is 5 minutes.
+	boolean improved = false;
+	private long startTime;
+	private HumanSimulator hsim;
+	private int settle;
 
 	public RandomizedMatchMerger(ArrayList<Model> models, MergeDescriptor md){
 		super(models);
 		solution = new ArrayList<Tuple>();
 		allElements = new ArrayList<Element>();
-		unusedElements = new ArrayList<Element>();
+		seeds = new ArrayList<Element>();
+		usedSeeds = new ArrayList<Element>();
 		this.md = md;
+		hsim = new HumanSimulator(models, md.choose, md.switchBuckets, this);
+		settle = 0;
+		improved = false;
 	}
 	
 	public void improveSolution(ArrayList<Tuple> prevSolution){
-		long startTime = System.currentTimeMillis();
+		if (startTime == 0)
+			startTime = System.currentTimeMillis();
 		for (Model m: models){
 			allElements.addAll(m.getElements());
 		}
-//		for (Tuple t: prevSolution){
-//			allElements.addAll(t.getElements());
-//		}
 		solutionTable = new TupleTable(allElements.size());
 		for (Tuple t: prevSolution){
 			solutionTable.add(t);
@@ -62,12 +68,66 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 				solution.add(e.getContainingTuple());
 			}
 		}
-		System.out.println(solutionTable.size());
-		try {
-			execute(startTime);
-		} catch (InvalidSolutionException e1) {
-			e1.printStackTrace();
+		seeds = joinAllModels();
+		hsim.play();
+	}
+	
+	public boolean game(){
+		//double gapSeeds = 0;
+		//int iterations = 0;
+		//int seedsUsed = 0;
+		//double firstChangeSum = 0;
+		//int numGaps = 0;
+		if (md.reshuffle > 0 && improved){
+			solution = solutionTable.getValues();
+			seeds = joinAllModels();
+			if (md.reshuffle == 2){
+				for (Element e: usedSeeds)
+					seeds.remove(e);
+			}
+			else{
+				improved = false;
+			}
+			usedSeeds = new ArrayList<Element>();
 		}
+		if (seeds.size() == 0){
+			settle++;
+			if (settle > 1){
+				return false;
+			}
+			solution = solutionTable.getValues();
+			usedSeeds = new ArrayList<Element>();
+			seeds = joinAllModels();
+		}
+		Element picked = seeds.remove(0);
+		usedSeeds.add(picked);
+		improved = hsim.strategy(new ArrayList<Element>(allElements), picked, solutionTable);
+		return true;
+	}
+	
+	public void end(){
+		solution = solutionTable.getValues();
+		try {
+			duplicateElements();
+		}catch (InvalidSolutionException e){
+			e.printStackTrace();
+		}
+		BigDecimal weight = AlgoUtil.calcGroupWeight(solution);
+		long endTime = System.currentTimeMillis();
+		long execTime = endTime - startTime;
+		BigDecimal avgTupleWeight = weight.divide(new BigDecimal(solution.size()), N_WAY.MATH_CTX);
+		res = new RunResult(execTime, weight, avgTupleWeight, solution);
+		/*res.addIterations(iterations);
+		if (iterations == 1){
+			res.addFirstChangeAvg(0);
+			res.addGapAvg(0);
+		}
+		else{
+			res.addFirstChangeAvg(firstChangeSum / (iterations - 1));
+			res.addGapAvg(gapSeeds / numGaps);
+		}*/
+		//res.addSeedsUsed(seedsUsed);
+		res.setTitle("Randomized");
 		clear();
 	}
 	
@@ -152,88 +212,19 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 		}
 	}
 	
-	public boolean duplicateElements(){
+	public void duplicateElements() throws InvalidSolutionException{
 		ArrayList<Element> usedElements = new ArrayList<Element>();
 		for (Tuple t: solutionTable.getValues()){
 			for (Element e: t.getElements()){
 				if (usedElements.contains(e)){
-					System.out.println("detected duplicate element:" + e);
-					return true;
+					//System.out.println("detected duplicate element:" + e);
+					throw new InvalidSolutionException("found duplicate element:" + e);
 				}
 				usedElements.add(e);
 			}
 		}
-		return false;
 	}
 	
-	private void execute(long startTime) throws InvalidSolutionException{
-		/**
-		 * Executes an instance of the randomized merge algorithm (DumbHuman).
-		 * 
-		 * @return The list of Tuples derived from performing randomized merge on given models.
-		 */
-		double gapSeeds = 0;
-		int iterations = 0;
-		int seedsUsed = 0;
-		double firstChangeSum = 0;
-		int numGaps = 0;
-	    boolean changed = true;
-	    HumanSimulator hsim = new HumanSimulator(models, md.choose, md.switchBuckets, this);
-		while(changed){
-			ArrayList<Element> toRemoveElems = new ArrayList<Element>();
-			iterations++;
-			changed = false;
-			unusedElements = joinAllModels();
-			while (System.currentTimeMillis() - startTime < timeout && unusedElements.size() > 0){
-				Element picked = unusedElements.remove(0);
-				toRemoveElems.add(picked);
-				seedsUsed++;
-				//if (buildNewTuple(new ArrayList<Element>(allElements), picked)){
-				if (hsim.play(new ArrayList<Element>(allElements), picked, (TupleTable) solutionTable.clone())){
-					if (!changed){
-						changed = true;
-						firstChangeSum += toRemoveElems.size();
-					}
-					gapSeeds = seedsUsed;
-					numGaps++;
-					if (md.reshuffle > 0){
-						solution = solutionTable.getValues();
-						unusedElements = joinAllModels();
-						if (md.reshuffle == 2){
-							for (Element e: toRemoveElems)
-								unusedElements.remove(e);
-						}
-						else{
-							changed = false;
-							iterations++;
-						}
-					}
-					toRemoveElems = new ArrayList<Element>();
-				}
-			}
-			solution = solutionTable.getValues();
-		}
-		//System.out.println("iterations:" + iterations);
-		if (duplicateElements()){
-			throw new InvalidSolutionException("found duplicate elements!");
-		}
-		BigDecimal weight = AlgoUtil.calcGroupWeight(solution);
-		long endTime = System.currentTimeMillis();
-		long execTime = endTime - startTime;
-		BigDecimal avgTupleWeight = weight.divide(new BigDecimal(solution.size()), N_WAY.MATH_CTX);
-		res = new RunResult(execTime, weight, avgTupleWeight, solution);
-		res.addIterations(iterations);
-		if (iterations == 1){
-			res.addFirstChangeAvg(0);
-			res.addGapAvg(0);
-		}
-		else{
-			res.addFirstChangeAvg(firstChangeSum / (iterations - 1));
-			res.addGapAvg(gapSeeds / numGaps);
-		}
-		res.addSeedsUsed(seedsUsed);
-		res.setTitle("Randomized");
-	}
 	
 	public void keepValidElements(ArrayList<Element> elems, ArrayList<Element> incompatible, Tuple tup){
 		BigDecimal weight = tup.getWeight();
@@ -380,10 +371,6 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 	
 	public void updateSolution(TupleTable newSolution){
 		solutionTable = newSolution;
-	}
-	
-	public void setTimeout(int timeout){
-		this.timeout = timeout;
 	}
 	
 	@Override

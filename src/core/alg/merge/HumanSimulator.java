@@ -22,6 +22,7 @@ public class HumanSimulator {
 	private boolean switchBuckets;
 	private Strategy strategy;
 	private RandomizedMatchMerger rmm;
+	private int timeout = (60 * 1000) * 5;
 	
 	public HumanSimulator(ArrayList<Model> models, int strategy, boolean switchBuckets, RandomizedMatchMerger rmm){
 		this.models = models;
@@ -38,7 +39,16 @@ public class HumanSimulator {
 		
 	}
 	
-	public boolean play(ArrayList<Element> elems, Element seed, TupleTable oldSolution){
+	public void play(){
+		long startTime = System.currentTimeMillis();
+		while (System.currentTimeMillis() - startTime < timeout){
+			if (!rmm.game())
+				break;
+		}
+		rmm.end();
+	}
+	
+	public boolean strategy(ArrayList<Element> elems, Element seed, TupleTable oldSolution){
 		TupleTable currSolution = rmm.new TupleTable(oldSolution.size());
 		for (Tuple t: oldSolution.getValues()){
 			currSolution.add(t);

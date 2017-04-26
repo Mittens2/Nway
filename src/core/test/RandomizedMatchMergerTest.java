@@ -49,13 +49,13 @@ public class RandomizedMatchMergerTest {
 		toycase4Models = Model.readModelsFile("models/toycases/toycase4.csv"); 
 		toycase5Models = Model.readModelsFile("models/toycases/toycase5.csv");
 		// md -> models_asc, elem_asc, hl, ch, st, sd.
-		md_hl0_sd2 = new MergeDescriptor(false, false, 0, 0, true, false, 0, 2);
-		md_hl0_sd1d = new MergeDescriptor(false, false, 0, 0, true,false, 0, 1);
-		md_hl1_sd2 = new MergeDescriptor(false, false, 1, 0, true,false, 0, 2);
-		md_hl2_sd2 = new MergeDescriptor(false, false, 2, 0, true,false, 0, 2);
-		md_hl2_sd5d = new MergeDescriptor(false, false, 2, 0, true,false, 0, 5);
-		md_hl3_sd2 = new MergeDescriptor(false, false, 3, 0, true,false, 0, 2);
-		md_hl1_sd2a = new MergeDescriptor(true, true, 1, 1, true, true, 2, 2);
+		md_hl0_sd2 = new MergeDescriptor(false, false, 0, 0, 0, 2);
+		md_hl0_sd1d = new MergeDescriptor(false, false, 0, 0, 0, 1);
+		md_hl1_sd2 = new MergeDescriptor(false, false, 1, 0, 0, 2);
+		md_hl2_sd2 = new MergeDescriptor(false, false, 2, 0, 0, 2);
+		md_hl2_sd5d = new MergeDescriptor(false, false, 2, 0, 0, 5);
+		md_hl3_sd2 = new MergeDescriptor(false, false, 3, 0, 0, 2);
+		md_hl1_sd2a = new MergeDescriptor(true, true, 1, 1, 2, 2);
 	}
 
 	@After

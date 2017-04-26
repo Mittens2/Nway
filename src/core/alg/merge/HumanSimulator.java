@@ -2,6 +2,8 @@ package core.alg.merge;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 import core.alg.merge.RandomizedMatchMerger.TupleTable;
 import core.common.AlgoUtil;
@@ -24,7 +26,7 @@ public class HumanSimulator {
 	private RandomizedMatchMerger rmm;
 	private int timeout = 3000;
 	
-	public HumanSimulator(ArrayList<Model> models, int strategy, boolean switchBuckets, RandomizedMatchMerger rmm){
+	public HumanSimulator(ArrayList<Model> models, int strategy, RandomizedMatchMerger rmm){
 		this.models = models;
 		switch (strategy){
 		case 0: this.strategy = Strategy.LOCAL;
@@ -34,7 +36,7 @@ public class HumanSimulator {
 		case 2: this.strategy = Strategy.BAR;
 			break;
 		}
-		this.switchBuckets = switchBuckets;
+		this.switchBuckets = false;
 		this.rmm = rmm;
 		
 	}
@@ -44,6 +46,7 @@ public class HumanSimulator {
 		Element seed = rmm.getSeed(false);
 		while (seed != null && System.currentTimeMillis() - startTime < timeout){
 			ArrayList<Element> elems = new ArrayList<Element>(rmm.allElements);
+			//Set<Element> elems = new HashSet<Element>(rmm.allElements);
 			TupleTable currSolution = rmm.new TupleTable(rmm.solutionTable.size());
 			for (Tuple t: rmm.solutionTable.getValues()){
 				currSolution.add(t);
@@ -66,7 +69,9 @@ public class HumanSimulator {
 			TupleTable bestSolution = null;
 			ArrayList<Element> bestTupleElements = new ArrayList<Element>();
 			ArrayList<Element> incompatible = new ArrayList<Element>();
+			//Set<Element> incompatible = new HashSet<Element>();
 			ArrayList<ArrayList<Element>> partition = new ArrayList<ArrayList<Element>>();
+			//ArrayList<Set<Element>> partition = new ArrayList<Set<Element>>();
 			while(true){
 				if (!switchBuckets || currTuple.getSize() == 1){
 					elems = AlgoUtil.removeElementsSameModelId(seed, elems);

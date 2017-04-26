@@ -830,10 +830,6 @@ public class AlgoUtil {
 				res= res+"_ch1";
 			else
 				res = res+"_ch2";
-			if (md.switchTuples)
-				res = res+"_st";
-			if (md.switchBuckets)
-				res = res+"_sb";
 			if (md.reshuffle == 0)
 				res = res+"_rs0)";
 			else if (md.reshuffle == 1)

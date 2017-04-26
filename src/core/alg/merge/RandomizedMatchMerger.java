@@ -18,6 +18,7 @@ import core.alg.local.BestFoundLocalSearch;
 import core.alg.local.FirstFoundLocalSearch;
 import core.common.AlgoUtil;
 import core.common.ElementComparator;
+import core.common.ElementComparator.Sort;
 import core.common.ModelComparator;
 import core.common.N_WAY;
 import core.common.TupleComparator;
@@ -45,7 +46,7 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 		seeds = new ArrayList<Element>();
 		usedSeeds = new ArrayList<Element>();
 		this.md = md;
-		hsim = new HumanSimulator(models, md.choose, md.switchBuckets, this);
+		hsim = new HumanSimulator(models, md.choose, this);
 		noImprove = true;
 	}
 	
@@ -148,7 +149,7 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 		else{
 			generateBars(currTuples);
 			elems.addAll(allElements);
-			Collections.sort(elems, new ElementComparator(md.asc, true));
+			Collections.sort(elems, new ElementComparator(md.asc, Sort.BAR, new Tuple(), models));
 		}
 		return elems;
 	}
@@ -357,12 +358,41 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 			return AlgoUtil.getElementsWithSharedProperties(current, elems, current.getSize());
 		}
 		// No highlight
-		else{
+		else if (md.highlight == 3){
 			ArrayList<ArrayList<Element>> partition = new ArrayList<ArrayList<Element>>();
 			partition.add(elems);
 			partition.add(incompatible);
 			return partition;
 		}
+		// Highlight by pairwise
+		else{
+			Set<Tuple> compatible = new HashSet<Tuple>();
+			elems.addAll(incompatible);
+			for (Element e: elems){
+				if (!compatible.contains(e.getContainingTuple())){
+					BigDecimal pw = BigDecimal.ZERO;
+					for (Element e2: e.getContainingTuple().getElements()){
+						Tuple rel = current.newExpanded(e2, models);
+						pw = pw.add(rel.getWeight());
+					}
+					if (pw.compareTo(BigDecimal.ZERO) > 0)
+						compatible.add(e.getContainingTuple());
+				}
+			}
+			ArrayList<Element> comp = new ArrayList<Element>();
+			//System.out.println(compatible.size());
+			for (Tuple t: compatible){
+				for (Element e2: t.getElements()){
+					comp.add(e2);
+					elems.remove(e2);
+				}
+			}
+			ArrayList<ArrayList<Element>> partition = new ArrayList<ArrayList<Element>>();
+			partition.add(comp);
+			partition.add(elems);
+			return partition;
+		}
+		
 	}
 	
 	public void updateSolution(TupleTable newSolution){

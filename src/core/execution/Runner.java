@@ -369,19 +369,19 @@ public class Runner extends ResultsWriter{
 		ArrayList<MergeDescriptor> retVal = new ArrayList<MergeDescriptor>();
 		if (pol == N_WAY.ALG_POLICY.RANDOM){
 			//boolean randomize = false;
-			for (int highlight = 2; highlight < 3; highlight++){
+			for (int highlight = 3; highlight < 4; highlight++){
 				for (int choose = 1; choose < 2; choose++){
 					for (int reshuffle = 2; reshuffle < 3; reshuffle++){
-						boolean switchTuples = true;
-						boolean switchModels = false;
+//						boolean switchTuples = true;
+//						boolean switchModels = false;
 						// Seedings used for improving on NwM.
-						/*retVal.add(new MergeDescriptor(false, false, highlight, choose, switchTuples, switchModels, reshuffle, 0));
-						retVal.add(new MergeDescriptor(true, true, highlight, choose, switchTuples,switchModels, reshuffle, 1));
-						retVal.add(new MergeDescriptor(false, false, highlight, choose, switchTuples,switchModels, reshuffle, 1));
-						*///retVal.add(new MergeDescriptor(true, true, highlight, choose, switchTuples,switchModels, reshuffle, 2));
-						//retVal.add(new MergeDescriptor(false, false, highlight, choose, switchTuples,switchModels, reshuffle, 2));
-						retVal.add(new MergeDescriptor(true, true, highlight, choose, switchTuples,switchModels, reshuffle, 3));
-						//retVal.add(new MergeDescriptor(false, false, highlight, choose, switchTuples,switchModels, reshuffle, 3));
+//						retVal.add(new MergeDescriptor(false, false, highlight, choose, reshuffle, 0));
+//						retVal.add(new MergeDescriptor(true, true, highlight, choose, reshuffle, 1));
+//						retVal.add(new MergeDescriptor(false, false, highlight, choose,  reshuffle, 1));
+//						retVal.add(new MergeDescriptor(true, true, highlight, choose, reshuffle, 2));
+//						retVal.add(new MergeDescriptor(false, false, highlight, choose,reshuffle, 2));
+						retVal.add(new MergeDescriptor(true, true, highlight, choose, reshuffle, 3));
+						//retVal.add(new MergeDescriptor(false, false, highlight, choose, reshuffle, 3));
 					}
 				}
 			}

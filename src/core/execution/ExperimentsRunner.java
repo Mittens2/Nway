@@ -301,7 +301,7 @@ public class ExperimentsRunner{
 			if (models.size() > 50){
 				models = new ArrayList<Model>(models.subList(0, 10));
 			}
-			MergeDescriptor md_hl1_sd2a = new MergeDescriptor(true, true, 1, 1, true, true, 2, 2);
+			MergeDescriptor md_hl1_sd2a = new MergeDescriptor(true, true, 1, 1, 2, 2);
 			
 			// NwM solution
 			MultiModelMerger nwm = new ChainingOptimizingMerger((ArrayList<Model>) models.clone());

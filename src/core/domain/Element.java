@@ -296,7 +296,7 @@ public class Element {
 		this.bar = bar;	
 	}
 	
-	public BigDecimal getBar(){
+	public BigDecimal getBar(){ 
 		return this.bar;
 	}
 	

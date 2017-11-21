@@ -68,6 +68,7 @@ public class GameSolutionParser {
 	}
 	
 	public void createNewGame(String newFilePath){
+		// Writes aliens to new buckets in JSON file (used to initialize buckets in MM online game)
 		PrintWriter writer = null;
 		try {
 			writer = new PrintWriter(newFilePath, "utf-8");

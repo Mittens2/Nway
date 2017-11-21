@@ -45,8 +45,7 @@ public class HumanSimulator {
 		long startTime = System.currentTimeMillis();
 		Element seed = rmm.getSeed(false);
 		while (seed != null && System.currentTimeMillis() - startTime < timeout){
-			ArrayList<Element> elems = new ArrayList<Element>(rmm.allElements);
-			//Set<Element> elems = new HashSet<Element>(rmm.allElements);
+			Set<Element> elems = new HashSet<Element>(rmm.allElements);
 			TupleTable currSolution = rmm.new TupleTable(rmm.solutionTable.size());
 			for (Tuple t: rmm.solutionTable.getValues()){
 				currSolution.add(t);
@@ -68,14 +67,12 @@ public class HumanSimulator {
 			seed.setContainingTuple(currTuple);
 			TupleTable bestSolution = null;
 			ArrayList<Element> bestTupleElements = new ArrayList<Element>();
-			ArrayList<Element> incompatible = new ArrayList<Element>();
-			//Set<Element> incompatible = new HashSet<Element>();
-			ArrayList<ArrayList<Element>> partition = new ArrayList<ArrayList<Element>>();
-			//ArrayList<Set<Element>> partition = new ArrayList<Set<Element>>();
+			Set<Element> incompatible = new HashSet<Element>();
+			ArrayList<Set<Element>> partition = new ArrayList<Set<Element>>();
 			while(true){
 				if (!switchBuckets || currTuple.getSize() == 1){
-					elems = AlgoUtil.removeElementsSameModelId(seed, elems);
-					incompatible = AlgoUtil.removeElementsSameModelId(seed, incompatible);
+					elems = (Set<Element>) AlgoUtil.removeElementsSameModelId(seed,elems);
+					incompatible = (Set<Element>) AlgoUtil.removeElementsSameModelId(seed, incompatible);
 				}
 				partition = rmm.highlightElements(seed, elems, incompatible, currTuple);
 				elems = partition.get(0);
@@ -144,7 +141,7 @@ public class HumanSimulator {
 		}
 		rmm.end();
 	}
-	private Element chooseElement(ArrayList<Element> elems, Tuple best){
+	private Element chooseElement(Set<Element> elems, Tuple best){
 		if (elems.size() == 0){
 			return null;
 		}
@@ -159,7 +156,7 @@ public class HumanSimulator {
 		}
 	}
 	
-	private Element pickBestLocalElement(ArrayList<Element> elems, Tuple best){
+	private Element pickBestLocalElement(Set<Element> elems, Tuple best){
 		BigDecimal maxWeight = null;
 		Element maxElement = null;
 		for (Element e: elems){
@@ -176,9 +173,10 @@ public class HumanSimulator {
 		return maxElement; 
 	}
 	
-	private Element pickBestGlobalElement(ArrayList<Element> elems, Tuple best){
+	private Element pickBestGlobalElement(Set<Element> elems, Tuple best){
 		BigDecimal maxWeight = null;
 		Element maxElement = null;
+		rmm.generateBars(elems);
 		for (Element e: elems){
 			Tuple test = best.newExpanded(e, models);
 			if (switchBuckets){
@@ -192,19 +190,23 @@ public class HumanSimulator {
 			Tuple ctLess = ct.getSize() > 1 ? ct.lessExpanded(e, models) : ct;
 			currWeight = (ctLess.getWeight().add(test.getWeight())
 					.subtract(ct.getWeight().add(best.getWeight())));
-			if (maxWeight == null || currWeight.compareTo(maxWeight) > 0){
-				maxElement = e;
-				maxWeight = currWeight;
+			if (maxWeight == null || currWeight.compareTo(maxWeight) > 0 
+					//|| (currWeight.compareTo(maxWeight) == 0 && maxElement.getBar().compareTo(e.getBar()) > 0)){
+					|| (currWeight.compareTo(maxWeight) == 0 && e.getId() < maxElement.getId())){
+					maxElement = e;
+					maxWeight = currWeight;
 			}
 		}
 		return maxElement;
 	}
 	
-	private Element pickLowestBarElement(ArrayList<Element> elems){
-		Element lowestBarElement = elems.get(0);
-		for (int i = 0; i < elems.size(); i++){
-			Element e = elems.get(i);
-			if (e.getBar().compareTo(lowestBarElement.getBar()) < 0){
+	private Element pickLowestBarElement(Set<Element> elems){
+		rmm.generateBars(elems);
+		Element lowestBarElement = null;
+		for (Element e: elems){
+			if (lowestBarElement == null)
+				lowestBarElement = e;
+			else if (e.getBar().compareTo(lowestBarElement.getBar()) < 0){
 				lowestBarElement = e;
 			}
 		}

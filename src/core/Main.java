@@ -212,14 +212,10 @@ public class Main {
 	}
 	
 	public static void testTuples(String modelsFile){
-		// 1<6>,2<4>,3<8>,4<3>,5<3>,6<2>,7<7>,8<6>
-		//
-		// 2<4>,3<8>,4<3>,5<3>,6<2>,7<7>,8<6>
-		// 1<6>,3<7>,8<7>
+		// Manually create tuples from models defined in modelsFile
 		ArrayList<Model> models = Model.readModelsFile(modelsFile);
 		int[][] elemMap = new int[9][3];
 		int numTuples = 2;
-		//
 		elemMap[0][0] = 9;
 		elemMap[0][1] = 28;
 		elemMap[0][2] = 0;
@@ -263,6 +259,7 @@ public class Main {
 	}
 	
 	private static void writeToFile(ArrayList<Model> models, String modelName){
+		// Write models to file modelName (mainly used to save NwM solutions)
 		try{
 			PrintWriter writer = new PrintWriter("models/FH_nogen/fixed_" + modelName + ".csv", "utf-8");
 			//for (Element e: elements){
@@ -275,7 +272,6 @@ public class Main {
 					for (Iterator<String> iterator = properties.iterator(); iterator.hasNext();){
 						writer.print(iterator.next() + ";");
 					}
-					//writer.print(properties.get(0));
 					writer.println();
 				}
 			}
@@ -301,8 +297,8 @@ public class Main {
 	}
 	
 	private static void writeSubModel(String casename){
+		// Used to create a new subModel out of a model that is too large to run in experiments
 		ArrayList<Model> models = Model.readModelsFile(Main.home + "models/FH_nogen/" + casename + ".csv");
-		//writeToFile(loadTuplesFromFile(new File(Main.home + "models/NwMsolutions/" + casename + ".csv"), models), casename);
 		writeToFile(models, casename);
 	}
 	
@@ -381,25 +377,26 @@ public class Main {
 		String mmGasBoiler = home + "models/MMsolutions/GasBoiler.txt";
 		String mmRandomTight = home + "models/MMsolutions/RandomTight.txt";
 		
+		// Models, Results, and mmResults used to compare HSim, NwM, and MM results
 		ArrayList<String> models = new ArrayList<String>();
 		ArrayList<String> results = new ArrayList<String>();
-		ArrayList<String> mmFiles = new ArrayList<String>();
+		ArrayList<String> mmResults = new ArrayList<String>();
 		
-		//models.add(hospitals);
-		//models.add(warehouses);
+//		models.add(hospitals);
+//		models.add(warehouses);
 		models.add(random);
-		//models.add(randomLoose);
-		//models.add(randomTight);
-		/*models.add(gasBoilerSystem);
-		models.add(audioControlSystem);
-		models.add(ajStats);
-		models.add(tankWar);
-		models.add(PKJab);
-		models.add(chatSystem);
-		models.add(notepad);
-		models.add(mobileMedia);
-		models.add(vod1);
-		models.add(vod2);*/
+		models.add(randomLoose);
+		models.add(randomTight);
+//		models.add(gasBoilerSystem);
+//		models.add(audioControlSystem);
+//		models.add(ajStats);
+//		models.add(tankWar);
+//		models.add(PKJab);
+//		models.add(chatSystem);
+//		models.add(notepad);
+//		models.add(mobileMedia);
+//		models.add(vod1);
+//		models.add(vod2);
 
 		results.add(resultsHospitals);
 		results.add(resultsWarehouses);
@@ -417,36 +414,40 @@ public class Main {
 		results.add(resultsVod1);
 		results.add(resultsVod2);
 		
-		mmFiles.add(mmHospital);
-		mmFiles.add(mmRandomTight);
-		mmFiles.add(mmGasBoiler);
-		
-		printStats(hospitals);
-		//testTuples(ajStats);
-		//writeSubModel("notepad");
+		mmResults.add(mmHospital);
+		mmResults.add(mmRandomTight);
+		mmResults.add(mmGasBoiler);
 		
 		//AlgoUtil.useTreshold(true);
 		
-		//ArrayList<Model> testModels = new ArrayList<Model>(Model.readModelsFile(random).subList(0, 10));
-	
-		//ArrayList<Model> testModels = Model.readModelsFile(audioControlSystem);
-		//GameSolutionParser parser = new GameSolutionParser(Main.home + "models/MMsolutions/audio_buckets.txt", testModels);
-		//parser.solutionCalculator();
-		//parser.createNewGame(Main.home + "models/newHopsitals.txt");
-	
+		for (String model: models){
+			singleBatchRun(model, resultsHospitals, 10, true);
+		}
+		
+		// Runs either a single batch of test, or multiple batches
+		//singleBatchRun(hospitals, resultsHospitals, -1, true);
+		//multipleBatchRun(random, resultsRandom, 10);	
+		
+		// Runs an experiment comparing NwM, HSim, and MM
 		//String[] solvers =  {"NwM", "HSim", "MM"};
 		//ExperimentsRunner.runMetricsExperiment(models, mmFiles, solvers);
 		//ExperimentsRunner.runConcurrentExperiment(models, results, 3, 50, 10, 84);
 		//ExperimentsRunner.runSeedExperiment(models, results, 3,  50, 10);
 		
-		//ArrayList<Model> audio = Model.readModelsFile(audioControlSystem);
-		//OptimalSolutionSolver oss = new OptimalSolutionSolver(audio);
-		//oss.calcOptimalScore(audioControlSystem);
-		//oss.calcOptimalScore(toyChat);
+		// Calculates MM solution score
+		//GameSolutionParser parser = new GameSolutionParser(Main.home + "models/MMsolutions/audio_buckets.txt", testModels);
+		//parser.solutionCalculator();
 		
+		// Calculates optimal solution for toy
+		//ArrayList<Model> toy = Model.readModelsFile(toycase2);
+		//OptimalSolutionSolver oss = new OptimalSolutionSolver(toy);
+		//oss.calcOptimalScore(toycase2);
+		
+		// Creates feature lists out of FH models
 		//UMLParser.createFeatureLists("MobileMedia8", true, 8);
 		//UMLParser.UMLtoCSV("MobileMedia8", 8);
 		
+		// Outputs difference between solutions of different solvers
 		//for (String caseStudy: models){
 		//String caseStudy = ajStats;
 		//ArrayList<Model> testModels = Model.readModelsFile(caseStudy);
@@ -455,47 +456,9 @@ public class Main {
 		//SolverDifference.testRMMandNwMDiff(testModels, nwmFilePath, true);
 		//}
 		
-		//testTuples(testModels);
 		
-		//writeSubModel("BerkeleyDB");
-		singleBatchRun(hospitals, resultsHospitals, -1, true);
-		//singleBatchRun(warehouses, resultsWarehouses, -1, true);	
-		//singleBatchRun(random, resultsRandom, 10, true);	
-		//singleBatchRun(randomLoose, resultsRandomLoose, 10, true);	
-		//singleBatchRun(randomTight, resultsRandomTight, 10, true);
-		//multipleBatchRun(random, resultsRandom, 10);	
-		//multipleBatchRun(randomLoose, resultsRandomLoose, 10);	
-		//multipleBatchRun(randomTight, resultsRandomTight, 10);
-		//singleBatchRun(level2a, resultsLevel2a,-1, true);
-		//singleBatchRun(level2b, resultsLevel2b,-1, true);
-		//singleBatchRun(level3a, resultsLevel3a,-1, true);
-		//singleBatchRun(toycase, resultsToycase, -1, true);
-		//singleBatchRun(toycase2, resultsToycase2, -1, true);
-		//singleBatchRun(toycase3, resultsToycase3, -1, true);
-		//singleBatchRun(toycase4, resultsToycase3, -1, true);
-		//singleBatchRun(toycase5, resultsToycase3, -1, true);
-		//singleBatchRun(toycase6, resultsToycase, -1, true);
-		//singleBatchRun(toycase7, resultsToycase, -1, true);
-		//singleBatchRun(toyChat, resultsToycase, -1, true);
-		//singleBatchRun(toyTank, resultsToycase, -1, true);
-		//singleBatchRun(gasBoilerSystem, resultsGasBoilerSystem, -1, true);
-		//singleBatchRun(audioControlSystem, resultsAudioControlSystem, -1, true);
-		//singleBatchRun(conferenceManagementSystem, resultsConferenceManagementSystem, -1, true);
-		//singleBatchRun(ajStats, resultsAJStats, -1, true);
-		//singleBatchRun(tankWar, resultsTankWar, -1, true);
-		//singleBatchRun(PKJab, resultsPKJab, -1, true);
-		//singleBatchRun(chatSystem, resultsChatSystem, -1, true);
-		//singleBatchRun(notepad, resultsNotepad, -1, true);
-		//singleBatchRun(notepad, resultsNotepad, -1, true);
-		//singleBatchRun(mobileMedia, resultsMobileMedia, -1, true);
-		//singleBatchRun(vod1, resultsVod1, -1, true);
-		//singleBatchRun(vod2, resultsVod2, -1, true);
-		//singleBatchRun(ahead, resultsAhead, 3, true);
-		//singleBatchRun(gameOfLife, resultsVod1, -1, true);
-		//singleBatchRun(GPL, resultsVod1, -1, true);
-		//singleBatchRun(BerkeleyDB, resultsVod1, -1, true);
-		//singleBatchRun(mobileMedia8, resultsVod1, -1, true);
 		
+		// Not used anymore
 		//workOnBatch(random10, resultRandom10);
 		//workOnBatch("models/randomH.csv", "results/randomH.xls");
 		//workOnBatch("models/randomWH.csv", "results/randomWH.xls");

@@ -19,7 +19,7 @@
 4;3;Diagnosis
 4;1;Decision
 5;4;Address
-5;5;UnregisteredPatient
+5;5;RegisteredPatient
 5;6;OutPatient
 5;7;History
 5;1;InPatient
@@ -51,7 +51,7 @@
 12;8;PatientProfile
 12;3;PatientProfile
 12;1;WristBand
-13;5;RegisteredPatient
+13;5;InPatient
 13;6;InPatient
 13;3;Decision
 13;4;History

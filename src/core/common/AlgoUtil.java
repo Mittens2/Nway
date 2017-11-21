@@ -143,10 +143,10 @@ public class AlgoUtil {
 		return lst; 
 	}
 	
-	public static ArrayList<ArrayList<Element>> getElementsWithSharedProperties(Tuple target, ArrayList<Element> elems, int shared){
-		ArrayList<ArrayList<Element>> partition = new ArrayList<ArrayList<Element>>();
-		ArrayList<Element> compatible = new ArrayList<Element>();
-		ArrayList<Element> incompatible = new ArrayList<Element>();
+	public static ArrayList<Set<Element>> getElementsWithSharedProperties(Tuple target, Set<Element> elems, int shared){
+		ArrayList<Set<Element>> partition = new ArrayList<Set<Element>>();
+		Set<Element> compatible = new HashSet<Element>();
+		Set<Element> incompatible = new HashSet<Element>();
 		for (Element e: elems){
 			int count = 0;
 			for (Element t: target.getElements()){
@@ -164,10 +164,10 @@ public class AlgoUtil {
 		return partition;
 	}
 	
-	public static ArrayList<ArrayList<Element>> partitionShared(Element target, ArrayList<Element> elems, int shared){
-		ArrayList<ArrayList<Element>> partition = new ArrayList<ArrayList<Element>>();
-		ArrayList<Element> compatible = new ArrayList<Element>();
-		ArrayList<Element> incompatible = new ArrayList<Element>();
+	public static ArrayList<Set<Element>> partitionShared(Element target, Set<Element> elems, int shared){
+		ArrayList<Set<Element>> partition = new ArrayList<Set<Element>>();
+		Set<Element> compatible = new HashSet<Element>();
+		Set<Element> incompatible = new HashSet<Element>();
 		for (Element e: elems){
 			if (haveCommonProperties(target, e, shared)){
 				compatible.add(e);
@@ -181,10 +181,12 @@ public class AlgoUtil {
 		return partition;
 	}
 	
-	public static ArrayList<Element> removeElementsSameModelId(Element target, ArrayList<Element> elems){
-		for (int i = elems.size() - 1; i >= 0; i--){
-			if (elems.get(i).getModelId() == target.getModelId()){
-				elems.remove(i);
+	public static Set<Element> removeElementsSameModelId(Element target, Set<Element> elems){
+		Set<Element> elemsCopy = new HashSet<Element>(elems);
+		for (Iterator<Element> iter = elemsCopy.iterator(); iter.hasNext();){
+			Element e = iter.next();
+			if (e.getModelId() == target.getModelId()){
+				elems.remove(e);
 			}
 		}
 		return elems;

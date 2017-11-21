@@ -8,6 +8,7 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.Set;
 
 import core.common.AlgoUtil;
 import core.common.ElementComparator;
@@ -356,6 +357,18 @@ public class Tuple {
 		//		(propertiesUnion.size() *numOfModels*numOfModels);
 				//(numOfModels*sumOfElementSizes);
 		return tooAccurateWeight;
+	}
+	
+	// Fitness function that rewards making tuples of a legible size, i.e., 7. 
+	public BigDecimal weight3Func(int numOfModels){
+		BigDecimal origWeight = weight3Func(numOfModels);
+		Set<String> pi_t = new HashSet<String>();
+		for (Element e: this.getElements()){
+			pi_t.addAll(e.getProperties());
+		}
+		BigDecimal newWeight = origWeight.multiply(new BigDecimal(numOfModels * numOfModels));
+		newWeight = newWeight.divide(new BigDecimal(Math.pow(this.getSize() - 7, 2) + 1), N_WAY.MATH_CTX);
+		return newWeight;
 	}
 	
 	public BigDecimal calcWeight(/*int numOfModels*/ArrayList<Model> mdls) {

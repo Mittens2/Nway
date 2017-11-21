@@ -19,6 +19,7 @@ import core.alg.merge.MultiModelMerger;
 import core.alg.merge.PairWiseMerger;
 import core.alg.merge.RandomizedMatchMerger;
 import core.alg.pair.ModelSizeBasedPairWiseMatcher;
+import core.alg.search.Search;
 import core.common.AlgoUtil;
 import core.common.ModelComparator;
 import core.common.N_WAY;
@@ -66,11 +67,16 @@ public class Runner extends ResultsWriter{
 	}
 
 	public void execute(String caseName){
-				
-//		runOnLocalSearch(N_WAY.ALG_POLICY.REPLACE_BEST, "LS triwise");
-	//	runOnLocalSearch(N_WAY.ALG_POLICY.REPLACE_FIRST_BY_SQUARES, "LS triwise");
+		AlgoUtil.COMPUTE_RESULTS_CLASSICALLY = false;
+		results.addAll(runBigHungarian(caseName, true));
+		//results.addAll(runRandomizedMatch());
+		//results.addAll(runNwMwithHS(caseName));
+		results.add(runSearch());
+		
+		//runOnLocalSearch(N_WAY.ALG_POLICY.REPLACE_BEST, "LS triwise");
+		//runOnLocalSearch(N_WAY.ALG_POLICY.REPLACE_FIRST_BY_SQUARES, "LS triwise");
 		//addManualRun();
-		AlgoUtil.COMPUTE_RESULTS_CLASSICALLY = true;
+		//AlgoUtil.COMPUTE_RESULTS_CLASSICALLY = true;
 		//runOnPairs();
 		/*if(!toChunkify){
 			runOnGreedy(models.size());
@@ -80,19 +86,14 @@ public class Runner extends ResultsWriter{
 			//runOnGreedy(4);
 		//runOnGreedy(5);
 		//}
-		AlgoUtil.COMPUTE_RESULTS_CLASSICALLY = false;
-		//results.addAll(runBigHungarian(caseName));
-		results.addAll(runRandomizedMatch());
-		//results.addAll(runNwMwithHS(caseName));
-		
 		//runLocalSearches(3);
 		/*if(! toChunkify){
 			runLocalSearches(models.size());
 		}
 		else{
-	//		runLocalSearches(3);
+			runLocalSearches(3);
 		}*/
-	//	runOnGreedy(5);
+		//runOnGreedy(5);
 		//runOnGreedy(6);
 		//runOnGreedy(7);
 		//runOnGreedy(8);
@@ -238,12 +239,12 @@ public class Runner extends ResultsWriter{
 		return rr;
 	}
 	
-	public ArrayList<RunResult> runBigHungarian(String caseName){
+	public ArrayList<RunResult> runBigHungarian(String caseName, Boolean runFromScratch){
 		@SuppressWarnings("unchecked")
 		RunResult rr = null;
 		File file = new File(Main.home + "models/NwMsolutions/" + caseName + ".csv");
 		ArrayList<Tuple> solution = null;
-		if (file.exists()){
+		if (file.exists() && !runFromScratch){
 			solution = loadTuplesFromFile(file);
 			rr = new RunResult(0, AlgoUtil.calcGroupWeight(solution), BigDecimal.ZERO, solution);
 		}
@@ -253,11 +254,11 @@ public class Runner extends ResultsWriter{
 			solution = mmm.getTuplesInMatch();
 			rr = mmm.getRunResult(models.size());
 			rr.setTitle("New Hungarian");
+			writeTuplesToFile(solution, file.getPath());
 		}
 		ArrayList<RunResult> result = new ArrayList<RunResult>();
 		result.add(rr);
 		System.out.println(rr);
-		//AlgoUtil.printTuples(mmm.getTuplesInMatch());
 		AlgoUtil.printTuples(solution);
 		//writeResults(result, "New Hungarian");
 		return result;
@@ -349,9 +350,10 @@ public class Runner extends ResultsWriter{
 			RunResult rr = runRandomMatch(md);
 			results.add(rr);
 		}
-		writeResults(results, "Randomized");
+		//writeResults(results, "Randomized");
 		return results;
 	}
+	
 	
 	private RunResult runRandomMatch(MergeDescriptor md){
 		RandomizedMatchMerger rmm = new RandomizedMatchMerger((ArrayList<Model>) models.clone(), md);
@@ -364,12 +366,21 @@ public class Runner extends ResultsWriter{
 		//AlgoUtil.printTuples(rmm.getTuplesInMatch());
 		return rr;
 	}
+
+	public RunResult runSearch(){
+		Search search = new Search((ArrayList<Model>) models.clone());
+		RunResult rr = search.execute();
+		rr.setTitle("Local Element Search");
+		System.out.println(rr);
+		AlgoUtil.printTuples(search.getTuplesInMatch());
+		return rr;
+	}
 	
 	private ArrayList<MergeDescriptor> allPermOnAlg(N_WAY.ALG_POLICY pol){
 		ArrayList<MergeDescriptor> retVal = new ArrayList<MergeDescriptor>();
 		if (pol == N_WAY.ALG_POLICY.RANDOM){
 			//boolean randomize = false;
-			for (int highlight = 3; highlight < 4; highlight++){
+			for (int highlight = 1; highlight < 2; highlight++){
 				for (int choose = 1; choose < 2; choose++){
 					for (int reshuffle = 2; reshuffle < 3; reshuffle++){
 //						boolean switchTuples = true;
@@ -379,8 +390,8 @@ public class Runner extends ResultsWriter{
 //						retVal.add(new MergeDescriptor(true, true, highlight, choose, reshuffle, 1));
 //						retVal.add(new MergeDescriptor(false, false, highlight, choose,  reshuffle, 1));
 //						retVal.add(new MergeDescriptor(true, true, highlight, choose, reshuffle, 2));
-//						retVal.add(new MergeDescriptor(false, false, highlight, choose,reshuffle, 2));
-						retVal.add(new MergeDescriptor(true, true, highlight, choose, reshuffle, 3));
+						retVal.add(new MergeDescriptor(false, false, highlight, choose,reshuffle, 2));
+						//retVal.add(new MergeDescriptor(true, true, highlight, choose, reshuffle, 3));
 						//retVal.add(new MergeDescriptor(false, false, highlight, choose, reshuffle, 3));
 					}
 				}

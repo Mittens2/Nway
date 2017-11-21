@@ -147,7 +147,7 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 		}
 		// By Bar
 		else{
-			generateBars(currTuples);
+			generateBars(new HashSet<Element>(allElements));
 			elems.addAll(allElements);
 			Collections.sort(elems, new ElementComparator(md.asc, Sort.BAR, new Tuple(), models));
 		}
@@ -182,18 +182,16 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 		return propProps;
 	}
 
-	private void generateBars(ArrayList<Tuple> tuples){
-		BigDecimal globalScore = AlgoUtil.calcGroupWeight(tuples);
-		for (Tuple t: tuples){
-			ArrayList<Element> tupleElems = t.getElements();
-			if (t.getSize() > 1){
-				for (int i = tupleElems.size() - 1; i >= 0; i--){
-					Element curr = tupleElems.get(i);
-					Tuple lessTuple = t.lessExpanded(curr, models);
-					BigDecimal bar = globalScore.subtract(t.calcWeight(models).subtract(lessTuple.calcWeight(models)));
-					curr.setBar(bar);
-				}
-			}
+	public void generateBars(Set<Element> elems){
+		BigDecimal globalScore = AlgoUtil.calcGroupWeight(solutionTable.getValues());
+		for (Element e: elems){
+			Tuple contain = e.getContainingTuple();
+			Tuple lessTuple = new Tuple();
+			lessTuple.setWeight(BigDecimal.ZERO);
+			if (contain.getSize() > 1)
+				lessTuple = contain.lessExpanded(e, models);
+			BigDecimal bar = globalScore.subtract(contain.getWeight().subtract(lessTuple.getWeight()));
+			e.setBar(bar);
 		}
 	}
 	
@@ -219,17 +217,19 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 	}
 	
 	
-	public void keepValidElements(ArrayList<Element> elems, ArrayList<Element> incompatible, Tuple tup){
+	public void keepValidElements(Set<Element> elems, Set<Element> incompatible, Tuple tup){
 		BigDecimal weight = tup.getWeight();
 		Tuple compare;
-		for (int i = elems.size() - 1; i >= 0; i--){
-			int index = AlgoUtil.commonModel(elems.get(i), tup);
-			compare = tup.newExpanded(elems.get(i), models);
+		Set<Element> elemsCopy = new HashSet<Element>(elems);
+		for (Element e: elemsCopy){
+			int index = AlgoUtil.commonModel(e, tup);
+			compare = tup.newExpanded(e, models);
 			if (index != -1){
 				 compare = compare.lessExpanded(tup.getElements().get(index), models);
 			}
 			if (compare.calcWeight(models).compareTo(weight) <= 0){
-				incompatible.add(elems.remove(i));
+				elems.remove(e);
+				incompatible.add(e);
 			}
 		}
 	}
@@ -341,8 +341,8 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 //		}
 //	}
 	
-	public ArrayList<ArrayList<Element>> highlightElements(Element picked, ArrayList<Element> elems, 
-			ArrayList<Element> incompatible, Tuple current){
+	public ArrayList<Set<Element>> highlightElements(Element picked, Set<Element> elems, 
+			Set<Element> incompatible, Tuple current){
 		// One with all
 		if (md.highlight == 0){
 			return AlgoUtil.partitionShared(picked, elems, 1);
@@ -359,7 +359,7 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 		}
 		// No highlight
 		else if (md.highlight == 3){
-			ArrayList<ArrayList<Element>> partition = new ArrayList<ArrayList<Element>>();
+			ArrayList<Set<Element>> partition = new ArrayList<Set<Element>>();
 			partition.add(elems);
 			partition.add(incompatible);
 			return partition;
@@ -367,8 +367,9 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 		// Highlight by pairwise
 		else{
 			Set<Tuple> compatible = new HashSet<Tuple>();
-			elems.addAll(incompatible);
-			for (Element e: elems){
+			incompatible.addAll(elems);
+			elems = new HashSet<Element>();
+			for (Element e: incompatible){
 				if (!compatible.contains(e.getContainingTuple())){
 					BigDecimal pw = BigDecimal.ZERO;
 					for (Element e2: e.getContainingTuple().getElements()){
@@ -379,17 +380,18 @@ public class RandomizedMatchMerger extends Merger implements Matchable {
 						compatible.add(e.getContainingTuple());
 				}
 			}
-			ArrayList<Element> comp = new ArrayList<Element>();
 			//System.out.println(compatible.size());
 			for (Tuple t: compatible){
 				for (Element e2: t.getElements()){
-					comp.add(e2);
-					elems.remove(e2);
+					if (incompatible.contains(e2)){
+						incompatible.remove(e2);
+						elems.add(e2);
+					}
 				}
 			}
-			ArrayList<ArrayList<Element>> partition = new ArrayList<ArrayList<Element>>();
-			partition.add(comp);
+			ArrayList<Set<Element>> partition = new ArrayList<Set<Element>>();
 			partition.add(elems);
+			partition.add(incompatible);
 			return partition;
 		}
 		

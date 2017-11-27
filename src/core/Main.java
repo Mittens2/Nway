@@ -7,6 +7,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -177,37 +178,39 @@ public class Main {
 		int min = 100;
 		int max = 0;
 		double totes = 0;
-		int possibs = 1;
+		BigDecimal possibs = BigDecimal.ONE;
 		for (Model mod: models){
 			//System.out.println(mod.size());
 			int size = mod.size();
 			totes += size;
-			possibs *= (mod.size() + 1);
+			possibs = possibs.multiply(new BigDecimal(mod.size()));
 			if (size > max)
 				max = size;
 			if (size < min)
 				min = size;
 		}
-		int incompat = 0;
-		//possibs -= 1;
-		for (int i = 0; i < models.size(); i++){
-			incompat += (((double) possibs) / (models.get(i).size() + 1));
-			for (int j = 0; j < i; j++){
-				incompat -= (((double) possibs) / (models.get(i).size() + 1) / (models.get(j).size() + 1));
-			}
-		}
-		Set<String> props = new HashSet<String>();
-		for (Model m: models){
-			for (Element e: m.getElements()){
-				for (String p: e.getProperties()){
-					if (!props.contains(p))
-						props.add(p);
-				}
-			}
-		}
-		System.out.println(name + ": " + "elements: " + totes + ", max:" + max + ", min:" + min + ", avg:" +  
-		(totes / models.size()) + ", possible tuples:" + possibs + ", possible solutions:" + possibs * (possibs - incompat)
-				+ ", props:" + props.size());
+//		int incompat = 0;
+//		//possibs -= 1;
+//		for (int i = 0; i < models.size(); i++){
+//			incompat += (((double) possibs) / (models.get(i).size() + 1));
+//			for (int j = 0; j < i; j++){
+//				incompat -= (((double) possibs) / (models.get(i).size() + 1) / (models.get(j).size() + 1));
+//			}
+//		}
+//		Set<String> props = new HashSet<String>();
+//		for (Model m: models){
+//			for (Element e: m.getElements()){
+//				for (String p: e.getProperties()){
+//					if (!props.contains(p))
+//						props.add(p);
+//				}
+//			}
+//		}
+//		System.out.println(name + ": " + "elements: " + totes + ", max:" + max + ", min:" + min + ", avg:" +  
+//		(totes / models.size()) + ", possible tuples:" + possibs + ", possible solutions:" + possibs * (possibs - incompat)
+//				+ ", props:" + props.size());
+		DecimalFormat df = new DecimalFormat("0.0###E0");
+		System.out.println(name + ": " +"possible tuples: " + df.format(possibs));
 		//System.out.println(name + ": " + props.size());
 	}
 	
@@ -382,24 +385,24 @@ public class Main {
 		ArrayList<String> results = new ArrayList<String>();
 		ArrayList<String> mmResults = new ArrayList<String>();
 		
-//		models.add(hospitals);
-//		models.add(warehouses);
+		models.add(hospitals);
+		models.add(warehouses);
 		models.add(random);
 		models.add(randomLoose);
 		models.add(randomTight);
-//		models.add(gasBoilerSystem);
-//		models.add(audioControlSystem);
-//		models.add(ajStats);
-//		models.add(tankWar);
-//		models.add(PKJab);
-//		models.add(chatSystem);
-//		models.add(notepad);
-//		models.add(mobileMedia);
-//		models.add(vod1);
-//		models.add(vod2);
+		models.add(gasBoilerSystem);
+		models.add(audioControlSystem);
+		models.add(ajStats);
+		models.add(tankWar);
+		models.add(PKJab);
+		models.add(chatSystem);
+		models.add(notepad);
+		models.add(mobileMedia);
+		models.add(vod1);
+		models.add(vod2);
 
-		results.add(resultsHospitals);
-		results.add(resultsWarehouses);
+//		results.add(resultsHospitals);
+//		results.add(resultsWarehouses);
 		results.add(resultsRandom);
 		results.add(resultsRandomLoose);
 		results.add(resultsRandomTight);
@@ -421,11 +424,17 @@ public class Main {
 		//AlgoUtil.useTreshold(true);
 		
 		for (String model: models){
-			singleBatchRun(model, resultsHospitals, 10, true);
+//			printStats(model);
+			if (model.startsWith("r", model.lastIndexOf("/") + 1)){
+				singleBatchRun(model, resultsHospitals, 10, true);
+			}
+			else
+				singleBatchRun(model, resultsHospitals, -1, true);
 		}
 		
+		
 		// Runs either a single batch of test, or multiple batches
-		//singleBatchRun(hospitals, resultsHospitals, -1, true);
+		//singleBatchRun(toycase, resultsHospitals, -1, true);
 		//multipleBatchRun(random, resultsRandom, 10);	
 		
 		// Runs an experiment comparing NwM, HSim, and MM

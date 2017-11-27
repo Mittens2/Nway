@@ -20,6 +20,7 @@ import core.alg.merge.PairWiseMerger;
 import core.alg.merge.RandomizedMatchMerger;
 import core.alg.pair.ModelSizeBasedPairWiseMatcher;
 import core.alg.search.Search;
+import core.alg.search.Search.MoveStrategy;
 import core.common.AlgoUtil;
 import core.common.ModelComparator;
 import core.common.N_WAY;
@@ -68,7 +69,7 @@ public class Runner extends ResultsWriter{
 
 	public void execute(String caseName){
 		AlgoUtil.COMPUTE_RESULTS_CLASSICALLY = false;
-		results.addAll(runBigHungarian(caseName, true));
+		//results.addAll(runBigHungarian(caseName, true));
 		//results.addAll(runRandomizedMatch());
 		//results.addAll(runNwMwithHS(caseName));
 		results.add(runSearch());
@@ -368,11 +369,11 @@ public class Runner extends ResultsWriter{
 	}
 
 	public RunResult runSearch(){
-		Search search = new Search((ArrayList<Model>) models.clone());
+		Search search = new Search((ArrayList<Model>) models.clone(), MoveStrategy.ELEMENT, 1);
 		RunResult rr = search.execute();
 		rr.setTitle("Local Element Search");
 		System.out.println(rr);
-		AlgoUtil.printTuples(search.getTuplesInMatch());
+		//AlgoUtil.printTuples(search.getTuplesInMatch());
 		return rr;
 	}
 	

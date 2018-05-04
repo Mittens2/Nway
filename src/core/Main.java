@@ -19,6 +19,7 @@ import java.util.Random;
 import java.util.Scanner;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.Future;
 
 import org.apache.poi.hssf.usermodel.HSSFSheet;
@@ -27,9 +28,9 @@ import org.apache.poi.ss.usermodel.Row;
 import org.jfree.data.category.CategoryDataset;
 import org.jfree.ui.RefineryUtilities;
 
+import core.alg.optimal.ParallelOptimal;
 import core.common.AlgoUtil;
 import core.common.GameSolutionParser;
-import core.common.OptimalSolutionSolver;
 import core.common.ResultsPlotter;
 import core.common.SolverDifference;
 import core.common.Statistics;
@@ -183,12 +184,13 @@ public class Main {
 			//System.out.println(mod.size());
 			int size = mod.size();
 			totes += size;
-			possibs = possibs.multiply(new BigDecimal(mod.size()));
+			possibs = possibs.multiply(new BigDecimal(mod.size() + 1));
 			if (size > max)
 				max = size;
 			if (size < min)
 				min = size;
 		}
+		
 //		int incompat = 0;
 //		//possibs -= 1;
 //		for (int i = 0; i < models.size(); i++){
@@ -210,7 +212,7 @@ public class Main {
 //		(totes / models.size()) + ", possible tuples:" + possibs + ", possible solutions:" + possibs * (possibs - incompat)
 //				+ ", props:" + props.size());
 		DecimalFormat df = new DecimalFormat("0.0###E0");
-		System.out.println(name + ": " +"possible tuples: " + df.format(possibs));
+		System.out.println(name + ": " +"size of S: " + df.format(possibs) + ", size of U: " + totes);
 		//System.out.println(name + ": " + props.size());
 	}
 	
@@ -312,9 +314,8 @@ public class Main {
 			Main.home = args[0];
 		}
 		else{
-			Main.home = "";
+			Main.home = new File("").getAbsolutePath() + "/";
 		}
-		
 		// All models files.
 		String hospitals = home + "models/Julia_study/hospitals.csv";
 		String warehouses = home + "models/Julia_study/warehouses.csv";
@@ -340,7 +341,7 @@ public class Main {
 		String tankWar = home + "models/FH/TankWar.csv";
 		String PKJab = home + "models/FH/PKJab.csv";
 		String chatSystem = home + "models/FH_nogen/ChatSystem.csv";
-		String notepad = home + "models/FH_nogen/fixed_Notepad.csv";
+		String notepad = home + "models/FH_nogen/fixed_notepad.csv";
 		String ahead = home + "models/FH_nogen/ahead.csv";
 		String mobileMedia = home + "models/Egyed/MobileMedia.csv";
 		String vod1 = home + "models/Egyed/VOD1.csv";
@@ -423,21 +424,17 @@ public class Main {
 		
 		//AlgoUtil.useTreshold(true);
 		
-		for (String model: models){
-//			printStats(model);
-			if (model.startsWith("r", model.lastIndexOf("/") + 1)){
-				singleBatchRun(model, resultsHospitals, 10, true);
-			}
-			else
-				singleBatchRun(model, resultsHospitals, -1, true);
-		}
-		
-		
+		// Optimal Solution Solver
+		ForkJoinPool commonPool = ForkJoinPool.commonPool();
+		System.out.println("number of threads available: " + commonPool.getParallelism());    // 3
+		String m = notepad;
+		printStats(m);
 		// Runs either a single batch of test, or multiple batches
-		//singleBatchRun(toycase, resultsHospitals, -1, true);
-		//multipleBatchRun(random, resultsRandom, 10);	
+		singleBatchRun(m, resultsHospitals, -1, true);
+		//multipleBatchRun(random, resultsRandom, 10);
 		
-		// Runs an experiment comparing NwM, HSim, and MM
+		
+		//Runs an experiment comparing NwM, HSim, and MM
 		//String[] solvers =  {"NwM", "HSim", "MM"};
 		//ExperimentsRunner.runMetricsExperiment(models, mmFiles, solvers);
 		//ExperimentsRunner.runConcurrentExperiment(models, results, 3, 50, 10, 84);
@@ -446,11 +443,6 @@ public class Main {
 		// Calculates MM solution score
 		//GameSolutionParser parser = new GameSolutionParser(Main.home + "models/MMsolutions/audio_buckets.txt", testModels);
 		//parser.solutionCalculator();
-		
-		// Calculates optimal solution for toy
-		//ArrayList<Model> toy = Model.readModelsFile(toycase2);
-		//OptimalSolutionSolver oss = new OptimalSolutionSolver(toy);
-		//oss.calcOptimalScore(toycase2);
 		
 		// Creates feature lists out of FH models
 		//UMLParser.createFeatureLists("MobileMedia8", true, 8);

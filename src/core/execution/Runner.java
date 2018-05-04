@@ -18,7 +18,9 @@ import core.alg.merge.Merger;
 import core.alg.merge.MultiModelMerger;
 import core.alg.merge.PairWiseMerger;
 import core.alg.merge.RandomizedMatchMerger;
+import core.alg.optimal.ParallelOptimal;
 import core.alg.pair.ModelSizeBasedPairWiseMatcher;
+import core.alg.search.ACO;
 import core.alg.search.Search;
 import core.alg.search.Search.MoveStrategy;
 import core.common.AlgoUtil;
@@ -72,7 +74,9 @@ public class Runner extends ResultsWriter{
 		//results.addAll(runBigHungarian(caseName, true));
 		//results.addAll(runRandomizedMatch());
 		//results.addAll(runNwMwithHS(caseName));
-		results.add(runSearch());
+		//results.add(runSearch());
+		//results.add(runParallelOptimal(caseName));
+		results.add(runACO());
 		
 		//runOnLocalSearch(N_WAY.ALG_POLICY.REPLACE_BEST, "LS triwise");
 		//runOnLocalSearch(N_WAY.ALG_POLICY.REPLACE_FIRST_BY_SQUARES, "LS triwise");
@@ -260,7 +264,7 @@ public class Runner extends ResultsWriter{
 		ArrayList<RunResult> result = new ArrayList<RunResult>();
 		result.add(rr);
 		System.out.println(rr);
-		AlgoUtil.printTuples(solution);
+		//AlgoUtil.printTuples(solution);
 		//writeResults(result, "New Hungarian");
 		return result;
 	}
@@ -373,9 +377,28 @@ public class Runner extends ResultsWriter{
 		RunResult rr = search.execute();
 		rr.setTitle("Local Element Search");
 		System.out.println(rr);
-		//AlgoUtil.printTuples(search.getTuplesInMatch());
+		AlgoUtil.printTuples(search.getTuplesInMatch());
 		return rr;
 	}
+	
+	public RunResult runParallelOptimal(String caseName){
+		ParallelOptimal po = new ParallelOptimal((ArrayList<Model>) models.clone());
+		RunResult rr = po.optimalSolution();
+		rr.setTitle("Optimal Solution");
+		System.out.println(rr);
+		System.out.println("number of tuples: " + po.getTuplesInMatch().size());
+		return rr;
+	}
+	
+	public RunResult runACO(){
+		ACO aco = new ACO((ArrayList<Model>) models.clone(), 1, 10, 1, 1, 0.3, 0.3);
+		RunResult rr = aco.runACO();
+		rr.setTitle("ACO Solution");
+		System.out.println(rr);
+		AlgoUtil.printTuples(aco.getTuplesInMatch());
+		return rr;
+	}
+	
 	
 	private ArrayList<MergeDescriptor> allPermOnAlg(N_WAY.ALG_POLICY pol){
 		ArrayList<MergeDescriptor> retVal = new ArrayList<MergeDescriptor>();

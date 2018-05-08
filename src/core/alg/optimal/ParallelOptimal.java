@@ -14,8 +14,6 @@ import core.execution.RunResult;
 
 
 public class ParallelOptimal {
-
-	
 	private ArrayList<Model> models;
 	private ArrayList<Tuple> tuples;
 	private int minProps;
@@ -30,8 +28,12 @@ public class ParallelOptimal {
 		this.minProps = minProps;
 	}
 	
-	
-	public RunResult optimalSolution(){
+	/**
+	 * Generates all of the possible tuples for models.
+	 * Each element in a tuple has at least minProps properties in common with other elements.
+	 * Uses Scan pattern to generate all of the tuples.
+	 */
+	public RunResult generateTuples(){
 		long startTime = System.currentTimeMillis();
 		Collector<Model, List<Tuple>, List<Tuple>> modelCollector =
 			    Collector.of(
@@ -50,6 +52,10 @@ public class ParallelOptimal {
 		return new RunResult(execTime, BigDecimal.ZERO, BigDecimal.ZERO, (ArrayList<Tuple>) tuples);
 	}
 	
+	
+	/**
+	 * @return intial state of collector.
+	 */
 	private List<Tuple> initialize(){
 		Tuple t = new Tuple();
 		ArrayList<Tuple> init = new ArrayList<Tuple>();
@@ -57,6 +63,12 @@ public class ParallelOptimal {
 		return init;
 	}
 	
+	/**
+	 * @param l List of tuples to be combined with new model.
+	 * @param m Model that is to be combined with current list of tuples.
+	 * @param mdls Models used for this case (needed to calculate score).
+	 * @return All combinations of tuples with new model.
+	 */
 	private List<Tuple> combine(List<Tuple> l, Model m, ArrayList<Model> mdls){
 		List<Tuple> combinations = 
 			     l.parallelStream()
@@ -67,6 +79,11 @@ public class ParallelOptimal {
 		return combinations;
 	}
 	
+	/**
+	 * @param l1 List of tuples to be combined with other list.
+	 * @param l2 Second list of tuples to be combined.
+	 * @return All combinations of both lists of tuples.
+	 */
 	private List<Tuple> merge(List<Tuple> l1, List<Tuple> l2){
 		List<Tuple> combinations = 
 			     l1.parallelStream()
@@ -77,6 +94,13 @@ public class ParallelOptimal {
 		return combinations;
 	}
 	
+	/**
+	 * Joins t1, t2 into tuple that contains all of their elements.
+	 * 
+	 * @param t1 first tuple.
+	 * @param t2 second tuple.
+	 * @return t3 tuple containing all elements of t1, t2.
+	 */
 	private Tuple join(Tuple t1, Tuple t2){
 		Tuple t3 = new Tuple();
 		t3.addElements(t1.getElements());
@@ -86,17 +110,27 @@ public class ParallelOptimal {
 		return t3;
 	}
 	
+	/**
+	 * @param t tuple.
+	 * @return Set of all properties that belong to this tuple.
+	 */
 	private Set<String> getProperties(Tuple t){ 
 		return t.getElements().parallelStream()
 				 .flatMap(e -> e.getProperties().parallelStream())
 			     .collect(Collectors.toSet());
 	}
 	
+	/**
+	 * Return intersection of s1 and s2.
+	 */
 	private Set<String> intersection(Set<String> s1, Set<String> s2){
 		s1.retainAll(s2);
 		return s1;
 	}
 	
+	/**
+	 * @return tuples in match (i.e. T).
+	 */
 	public ArrayList<Tuple> getTuplesInMatch(){
 		return tuples;
 	}

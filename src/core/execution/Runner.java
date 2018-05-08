@@ -383,7 +383,7 @@ public class Runner extends ResultsWriter{
 	
 	public RunResult runParallelOptimal(String caseName){
 		ParallelOptimal po = new ParallelOptimal((ArrayList<Model>) models.clone());
-		RunResult rr = po.optimalSolution();
+		RunResult rr = po.generateTuples();
 		rr.setTitle("Optimal Solution");
 		System.out.println(rr);
 		System.out.println("number of tuples: " + po.getTuplesInMatch().size());

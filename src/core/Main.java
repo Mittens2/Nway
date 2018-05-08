@@ -37,6 +37,7 @@ import core.common.Statistics;
 import core.domain.Element;
 import core.domain.Model;
 import core.domain.Tuple;
+import core.execution.ACORunner;
 import core.execution.BatchRunner;
 import core.execution.BatchRunner.BatchRunDescriptor;
 import core.execution.UMLParser.UMLClass;
@@ -310,12 +311,7 @@ public class Main {
 	
 	public static void main(String[] args) {
 		// Set home to path where models/results files are located.
-		if (args.length == 1){
-			Main.home = args[0];
-		}
-		else{
-			Main.home = new File("").getAbsolutePath() + "/";
-		}
+		Main.home = new File("").getAbsolutePath() + "/";
 		// All models files.
 		String hospitals = home + "models/Julia_study/hospitals.csv";
 		String warehouses = home + "models/Julia_study/warehouses.csv";
@@ -386,21 +382,23 @@ public class Main {
 		ArrayList<String> results = new ArrayList<String>();
 		ArrayList<String> mmResults = new ArrayList<String>();
 		
+		models.add(notepad);
+		models.add(audioControlSystem);
+		models.add(chatSystem);
 		models.add(hospitals);
-		models.add(warehouses);
 		models.add(random);
 		models.add(randomLoose);
-		models.add(randomTight);
-		models.add(gasBoilerSystem);
-		models.add(audioControlSystem);
-		models.add(ajStats);
-		models.add(tankWar);
-		models.add(PKJab);
-		models.add(chatSystem);
-		models.add(notepad);
-		models.add(mobileMedia);
-		models.add(vod1);
-		models.add(vod2);
+		
+//		models.add(gasBoilerSystem);
+//		
+//		models.add(ajStats);
+//		models.add(tankWar);
+//		models.add(PKJab);
+//		
+//		
+//		
+//		models.add(vod1);
+//		models.add(vod2);
 
 //		results.add(resultsHospitals);
 //		results.add(resultsWarehouses);
@@ -425,14 +423,17 @@ public class Main {
 		//AlgoUtil.useTreshold(true);
 		
 		// Optimal Solution Solver
-		ForkJoinPool commonPool = ForkJoinPool.commonPool();
-		System.out.println("number of threads available: " + commonPool.getParallelism());    // 3
-		String m = notepad;
-		printStats(m);
+		//ForkJoinPool commonPool = ForkJoinPool.commonPool();
+		//System.out.println("number of threads available: " + commonPool.getParallelism());    // 3
+		//String m = audioControlSystem;
+		//printStats(m);
 		// Runs either a single batch of test, or multiple batches
-		singleBatchRun(m, resultsHospitals, -1, true);
+		//singleBatchRun(m, resultsHospitals, -1, true);
 		//multipleBatchRun(random, resultsRandom, 10);
 		
+		//ACORunner ar = new ACORunner();
+		//ACORunner ar = new ACORunner(new int[]{1}, new int[]{1}, new double[]{5}, new double[]{0.5}, new double[]{0.1});
+		//ar.runHyperParams(models);
 		
 		//Runs an experiment comparing NwM, HSim, and MM
 		//String[] solvers =  {"NwM", "HSim", "MM"};

@@ -71,13 +71,13 @@ public class Runner extends ResultsWriter{
 
 	public void execute(String caseName){
 		AlgoUtil.COMPUTE_RESULTS_CLASSICALLY = false;
-		//results.addAll(runBigHungarian(caseName, true));
+		results.addAll(runBigHungarian(caseName, true));
 		//results.addAll(runRandomizedMatch());
 		//results.addAll(runNwMwithHS(caseName));
 		//results.add(runSearch());
 		//results.add(runParallelOptimal(caseName));
-		results.add(runACO());
-		
+		//results.add(runACO());
+		//results.add(runGreed());
 		//runOnLocalSearch(N_WAY.ALG_POLICY.REPLACE_BEST, "LS triwise");
 		//runOnLocalSearch(N_WAY.ALG_POLICY.REPLACE_FIRST_BY_SQUARES, "LS triwise");
 		//addManualRun();
@@ -377,7 +377,7 @@ public class Runner extends ResultsWriter{
 		RunResult rr = search.execute();
 		rr.setTitle("Local Element Search");
 		System.out.println(rr);
-		AlgoUtil.printTuples(search.getTuplesInMatch());
+		//AlgoUtil.printTuples(search.getTuplesInMatch());
 		return rr;
 	}
 	
@@ -390,12 +390,21 @@ public class Runner extends ResultsWriter{
 		return rr;
 	}
 	
+	public RunResult runGreed(){
+		ACO aco = new ACO((ArrayList<Model>) models.clone(), 1, 0, 1, 1, 0.3, 0);
+		RunResult rr = aco.runACO();
+		rr.setTitle("Greedy Solution");
+		System.out.println(rr);
+		//AlgoUtil.printTuples(aco.getTuplesInMatch());
+		return rr;
+	}
+	
 	public RunResult runACO(){
-		ACO aco = new ACO((ArrayList<Model>) models.clone(), 1, 10, 1, 1, 0.3, 0.3);
+		ACO aco = new ACO((ArrayList<Model>) models.clone(), 3, 30, 1, 1, 0.1, 0);
 		RunResult rr = aco.runACO();
 		rr.setTitle("ACO Solution");
 		System.out.println(rr);
-		AlgoUtil.printTuples(aco.getTuplesInMatch());
+		//AlgoUtil.printTuples(aco.getTuplesInMatch());
 		return rr;
 	}
 	

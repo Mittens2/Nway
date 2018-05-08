@@ -37,13 +37,14 @@ public class ACO {
 	private Random rand;
 	private int workers;
 	private int numIters;
-	private int alpha;
-	private int beta;
+	private double alpha;
+	private double beta;
 	private double roe;
-	private double delta;
+	//private double delta;
 	private double total;
+	private int minProps;
 	
-	public ACO(ArrayList<Model> models, int workers, int numIters, int alpha, int beta, double roe, double delta){
+	public ACO(ArrayList<Model> models, int workers, int numIters, double alpha, double beta, double roe, int minProps){
 		this.models = models;
 		this.rand = new Random();
 		this.workers = workers;
@@ -51,22 +52,28 @@ public class ACO {
 		this.alpha = alpha;
 		this.beta = beta;
 		this.roe = roe;
-		this.delta = delta;
+		this.minProps = minProps;
+		//this.delta = delta;
 	}
 	
 	public RunResult runACO(){
 		long startTime = System.currentTimeMillis();
+		
 		// Get all tuples using ParallelOptimal
-		ParallelOptimal po = new ParallelOptimal(models);
+		ParallelOptimal po = new ParallelOptimal(models, minProps);
 		po.optimalSolution();
 		tuples = po.getTuplesInMatch();
+		System.out.println(tuples.size());
+		
 		// Initialize heuristic, tau and total
-		heuristics = new double[tuples.size()];
 		tau = new double[tuples.size()];
-		IntStream.range(0, tuples.size())
+		Arrays.parallelSetAll(tau, i -> 1);
+		heuristics = new double[tau.length];
+		IntStream.range(0, tau.length).parallel()
 			.forEach(i -> heuristics[i] = tuples.get(i).getWeight().doubleValue());
-		total = Math.pow(Arrays.stream(heuristics).parallel().sum(), alpha);
-		// Run ACO for numIters
+		double[] totArr = new double[tau.length];
+		Arrays.parallelSetAll(totArr, i -> Math.pow(heuristics[i], alpha) * Math.pow(tau[i], beta));
+		total = Arrays.stream(totArr).parallel().sum();
 		for (int i = 0; i < numIters; i++){
 			List<Set<Integer>> solutions = new ArrayList<Set<Integer>>(workers);
 			for (int j = 0; j< workers; j++)
@@ -75,9 +82,11 @@ public class ACO {
 					.map(a -> singleRun(tuples))
 					.collect(Collectors.toList());
 			updateProbs(solutions);
-			total = Math.pow(Arrays.stream(heuristics).parallel().sum(), alpha) + 
-					Math.pow(Arrays.stream(tau).parallel().sum(), beta);
+			Arrays.parallelSetAll(totArr, j -> Math.pow(heuristics[j], alpha) * Math.pow(tau[j], beta));
+			total = Arrays.stream(totArr).parallel().sum();
 		}
+		long midTime = System.currentTimeMillis();
+		//System.out.println(midTime - startTime);
 		
 		// Calculate final solution with single run of ACO
 		Set<Integer> finalSolution = finalSolution(tuples);
@@ -85,6 +94,7 @@ public class ACO {
 				.map(i -> tuples.get(i))
 				.collect(Collectors.toList());
 		long endTime = System.currentTimeMillis();
+		//System.out.println(endTime - midTime);
 		long execTime = endTime - startTime;
 		BigDecimal weight = AlgoUtil.calcGroupWeight(solution);
 		return new RunResult(execTime, weight, 
@@ -98,8 +108,7 @@ public class ACO {
 		double tot = total;
 		while (rem.size() != 0){
 			int ind = choose(tot, rem);
-			//System.out.println(ind);
-			tot -= (tau[ind] + heuristics[ind]);
+			tot -= (Math.pow(tau[ind], beta) * Math.pow(heuristics[ind], alpha));
 			solution.add(ind);
 			rem.remove(ind);
 			removeConflicting(allTuples, rem, ind);
@@ -114,7 +123,7 @@ public class ACO {
 		double sum = 0;
 		int i = keys.get(keys.size() - 1);
 		for (Integer key: keys){
-			sum += Math.pow(heuristics[key], alpha) + Math.pow(tau[key], beta);
+			sum += Math.pow(heuristics[key], alpha) * Math.pow(tau[key], beta);
 			if (sum / tot >= prob){
 				i = key;
 				break;
@@ -134,7 +143,9 @@ public class ACO {
 	}
 	
 	private void updateProbs(List<Set<Integer>> solutions){
-		// evaporation
+		// TODO: Right now not penalizing tuples that have been chosen only sometimes, i.e., if not chosen at all big
+		// penalty, very dramatic reshape of search space at every iteration
+		// evaporation 
 		Arrays.stream(tau).parallel().map(p -> (1 - roe) * p);
 		//reinforcement (Should probably figure out how to parallelize this)
 		Map<Integer, Integer> chosen = new HashMap<Integer, Integer>();
@@ -148,8 +159,10 @@ public class ACO {
 					chosen.put(tup, 0);
 			}
 		}
+		double totFit = Arrays.stream(heuristics).parallel().sum();
 		chosen.entrySet().parallelStream()
-			.forEach(e -> tau[e.getKey()] += e.getValue() * delta);
+			.forEach(e -> tau[e.getKey()] += e.getValue() *(heuristics[e.getKey()] / totFit));
+			//.forEach(e -> tau[e.getKey()] += e.getValue() * delta);
 	}
 	
 	private Set<Integer> finalSolution(List<Tuple> allTuples){
@@ -157,8 +170,8 @@ public class ACO {
 		Set<Integer> rem = IntStream.range(0, allTuples.size()).boxed().collect(Collectors.toSet());
 		Set<Integer> solution = new HashSet<Integer>();
 		while (rem.size() != 0){
-			int ind = IntStream.range(0, tau.length).filter(i -> rem.contains(i))
-			  .boxed().max(Comparator.comparingDouble(i -> Math.pow(tau[i], beta) + Math.pow(heuristics[i], alpha)))
+			int ind = IntStream.range(0, tau.length).parallel().filter(i -> rem.contains(i))
+			  .boxed().max(Comparator.comparingDouble(i -> Math.pow(tau[i], beta) * Math.pow(heuristics[i], alpha)))
 			  .get();
 			solution.add(ind);
 			rem.remove(ind);

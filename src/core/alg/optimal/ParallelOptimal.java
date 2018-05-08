@@ -18,9 +18,16 @@ public class ParallelOptimal {
 	
 	private ArrayList<Model> models;
 	private ArrayList<Tuple> tuples;
+	private int minProps;
 	
 	public ParallelOptimal(ArrayList<Model> models){
 		this.models = models;
+		this.minProps = 0;
+	}
+	
+	public ParallelOptimal(ArrayList<Model> models, int minProps){
+		this.models = models;
+		this.minProps = minProps;
 	}
 	
 	
@@ -54,7 +61,7 @@ public class ParallelOptimal {
 		List<Tuple> combinations = 
 			     l.parallelStream()
 			        .flatMap(t1 -> m.getElements().parallelStream()
-			        		.filter(e -> t1.getSize() == 0 || intersection(getProperties(t1), e.getProperties()).size() != 0)			  
+			        		.filter(e -> t1.getSize() == 0 || intersection(getProperties(t1), e.getProperties()).size() > minProps)			  
 			        		.map(e -> t1.newExpanded(e, mdls)))
 			        .collect(Collectors.toList());
 		return combinations;
@@ -64,7 +71,7 @@ public class ParallelOptimal {
 		List<Tuple> combinations = 
 			     l1.parallelStream()
 			        .flatMap(t1 -> l2.parallelStream()
-			        		.filter(t2 -> t2.getSize() == 0 || t1.getSize() == 0 || intersection(getProperties(t1), getProperties(t2)).size() != 0)
+			        		.filter(t2 -> t2.getSize() == 0 || t1.getSize() == 0 || intersection(getProperties(t1), getProperties(t2)).size() > minProps)
 			        		.map(t2 -> join(t1, t2)))
 			        .collect(Collectors.toList());
 		return combinations;

@@ -77,7 +77,7 @@ public class Runner extends ResultsWriter{
 		//results.add(runSearch());
 		//results.add(runParallelOptimal(caseName));
 		//results.add(runACO());
-		//results.add(runGreed());
+		results.add(runGreed());
 		//runOnLocalSearch(N_WAY.ALG_POLICY.REPLACE_BEST, "LS triwise");
 		//runOnLocalSearch(N_WAY.ALG_POLICY.REPLACE_FIRST_BY_SQUARES, "LS triwise");
 		//addManualRun();
@@ -391,7 +391,7 @@ public class Runner extends ResultsWriter{
 	}
 	
 	public RunResult runGreed(){
-		ACO aco = new ACO((ArrayList<Model>) models.clone(), 1, 0, 1, 1, 0.3, 0);
+		ACO aco = new ACO((ArrayList<Model>) models.clone(), 1, 0, 1, 1, 0.3, 1);
 		RunResult rr = aco.runACO();
 		rr.setTitle("Greedy Solution");
 		System.out.println(rr);

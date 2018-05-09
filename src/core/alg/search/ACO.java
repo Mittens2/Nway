@@ -88,7 +88,7 @@ public class ACO {
 			Arrays.parallelSetAll(totArr, j -> Math.pow(heuristics[j], alpha) * Math.pow(tau[j], beta));
 			total = Arrays.stream(totArr).parallel().sum();
 		}
-		long midTime = System.currentTimeMillis();
+//		long midTime = System.currentTimeMillis();
 		//System.out.println(midTime - startTime);
 		
 		// Calculate final solution with single run of ACO

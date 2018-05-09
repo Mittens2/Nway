@@ -43,7 +43,7 @@ public class ACORunner {
 		this.rho = new double[]{0.1, 0.5};
 	}
 	
-	public ACORunner(int[] workers, int[] numIters,double[] alpha, double[] beta, double[] rho){
+	public ACORunner(int[] workers, int[] numIters, double[] alpha, double[] beta, double[] rho){
 		this.workers = workers;
 		this.numIters = numIters;
 		this.alpha = alpha;

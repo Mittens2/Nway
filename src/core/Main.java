@@ -29,6 +29,7 @@ import org.jfree.data.category.CategoryDataset;
 import org.jfree.ui.RefineryUtilities;
 
 import core.alg.optimal.ParallelOptimal;
+import core.alg.search.ACO;
 import core.common.AlgoUtil;
 import core.common.GameSolutionParser;
 import core.common.ResultsPlotter;
@@ -130,14 +131,18 @@ public class Main {
 		// Models, Results, and mmResults used to compare HSim, NwM, and MM results
 		ArrayList<String> models = new ArrayList<String>();
 		
-		models.add(notepad);
-		models.add(audioControlSystem);
-		models.add(chatSystem);
+//		models.add(notepad);
+//		models.add(audioControlSystem);
+//		models.add(chatSystem);
 		models.add(hospitals);
-		models.add(random);
-		models.add(randomLoose);
-		
-		ACORunner ar = new ACORunner();
-		ar.runHyperParams(models);
+//		models.add(random);
+//		models.add(randomLoose);
+//		for (String m: models){
+//			printStats(m);
+//		}
+		//ACORunner ar = new ACORunner();
+		//ar.runHyperParams(models);
+		singleBatchRun(random, null, 10, false);
+		singleBatchRun(randomLoose, null, 10, false);
 	}		
 }

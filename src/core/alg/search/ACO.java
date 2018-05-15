@@ -28,7 +28,6 @@ import core.domain.Tuple;
 import core.execution.RunResult;
 
 public class ACO {
-	private Map<List<Integer>, BigDecimal> tensor;
 	private ArrayList<Model> models;
 	private ArrayList<Tuple> tuples;
 	private ArrayList<Tuple> solution;

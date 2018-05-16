@@ -10,6 +10,7 @@ The following algorithms may be run with the code from N-way:
 4. [HSim](https://github.com/Mittens2/Nway/blob/aco/src/core/alg/merge/HumanSimulator.java)
 5. [Local Element Search](https://github.com/Mittens2/Nway/blob/aco/src/core/alg/search/Search.java)
 6. [Ant-Colony Optimization](https://github.com/Mittens2/Nway/blob/aco/src/core/alg/search/ACO.java)
+
 The descriptions of 1-3 can be found in https://people.csail.mit.edu/mjulia/publications/N-Way_Model_Merging_2013.pdf.
 In order to designate which algorithms are run, go to the execute method in Runner.java, and uncomment lines that run desired algorithms.
 

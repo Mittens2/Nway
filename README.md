@@ -38,8 +38,7 @@ divideUp: If you don’t want to use every model from every case, then can desig
 The results produced for the variant of the algorithm are stored in results/seedStats.xls. The different recordings are described in the results section.
 
 ### Single Case Run (Alg +)
-The singleBatchRun(modelsFile, resultsFile, numOfModels, toChunkify) method in Main.java can be used to run any number of variants of any algorithm on a
-* single case. Fields are described:
+The singleBatchRun(modelsFile, resultsFile, numOfModels, toChunkify) method in Main.java can be used to run any number of variants of any algorithm on a single case. Fields are described:
 * modelsFile: Filename from which models are read.
 * resultsFiles: Filenames where results for case are stored.
 * numOfModels: How many models from the desired case you want to use.
@@ -50,10 +49,10 @@ The results for each variant run are printed in the console, as well as written 
 ## Results
 
 The results of a full experiment over every possible configuration of HSim improving on NwM, as well as the results of a single variant experiment with the best configuration of HSim are stored in the results folder. The results of the full experiment are stored in four different files - all_params_scores.xls, all_params_time.xls, all_params_gap.xls, and all_params_1stchange.xls. The results stored in each file are described:
-* all_params_scores.xls: The different scores of the different configurations of HSim. Results can be viewed either in Block Form or Long Form. Scores in long form can also be viewed as relative percent improvement to the original NwM score.
-* all_params_time.xls: The different runtimes of each configuration of HSim. Can be viewed in Block or Long form.
-* all_params_gap.xls: The avg gap between successive changes that HSim makes, i.e., how many seeds are tried in between successive changes to the solution.
-* all_params_1stchange.xls: The avg amount of seeds used per iteration before a change to the solution is made.
+* score_results.xls: The different scores of the different configurations of HSim. Results can be viewed either in Block Form or Long Form. Scores in long form can also be viewed as relative percent improvement to the original NwM score.
+* time_results.xls: The different runtimes of each configuration of HSim. Can be viewed in Block or Long form.
+* gap_results.xls: The avg gap between successive changes that HSim makes, i.e., how many seeds are tried in between successive changes to the solution.
+* change_results.xls: The avg amount of seeds used per iteration before a change to the solution is made.
 
 These are the same measurements that are made when running a full experiment as described in case studies, along with the standard deviation over the runs averaged to obtain each score.
 

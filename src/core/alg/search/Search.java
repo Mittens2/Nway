@@ -49,6 +49,23 @@ public class Search {
 		}
 	}
 	
+	public Search(ArrayList<Model> models, ArrayList<Tuple> solution, MoveStrategy strat, int k){
+		this.models = models;
+		this.strat = strat;
+		this.elements = new HashSet<Element>();
+		this.solution = solution;
+		for (Model m: models){
+			elements.addAll(m.getElements());
+		}
+		for (Tuple t: solution){
+			for (Element e: t.getElements()){
+				e.setContainingTuple(t);
+			}
+		}
+		this.k = k;
+		moveCache = new ArrayDeque<Map<BigDecimal, Move>>(k);
+	}
+	
 	public Search(ArrayList<Model> models, MoveStrategy strat, int k){
 		this.models = models;
 		this.strat = strat;
@@ -192,19 +209,12 @@ public class Search {
 		return max;
 	}
 	
-	private int countElements(){
-		int sum = 0;
-		for (Tuple t: solution)
-			sum += t.getSize();
-		return sum;
-	}
-	
 	public ArrayList<Tuple> getTuplesInMatch(){
 		return solution;
 	}
 	
 	private void duplicateElements() throws InvalidSolutionException{
-		ArrayList<Element> usedElements = new ArrayList<Element>();
+		Set<Element> usedElements = new HashSet<Element>();
 		for (Tuple t: solution){
 			for (Element e: t.getElements()){
 				if (usedElements.contains(e)){

@@ -9,7 +9,6 @@ import java.util.stream.Collectors;
 
 import core.domain.Model;
 import core.domain.Tuple;
-import core.domain.Element;
 import core.execution.RunResult;
 
 

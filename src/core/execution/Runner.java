@@ -71,12 +71,12 @@ public class Runner extends ResultsWriter{
 
 	public void execute(String caseName){
 		AlgoUtil.COMPUTE_RESULTS_CLASSICALLY = false;
-		results.addAll(runBigHungarian(caseName, true));
+		//results.addAll(runBigHungarian(caseName, true));
 		//results.addAll(runRandomizedMatch());
 		//results.addAll(runNwMwithHS(caseName));
 		//results.add(runSearch());
 		//results.add(runParallelOptimal(caseName));
-		//results.add(runACO());
+		results.add(runACO());
 		//results.add(runGreed());
 		//runOnLocalSearch(N_WAY.ALG_POLICY.REPLACE_BEST, "LS triwise");
 		//runOnLocalSearch(N_WAY.ALG_POLICY.REPLACE_FIRST_BY_SQUARES, "LS triwise");
@@ -290,11 +290,65 @@ public class Runner extends ResultsWriter{
 					e.setContainingTuple(t);
 				}
 			}
-			RunResult rr = runBestAlgo(md, prevSolution);
+			RunResult rr = runRandomMatch(md, prevSolution);
 			results.add(rr);
 		}
 		writeResults(results, "Randomized");
 		return results;
+	}
+	
+	public ArrayList<RunResult> runRandomizedMatch(){
+		@SuppressWarnings("unchecked")
+		ArrayList<RunResult> results = new ArrayList<RunResult>();
+		ArrayList<MergeDescriptor> mds = allPermOnAlg(N_WAY.ALG_POLICY.RANDOM);
+		for(MergeDescriptor md:mds){
+			RunResult rr = runRandomMatch(md, new ArrayList<Tuple>());
+			results.add(rr);
+		}
+		//writeResults(results, "Randomized");
+		return results;
+	}
+	
+	private RunResult runRandomMatch(MergeDescriptor md, ArrayList<Tuple> prevSolution){
+		RandomizedMatchMerger rmm = new RandomizedMatchMerger((ArrayList<Model>) models.clone(), md);
+		//System.out.println(models);
+		rmm.improveSolution(prevSolution);
+		RunResult rr = rmm.getRunResult(models.size());
+		//System.out.println(models.size());
+		rr.setTitle(AlgoUtil.nameOfMergeDescription(md, -1));
+		System.out.println(rr);
+		//AlgoUtil.printTuples(rmm.getTuplesInMatch());
+		return rr;
+	}
+
+	public RunResult runSearch(){
+		Search search = new Search((ArrayList<Model>) models.clone(), MoveStrategy.ELEMENT, 1);
+		RunResult rr = search.execute();
+		rr.setTitle("Local Element Search");
+		System.out.println(rr);
+		//AlgoUtil.printTuples(search.getTuplesInMatch());
+		return rr;
+	}
+	
+	public RunResult runGreed(){
+		ACO aco = new ACO((ArrayList<Model>) models.clone(), 1, 0, 1, 1, 0.3, 0);
+		RunResult rr = aco.runACO();
+		rr.setTitle("Greedy Solution");
+		System.out.println(rr);
+		//AlgoUtil.printTuples(aco.getTuplesInMatch());
+		return rr;
+	}
+	
+	public RunResult runACO(){
+		ACO aco = new ACO((ArrayList<Model>) models.clone(), 3, 5, 1, 1, 0.1, 1);
+		RunResult rr = aco.runACO();
+		Search search = new Search((ArrayList<Model>) models.clone(), aco.getTuplesInMatch(), MoveStrategy.ELEMENT, 1);
+		rr.setTitle("ACO Solution");
+		System.out.println(rr);
+		RunResult rr2 = search.execute();
+		System.out.println(rr2);
+		//AlgoUtil.printTuples(aco.getTuplesInMatch());
+		return rr;
 	}
 	
 	private ArrayList<Tuple> loadTuplesFromFile(File f){
@@ -332,80 +386,6 @@ public class Runner extends ResultsWriter{
 		} catch (Exception e){
 			e.printStackTrace();
 		}
-	}
-	
-	private RunResult runBestAlgo(MergeDescriptor md, ArrayList<Tuple> prevSolution){
-		
-		RandomizedMatchMerger rmm = new RandomizedMatchMerger((ArrayList<Model>) models.clone(), md);
-		//System.out.println(models);
-		rmm.improveSolution(prevSolution);
-		RunResult rr = rmm.getRunResult(models.size());
-		//System.out.println(models.size());
-		rr.setTitle(AlgoUtil.nameOfMergeDescription(md, -1));
-		System.out.println(rr);
-		//AlgoUtil.printTuples(rmm.getTuplesInMatch());
-		return rr;
-	}
-	
-	public ArrayList<RunResult> runRandomizedMatch(){
-		@SuppressWarnings("unchecked")
-		ArrayList<RunResult> results = new ArrayList<RunResult>();
-		ArrayList<MergeDescriptor> mds = allPermOnAlg(N_WAY.ALG_POLICY.RANDOM);
-		for(MergeDescriptor md:mds){
-			RunResult rr = runRandomMatch(md);
-			results.add(rr);
-		}
-		//writeResults(results, "Randomized");
-		return results;
-	}
-	
-	
-	private RunResult runRandomMatch(MergeDescriptor md){
-		RandomizedMatchMerger rmm = new RandomizedMatchMerger((ArrayList<Model>) models.clone(), md);
-		//System.out.println(models);
-		rmm.improveSolution(new ArrayList<Tuple>());
-		RunResult rr = rmm.getRunResult(models.size());
-		//System.out.println(models.size());
-		rr.setTitle(AlgoUtil.nameOfMergeDescription(md, -1));
-		System.out.println(rr);
-		//AlgoUtil.printTuples(rmm.getTuplesInMatch());
-		return rr;
-	}
-
-	public RunResult runSearch(){
-		Search search = new Search((ArrayList<Model>) models.clone(), MoveStrategy.ELEMENT, 1);
-		RunResult rr = search.execute();
-		rr.setTitle("Local Element Search");
-		System.out.println(rr);
-		//AlgoUtil.printTuples(search.getTuplesInMatch());
-		return rr;
-	}
-	
-	public RunResult runParallelOptimal(String caseName){
-		ParallelOptimal po = new ParallelOptimal((ArrayList<Model>) models.clone());
-		RunResult rr = po.optimalSolution();
-		rr.setTitle("Optimal Solution");
-		System.out.println(rr);
-		System.out.println("number of tuples: " + po.getTuplesInMatch().size());
-		return rr;
-	}
-	
-	public RunResult runGreed(){
-		ACO aco = new ACO((ArrayList<Model>) models.clone(), 1, 0, 1, 1, 0.3, 0);
-		RunResult rr = aco.runACO();
-		rr.setTitle("Greedy Solution");
-		System.out.println(rr);
-		//AlgoUtil.printTuples(aco.getTuplesInMatch());
-		return rr;
-	}
-	
-	public RunResult runACO(){
-		ACO aco = new ACO((ArrayList<Model>) models.clone(), 3, 30, 1, 1, 0.1, 0);
-		RunResult rr = aco.runACO();
-		rr.setTitle("ACO Solution");
-		System.out.println(rr);
-		//AlgoUtil.printTuples(aco.getTuplesInMatch());
-		return rr;
 	}
 	
 	
@@ -477,34 +457,6 @@ public class Runner extends ResultsWriter{
 	 public ArrayList<RunResult> getRunResults(){
 		 return results;
 	 }
-	
-//	private RunResult runOn(MergeDescriptor md, int modelSplitSize, int bucketSize){
-//		 
-//		@SuppressWarnings("unchecked")
-//		MultiModelMerger mmm = new MultiModelMerger((ArrayList<Model>) models.clone(), md, modelSplitSize, bucketSize);
-//		mmm.run();
-//		RunResult retVal = mmm.getRunResult(models.size());
-//		System.out.println(retVal);
-//		return retVal;
-//	}
-
-//	private void runOnBuckets(int modelSplitSize, int bucketSize){
-//	ArrayList<RunResult> results = new ArrayList<RunResult>();
-//	ArrayList<MergeDescriptor> descriptors = getDescriptors();
-//	for(MergeDescriptor md:descriptors){
-//		results.add(runOn(md, modelSplitSize, bucketSize));
-//	}
-//	String sheetName = "b="+bucketSize+", m="+modelSplitSize;
-//	writeResults(results, sheetName);
-//}
-//	private ArrayList<MergeDescriptor> getDescriptors() {
-//	ArrayList<MergeDescriptor> retVal = new ArrayList<MergeDescriptor>();
-//	retVal.addAll(allPermOnAlg(N_WAY.ALG_POLICY.PAIR_WISE));
-//	retVal.addAll(allPermOnAlg(N_WAY.ALG_POLICY.GREEDY));
-//	retVal.addAll(allPermOnAlg(N_WAY.ALG_POLICY.REPLACE_FIRST));
-//	retVal.addAll(allPermOnAlg(N_WAY.ALG_POLICY.REPLACE_BEST));
-//	return retVal;
-//}
 
 	public static abstract class RunnerThread extends Thread {
 		

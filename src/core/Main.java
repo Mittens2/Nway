@@ -191,30 +191,8 @@ public class Main {
 			if (size < min)
 				min = size;
 		}
-		
-//		int incompat = 0;
-//		//possibs -= 1;
-//		for (int i = 0; i < models.size(); i++){
-//			incompat += (((double) possibs) / (models.get(i).size() + 1));
-//			for (int j = 0; j < i; j++){
-//				incompat -= (((double) possibs) / (models.get(i).size() + 1) / (models.get(j).size() + 1));
-//			}
-//		}
-//		Set<String> props = new HashSet<String>();
-//		for (Model m: models){
-//			for (Element e: m.getElements()){
-//				for (String p: e.getProperties()){
-//					if (!props.contains(p))
-//						props.add(p);
-//				}
-//			}
-//		}
-//		System.out.println(name + ": " + "elements: " + totes + ", max:" + max + ", min:" + min + ", avg:" +  
-//		(totes / models.size()) + ", possible tuples:" + possibs + ", possible solutions:" + possibs * (possibs - incompat)
-//				+ ", props:" + props.size());
 		DecimalFormat df = new DecimalFormat("0.0###E0");
 		System.out.println(name + ": " +"size of S: " + df.format(possibs) + ", size of U: " + totes);
-		//System.out.println(name + ": " + props.size());
 	}
 	
 	public static void testTuples(String modelsFile){
@@ -383,38 +361,7 @@ public class Main {
 		ArrayList<String> mmResults = new ArrayList<String>();
 		
 		models.add(notepad);
-		models.add(audioControlSystem);
-		models.add(chatSystem);
-		models.add(hospitals);
-		models.add(random);
-		models.add(randomLoose);
-		
-//		models.add(gasBoilerSystem);
-//		
-//		models.add(ajStats);
-//		models.add(tankWar);
-//		models.add(PKJab);
-//		
-//		
-//		
-//		models.add(vod1);
-//		models.add(vod2);
-
-//		results.add(resultsHospitals);
-//		results.add(resultsWarehouses);
-		results.add(resultsRandom);
-		results.add(resultsRandomLoose);
-		results.add(resultsRandomTight);
-		results.add(resultsGasBoilerSystem);
-		results.add(resultsAudioControlSystem);
-		results.add(resultsAJStats);
-		results.add(resultsTankWar);
-		results.add(resultsPKJab);
-		results.add(resultsChatSystem);
 		results.add(resultsNotepad);
-		results.add(resultsMobileMedia);
-		results.add(resultsVod1);
-		results.add(resultsVod2);
 		
 		mmResults.add(mmHospital);
 		mmResults.add(mmRandomTight);
@@ -422,18 +369,12 @@ public class Main {
 		
 		//AlgoUtil.useTreshold(true);
 		
-		// Optimal Solution Solver
-		//ForkJoinPool commonPool = ForkJoinPool.commonPool();
-		//System.out.println("number of threads available: " + commonPool.getParallelism());    // 3
-		//String m = audioControlSystem;
+		String m = hospitals;
 		//printStats(m);
-		// Runs either a single batch of test, or multiple batches
-		//singleBatchRun(m, resultsHospitals, -1, true);
-		//multipleBatchRun(random, resultsRandom, 10);
 		
-		//ACORunner ar = new ACORunner();
-		//ACORunner ar = new ACORunner(new int[]{1}, new int[]{1}, new double[]{5}, new double[]{0.5}, new double[]{0.1});
-		//ar.runHyperParams(models);
+		// Runs either a single batch of test, or multiple batches
+		singleBatchRun(m, resultsHospitals, -1, true);
+		//multipleBatchRun(random, resultsRandom, 10);
 		
 		//Runs an experiment comparing NwM, HSim, and MM
 		//String[] solvers =  {"NwM", "HSim", "MM"};
@@ -458,111 +399,5 @@ public class Main {
 		//SolverDifference.testRMMandNwMDiff(testModels, nwmFilePath, true);
 		//}
 		
-		
-		
-		// Not used anymore
-		//workOnBatch(random10, resultRandom10);
-		//workOnBatch("models/randomH.csv", "results/randomH.xls");
-		//workOnBatch("models/randomWH.csv", "results/randomWH.xls");
-		//workOnBatch("models/randomBad.csv", "results/randomBad.xls");
-
-		//createBatch("models/randomH.xls", 18,38,2,9,60,100);
-		//createBatch("models/randomWH.xls", 15,44,2,7,60,280);
-		//createBatch("models/randomMid.xls",15,44,2,7,60,280);
-		//createBatch("models/randomBad.xls",20,30,2,16,60,60);
-		
-		//ArrayList<Model> models = Model.readModelsFile(randomTMP);
-		//MultiModelMerger mmm = new MultiModelMerger(models);
-		//mmm.run();
-//		Runner runner = new Runner(models, resultsHospitals, null);
-//		runner.execute();
-
-		//TupleReader tr = new TupleReader(Model.readModelsFile(hospitals),"models/Models.xls");
-		//System.out.println(tr.getResult());
-		
-//		ArrayList<Model> models = Model.readModelsFile(hospitals);
-//		ArrayList<Model> tst = new ArrayList<Model>();
-//		tst.add(models.get(0));
-//		tst.add(models.get(1));
-//		tst.add(models.get(2));	
-//		tst.add(models.get(3));	
-		//MergeDescriptor md = new MergeDescriptor( N_WAY.ALG_POLICY.GREEDY, false, true);
-		//MultiModelMerger mmm = new MultiModelMerger(models, md, 3, 20);
-		//mmm.run();
-		//System.out.println(mmm.getRunResult(models.size()));
-		//MergeByBuckets mbb = new MergeByBuckets(models, 20, N_WAY.ALG_POLICY.GREEDY);
-		//mbb.run()
-		//doit(3, models, N_WAY.ALG_POLICY.GREEDY);
-		//doit(2, models, N_WAY.ALG_POLICY.PAIR_BY_AVG);
-		//doit(2, models, N_WAY.ALG_POLICY.PAIR_BY_MODEL);
-		//doit(3, models, N_WAY.ALG_POLICY.GREEDY);
-		//doit(4, models, N_WAY.ALG_POLICY.GREEDY);
-		//doit(5, models, N_WAY.ALG_POLICY.GREEDY);
-		//ExecutionMixer em = new ExecutionMixer(models);
-		
-//		RunResult rr = em.run(2, N_WAY.ALG_POLICY.PAIR_BY_AVG, true);
-//		System.out.println(rr.toString());
-//		
-//		em = new ExecutionMixer(Model.readModelsFile(hospitals));
-//		rr = em.run(2, N_WAY.ALG_POLICY.PAIR_BY_AVG, false);
-//		System.out.println(rr.toString());
-
-		
-//		Experiment e = new Experiment(tst, N_WAY.Strategy.ENTIRE_INPUT ,N_WAY.FIRST_LOCAL_SEARCH , "hospitals_triplets");
-//		e.run();
-//		System.out.println(e.reportOnResults());
-		//e.writeResultsAsCSV();
-		
-		//e =  new Experiment(warehouses, N_WAY.Strategy.MODEL_TRIPLETS ,N_WAY.ALL_ALGOS , "warehouses_triplets");
-		//e.run();
-		//System.out.println(e.reportOnResults());
-		//e.writeResultsAsCSV();
-
-		
-		//e =  new Experiment(hospitals, N_WAY.Strategy.MODEL_TRIPLETS ,N_WAY.ALL_ALGOS , "hospitals_triplets");
-		//e.run();
-		//System.out.println(e.reportOnResults());
-		//e.writeResultsAsCSV();
-		
-		//e =  new Experiment(hospitals, N_WAY.Strategy.ENTIRE_INPUT ,N_WAY.PAIR_WISE , "hospitals_all");
-		//e.run();
-		//System.out.println(e.reportOnResults());
-		//e.writeResultsAsCSV();
-		
-		
-//		SingleRunDescriptor ed1 = new SingleRunDescriptor("models/test.csv", null);
-//		SingleRunDescriptor ed2 = new SingleRunDescriptor("models/hospital.csv", new int[] {1,2,3});
-//		SingleRunDescriptor ed3 = new SingleRunDescriptor("models/hospital.csv", new int[] {3,4,5});
-//		SingleRunDescriptor ed4 = new SingleRunDescriptor("models/hospital.csv", new int[] {5,6,7});
-//		SingleRunDescriptor ed5 = new SingleRunDescriptor("models/hospital.csv", new int[] {7,8,1});
-//		SingleRunDescriptor ed6 = new SingleRunDescriptor("models/hospital.csv", null);
-//		SingleRunDescriptor ed7 = new SingleRunDescriptor("models/hospital.csv", new int[] {1,2,3,4});
-//		
-//		SingleRunDescriptor used = ed7;
-//		SingleRun e = new SingleRun(used.path,used.idsToUse);
-//		e.setK(3);
-//		e.setL(4);
-//		e.setN(4);
-//		e.run();
-	}
-	
-//	private static void doit(int m, ArrayList<Model> models, N_WAY.ALG_POLICY pol){
-//	ExecutionMixer em = new ExecutionMixer(models);
-//	
-//	MergeDescriptor md  = new MergeDescriptor(pol, true, true);
-//	RunResult rr = em.run(m, md);
-//	System.out.println(rr.toString());		
-//	
-//	md  = new MergeDescriptor(pol, true, false);
-//	rr = em.run(m, md);
-//	System.out.println(rr.toString());		
-//	
-//	md  = new MergeDescriptor(pol, false, true);
-//	rr = em.run(m, md);
-//	System.out.println(rr.toString());		
-//	
-//	md  = new MergeDescriptor(pol, false, false);
-//	rr = em.run(m, md);
-//	System.out.println(rr.toString());				
-//}
+	}	
 }
